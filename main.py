@@ -18,6 +18,7 @@ Variables and settings
 '''
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(device)
 
 # Paths
 Path = "/mnt/data/desy/frog_simulated/grid_256/"
