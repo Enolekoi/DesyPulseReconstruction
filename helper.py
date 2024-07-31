@@ -60,7 +60,7 @@ class SimulatedDataset(Dataset):
         # create a spectrogram with 3 identical channels
         output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
         output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
-        output_spec = output_spec.permute(1,2,0)# change the order of dimensions (h,w,3)
+        # output_spec = output_spec.permute(1,2,0)# change the order of dimensions (h,w,3)
 
         # print(output_spec.shape)
         # print(label.shape)
