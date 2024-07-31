@@ -46,19 +46,17 @@ class SimulatedDataset(Dataset):
 
         if self.transform:
             spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
-            print("here spec trans")
         else:
             output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values).unsqueeze(0)
 
         if self.target_transform:
             label = self.target_transform(label_path)
-            print("here label trans")
         else:
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
 
         # print(output_spec.shape)
         # print(label.shape)
-        print(f"Spectrogram type: {type(output_spec)}, Label type: {type(label)}")
+        print(f"Spectrogram type: {type(torch.tensor(output_spec))}, Label type: {type(torch.tensor(label))}")
         return output_spec, label
 
 '''
