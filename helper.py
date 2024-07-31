@@ -58,7 +58,7 @@ class SimulatedDataset(Dataset):
 
         # print(output_spec.shape)
         # print(label.shape)
-        print(f"Spectrogram type: {type(spectrogram)}, Label type: {type(label)}")
+        print(f"Spectrogram type: {type(output_spec)}, Label type: {type(label)}")
         return output_spec, label
 
 '''
