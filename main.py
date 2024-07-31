@@ -92,6 +92,7 @@ n_total_steps = len(train_loader)
 for epoch in range(num_epochs):     # iterate over epochs
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
         print(spectrograms.shape)
+        spectrograms = spectrograms.double()
         # send spectrogram and label data to selected device
         spectrograms = spectrograms.to(device)
         labels = labels.to(device)
