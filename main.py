@@ -33,7 +33,7 @@ OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
 output_size = 128
-batch_size = 100
+batch_size = 50
 num_epochs = 2
 learning_rate = 0.001
 
