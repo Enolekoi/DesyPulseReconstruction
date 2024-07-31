@@ -173,7 +173,7 @@ class ReadLabelFromEs(object):
         # imag_part = Array containing imaginary part of time signal
 
         # read the dataframe
-        dataframe = pd.read_csv(path,sep='  ', header=None, engine='python')     # sep needs to be 2 spaces
+        dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
         
         TimeDomainSignal = TimeDomain(time_axis = dataframe[0].to_numpy(),
                                       intensity = dataframe[1].to_numpy(),
