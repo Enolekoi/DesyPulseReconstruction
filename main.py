@@ -19,6 +19,7 @@ Variables and settings
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device!')
+
 if device == 'cuda':
     torch.cuda.empty_cache()
 
@@ -35,7 +36,7 @@ OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
 output_size = 128
-batch_size = 50
+batch_size = 8
 num_epochs = 2
 learning_rate = 0.001
 
