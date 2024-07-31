@@ -48,7 +48,7 @@ Load Model
 # Load pretrained DenseNet
 model = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
 # Get the number of features before the last layer
-num_features = model.features()
+num_features = model.classifier.in_features
 # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
 model.classifier = nn.Linear(num_features, 256)
 
@@ -98,6 +98,7 @@ for epoch in range(num_epochs):     # iterate over epochs
         
         # Forward pass
         outputs = model(spectrograms)
+        output_array = outputs.detach().numpy()
         loss = criterion(outputs, labels)
 
         # Backward pass
