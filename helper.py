@@ -56,9 +56,9 @@ class SimulatedDataset(Dataset):
         else:
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
 
-        print(output_spec.shape)
-        print(label.shape)
-
+        # print(output_spec.shape)
+        # print(label.shape)
+        print(f"Spectrogram type: {type(spectrogram)}, Label type: {type(label)}")
         return output_spec, label
 
 '''
