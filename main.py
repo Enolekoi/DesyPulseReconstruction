@@ -109,7 +109,6 @@ for epoch in range(num_epochs):     # iterate over epochs
         
         # Forward pass
         outputs = model(spectrograms)
-        output_array = outputs.detach().numpy()
         loss = criterion(outputs, labels)
 
         # Backward pass
