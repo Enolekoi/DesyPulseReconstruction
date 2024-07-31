@@ -52,7 +52,7 @@ class SimulatedDataset(Dataset):
 
         if self.target_transform:
             label = self.target_transform(label_path)
-            label = torch.tensor(label)
+            label = torch.from_numpy(label)
         else:
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
 
