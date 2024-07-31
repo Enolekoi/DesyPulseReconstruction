@@ -111,6 +111,8 @@ for epoch in range(num_epochs):     # iterate over epochs
         # Forward pass
         outputs = model(spectrograms)
         outputs = outputs.clone().detach().requires_grad_(True)
+        print(f'shape of outputs: {outputs.shape}')
+        print(f'shape of labels: {labels.shape}')
         loss = criterion(outputs, labels)
 
         # Backward pass
