@@ -109,7 +109,7 @@ for epoch in range(num_epochs):     # iterate over epochs
         
         # Forward pass
         outputs = model(spectrograms)
-        outputs = torch.tensor(outputs)
+        outputs = outputs.clone().detach().requires_grad_(True)
         loss = criterion(outputs, labels)
 
         # Backward pass
