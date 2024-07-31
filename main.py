@@ -59,6 +59,7 @@ model.classifier = nn.Linear(num_features, 512)
 model.float()
 model.to(device)
 model.eval()
+
 print('Loading Model finished!')
 
 '''
@@ -100,17 +101,16 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 n_total_steps = len(train_loader)
 for epoch in range(num_epochs):     # iterate over epochs
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
-        print(spectrograms.shape)
-        print(type(spectrograms))
+        # print(spectrograms.shape)
+        # print(type(spectrograms))
         spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
         spectrograms = spectrograms.to(device)
-        # labels = labels.view(-1)
         labels = labels.to(device)
         
         # Forward pass
         outputs = model(spectrograms)
-        outputs = outputs.clone().detach().requires_grad_(True)
+        # outputs = outputs.clone().detach().requires_grad_(True)
         print(f'shape of outputs: {outputs.shape}')
         print(f'shape of labels: {labels.shape}')
         loss = criterion(outputs, labels)
