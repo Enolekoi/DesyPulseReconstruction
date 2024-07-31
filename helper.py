@@ -58,7 +58,7 @@ class SimulatedDataset(Dataset):
 
         # print(output_spec.shape)
         # print(label.shape)
-        print(f"Spectrogram type: {type(torch.tensor(output_spec))}, Label type: {type(torch.tensor(label))}")
+        # print(f"Spectrogram type: {type(torch.tensor(output_spec))}, Label type: {type(torch.tensor(label))}")
         return output_spec, label
 
 '''
