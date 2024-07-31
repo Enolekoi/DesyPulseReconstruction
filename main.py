@@ -18,7 +18,7 @@ Variables and settings
 '''
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(device)
+print(f'Using {device} as device!')
 
 # Paths
 Path = "/mnt/data/desy/frog_simulated/grid_256/"
@@ -45,6 +45,7 @@ label_transform = helper.ReadLabelFromEs()
 Load Model
 '''
 
+print('Loading Model...')
 # Load pretrained DenseNet
 model = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
 # Get the number of features before the last layer
@@ -55,10 +56,12 @@ model.classifier = nn.Linear(num_features, 256)
 model.float()
 model.to(device)
 model.eval()
+print('Loading Model finished!')
 
 '''
 Load Data
 '''
+print('Loading Data...')
 data = helper.SimulatedDataset(path=Path,
                                label_filename=LabelFilename,
                                spec_filename=SpecFilename,
@@ -80,9 +83,11 @@ train_loader = DataLoader(train_data, batch_size = batch_size, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = batch_size, shuffle=False)
 train_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
 
+print('Loading Data finished')
 '''
 Training
 '''
+print('Starting Training...')
 ########################
 ## loss and optimizer ##
 ########################
@@ -112,9 +117,12 @@ for epoch in range(num_epochs):     # iterate over epochs
         # Print information (every 100 steps)
         if (i+1) % 100 == 0:
             print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {n_total_steps}, Loss = {loss.item():.4f}')
+
+print('Training finished')
 '''
 validation
 '''
+print('Starting Validation...')
 # visualize random prediction
 image, label = data[0]
 prediction = np.zeros(1)
