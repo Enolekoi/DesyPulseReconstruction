@@ -46,11 +46,13 @@ class SimulatedDataset(Dataset):
 
         if self.transform:
             spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
+            output_spec = torch.tensor(output_spec)
         else:
             output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values).unsqueeze(0)
 
         if self.target_transform:
             label = self.target_transform(label_path)
+            label = torch.tensor(label)
         else:
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
 
