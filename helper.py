@@ -48,13 +48,13 @@ class SimulatedDataset(Dataset):
             spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
             print("here spec trans")
         else:
-            output_spec = torch.tensor(pd.read_csv(spec_path, header=None).values).unsqueeze(0)
+            output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values).unsqueeze(0)
 
         if self.target_transform:
             label = self.target_transform(label_path)
             print("here label trans")
         else:
-            label = torch.tensor(pd.read_csv(label_path, header=None).values).unsqueeze(0)
+            label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
 
         print(output_spec.shape)
         print(label.shape)
@@ -123,7 +123,7 @@ class ResampleSpectrogram(object):
         ######################
         ## Read Spectrogram ##
         ######################
-        spectrogram_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None)
+        spectrogram_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None, engine='python')
         spectrogram = spectrogram_df.to_numpy()     # convert to numpy array 
         
         #######################
@@ -172,7 +172,7 @@ class ReadLabelFromEs(object):
         # imag_part = Array containing imaginary part of time signal
 
         # read the dataframe
-        dataframe = pd.read_csv(path,sep='  ', header=None)     # sep needs to be 2 spaces
+        dataframe = pd.read_csv(path,sep='  ', header=None, engine='python')     # sep needs to be 2 spaces
         
         TimeDomainSignal = TimeDomain(time_axis = dataframe[0].to_numpy(),
                                       intensity = dataframe[1].to_numpy(),
