@@ -110,8 +110,6 @@ for epoch in range(num_epochs):     # iterate over epochs
         
         # Forward pass
         outputs = model(spectrograms)
-        print(f'shape of outputs: {outputs.shape}')
-        print(f'shape of labels: {labels.shape}')
         loss = criterion(outputs, labels)
 
         # Backward pass
@@ -120,7 +118,7 @@ for epoch in range(num_epochs):     # iterate over epochs
         optimizer.step()
         
         # Print information (every 100 steps)
-        if (i+1) % 100 == 0:
+        if (i+1) % 8 == 0:
             print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {n_total_steps}, Loss = {loss.item():.4f}')
 
 print('Training finished')
