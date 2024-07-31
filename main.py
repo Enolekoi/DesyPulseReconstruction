@@ -36,8 +36,8 @@ OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
 output_size = 128
-batch_size = 8
-num_epochs = 2
+batch_size = 10
+num_epochs = 100
 learning_rate = 0.001
 
 # Transforms
