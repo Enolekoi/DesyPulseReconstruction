@@ -116,7 +116,7 @@ class ResampleSpectrogram(object):
         
         input_number_rows = int(header[0]) # delay points
         input_number_cols = int(header[1]) # wavelength points
-        input_time_step = int(header[2]) # [fs]
+        input_time_step = float(header[2]) # [fs]
         input_wavelength_step = float(header[3]) # [nm]
         input_center_wavelength = float(header[4]) # [nm]
         
