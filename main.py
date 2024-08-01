@@ -39,7 +39,7 @@ OUTPUT_END_WAVELENGTH = 550     # [nm]
 output_size = 128
 batch_size = 10
 num_epochs = 100
-learning_rate = 0.01
+learning_rate = 0.001
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(OUTPUT_NUM_DELAYS, OUTPUT_TIMESTEP, OUTPUT_NUM_WAVELENGTH, OUTPUT_START_WAVELENGTH, OUTPUT_END_WAVELENGTH)
