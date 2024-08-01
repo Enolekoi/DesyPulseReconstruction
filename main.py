@@ -39,7 +39,7 @@ OUTPUT_END_WAVELENGTH = 550     # [nm]
 output_size = 128
 batch_size = 10
 num_epochs = 80
-learning_rate = 0.000001
+learning_rate = 0.00001
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(OUTPUT_NUM_DELAYS, OUTPUT_TIMESTEP, OUTPUT_NUM_WAVELENGTH, OUTPUT_START_WAVELENGTH, OUTPUT_END_WAVELENGTH)
@@ -51,7 +51,7 @@ Load Model
 
 print('Loading Model...')
 # Load custom DenseNet
-model = helper.CustomDenseNet(output_scale=50)
+model = helper.CustomDenseNet(output_scale=40)
 model.float()
 model.to(device)
 model.eval()
