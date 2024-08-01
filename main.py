@@ -51,7 +51,7 @@ Load Model
 
 print('Loading Model...')
 # Load custom DenseNet
-model = helper.CustomDenseNet(output_scale=100)
+model = helper.CustomDenseNet(output_scale=50)
 model.float()
 model.to(device)
 model.eval()
