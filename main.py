@@ -94,7 +94,8 @@ print('Starting Training...')
 ########################
 ## loss and optimizer ##
 ########################
-criterion = nn.CrossEntropyLoss()
+# criterion = nn.CrossEntropyLoss()
+criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 loss_values = []
 
