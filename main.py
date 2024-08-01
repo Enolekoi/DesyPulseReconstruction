@@ -107,7 +107,7 @@ for epoch in range(num_epochs):     # iterate over epochs
         spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
         spectrograms = spectrograms.to(device)
-        labels = labels.to(device)
+        labels = labels.float().to(device)
         
         # Forward pass
         outputs = model(spectrograms)
