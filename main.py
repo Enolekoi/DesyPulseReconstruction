@@ -38,7 +38,7 @@ OUTPUT_END_WAVELENGTH = 550     # [nm]
 
 output_size = 128
 batch_size = 10
-num_epochs = 100
+num_epochs = 80
 learning_rate = 0.0001
 
 # Transforms
@@ -83,6 +83,9 @@ train_loader = DataLoader(train_data, batch_size = batch_size, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = batch_size, shuffle=False)
 train_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
 
+# TODO THIS IS TEMPORARY
+num_epochs = int(train_size / batch_size) + 1
+
 print('Loading Data finished')
 '''
 Training
@@ -93,7 +96,7 @@ print('Starting Training...')
 ########################
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-# loss_values = []
+loss_values = []
 
 n_total_steps = len(train_loader)
 for epoch in range(num_epochs):     # iterate over epochs
@@ -117,16 +120,16 @@ for epoch in range(num_epochs):     # iterate over epochs
         # Print information (every 100 steps)
         if (i+1) % 10 == 0:
             print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {n_total_steps}, Loss = {loss.item():.4f}')
-            print(loss)
+            # print(loss)
         # Write loss into array
-        # loss_values.append(loss.item())
+        loss_values.append(loss.item())
 
 # Visualize training
-# plt.plot(loss_values)
-# plt.xlabel('Time')
-# plt.ylabel('Loss')
-# plt.title('Training loss over time')
-# plt.show()
+plt.plot(loss_values)
+plt.xlabel('Time')
+plt.ylabel('Loss')
+plt.title('Training loss over time')
+plt.show()
 
 print('Training finished')
 '''
