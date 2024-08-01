@@ -98,7 +98,7 @@ print('Starting Training...')
 ########################
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-loss_values = []
+# loss_values = []
 
 n_total_steps = len(train_loader)
 for epoch in range(num_epochs):     # iterate over epochs
@@ -120,17 +120,17 @@ for epoch in range(num_epochs):     # iterate over epochs
         optimizer.step()
 
         # Print information (every 100 steps)
-        if (i+1) % 8 == 0:
+        if (i+1) % 10 == 0:
             print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {n_total_steps}, Loss = {loss.item():.4f}')
         # Write loss into array
-        loss_values.append(loss.item())
+        # loss_values.append(loss.item())
 
 # Visualize training
-plt.plot(loss_values)
-plt.xlabel('Time')
-plt.ylabel('Loss')
-plt.title('Training loss over time')
-plt.show()
+# plt.plot(loss_values)
+# plt.xlabel('Time')
+# plt.ylabel('Loss')
+# plt.title('Training loss over time')
+# plt.show()
 
 print('Training finished')
 '''
