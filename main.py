@@ -9,6 +9,7 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader, random_split
 import matplotlib.pyplot as plt
+import matplotlib
 
 # Classes, methods and functions from different files
 import helper
@@ -17,6 +18,7 @@ import visualize as vis
 '''
 Variables and settings
 '''
+matplotlib.use('GTK')  # Or any other X11 back-end
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device!')
