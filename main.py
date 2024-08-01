@@ -18,7 +18,7 @@ import visualize as vis
 '''
 Variables and settings
 '''
-matplotlib.use('GTK4Agg')  # Or any other X11 back-end
+matplotlib.use('Agg')  # Or any other X11 back-end
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device!')
