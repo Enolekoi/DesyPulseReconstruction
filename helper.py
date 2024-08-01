@@ -11,6 +11,29 @@ import matplotlib.pyplot as plt
 import os   # Dataloader, 
 import torch    # Dataloader,
 from torch.utils.data import Dataset    # Dataloader,
+import torchvision.models as models     # Custom DenseNet
+import torch.nn as nn   # Custom DenseNet
+
+'''
+Custom DenseNet
+'''
+class CustomDenseNet(nn.Module):
+    def __init__(self, output_scale=100):
+        super(CustomDenseNet, self).__init__()
+        # Load pretrained DenseNet
+        self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
+        # Get the number of features before the last layer
+        num_features = self.densenet.classifier.in_features
+        # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
+        self.densenet.classifier = nn.Linear(num_features, 512)
+        self.output_scale = output_scale
+
+    def forward(self, x):
+        # get the output of the densenet
+        x = self.densenet(x)
+        # use tanh activation function to scale the output to [-1, 1] and then scale it to [-100, 100]
+        x = torch.tanh(x) * self.output_scale
+        return x
 
 '''
 Class holding Time Domain Data
@@ -52,7 +75,6 @@ class SimulatedDataset(Dataset):
 
         if self.target_transform:
             label = self.target_transform(label_path)
-            # label = label.astype(np.float32)
             label = torch.from_numpy(label)
         else:
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
