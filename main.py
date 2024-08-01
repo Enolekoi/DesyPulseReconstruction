@@ -119,12 +119,11 @@ for epoch in range(num_epochs):     # iterate over epochs
         loss.backward()
         optimizer.step()
 
-        # Write loss into array
-        loss_values.append(loss.item())
-        
         # Print information (every 100 steps)
         if (i+1) % 8 == 0:
             print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {n_total_steps}, Loss = {loss.item():.4f}')
+        # Write loss into array
+        loss_values.append(loss.item())
 
 # Visualize training
 plt.plot(loss_values)
