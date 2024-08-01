@@ -8,6 +8,7 @@ import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader, random_split
+import matplotlib.pyplot as plt
 
 # Classes, methods and functions from different files
 import helper
@@ -38,7 +39,7 @@ OUTPUT_END_WAVELENGTH = 550     # [nm]
 output_size = 128
 batch_size = 10
 num_epochs = 100
-learning_rate = 0.001
+learning_rate = 0.1
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(OUTPUT_NUM_DELAYS, OUTPUT_TIMESTEP, OUTPUT_NUM_WAVELENGTH, OUTPUT_START_WAVELENGTH, OUTPUT_END_WAVELENGTH)
@@ -97,6 +98,7 @@ print('Starting Training...')
 ########################
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+loss_values = []
 
 n_total_steps = len(train_loader)
 for epoch in range(num_epochs):     # iterate over epochs
@@ -116,17 +118,28 @@ for epoch in range(num_epochs):     # iterate over epochs
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+        # Write loss into array
+        loss_values.append(loss.item())
         
         # Print information (every 100 steps)
         if (i+1) % 8 == 0:
             print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {n_total_steps}, Loss = {loss.item():.4f}')
 
+# Visualize training
+plt.plot(loss_values)
+plt.xlabel('Time')
+plt.ylabel('Loss')
+plt.title('Training loss over time')
+plt.show()
+
 print('Training finished')
 '''
 validation
 '''
-print('Starting Validation...')
+# print('Starting Validation...')
 # visualize random prediction
-image, label = data[0]
-prediction = np.zeros(1)
-vis.visualize(image, label, prediction)
+# image, label = data[0]
+# prediction = np.zeros(1)
+# vis.visualize(image, label, prediction)
+
