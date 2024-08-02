@@ -52,7 +52,6 @@ log_filepath, loss_plot_filepath = helper.getLogFilepath(
         )
 # Logger Settings
 logger = logging.getLogger(__name__)    # create logger with the name of the current module
-logging.basicConfig()
 
 logging_console_handler = logging.StreamHandler(sys.stdout)   # create a handler for the console log
 logging_file_handler = logging.FileHandler(         # create a handler for the file log
