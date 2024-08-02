@@ -103,7 +103,7 @@ criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 loss_values = []
 
-n_total_steps = len(train_loader) / num_epochs
+n_total_steps = len(train_loader)
 for epoch in range(num_epochs):     # iterate over epochs
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
         # print(spectrograms.shape)
@@ -124,7 +124,7 @@ for epoch in range(num_epochs):     # iterate over epochs
 
         # Print information (every 100 steps)
         if (i+1) % 10 == 0:
-            print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {n_total_steps}, Loss = {loss.item():.10f}')
+            print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {batch_size}, Loss = {loss.item():.10f}')
             # print(loss)
         # Write loss into array
         loss_values.append(loss.item())
