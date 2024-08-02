@@ -4,6 +4,7 @@ import logging
 
 def compareTimeDomain(filepath, label, prediction):
     logger = logging.getLogger(__name__)
+
     orig_real = label[:256]
     orig_imag = label[256:]
     pred_real = prediction[:256]
@@ -33,7 +34,7 @@ def compareTimeDomain(filepath, label, prediction):
 
     axs[2].plot(orig_imag, label="original pulse", color="green")
     axs[2].plot(pred_imag, label="predicted pulse", color="red")
-    axs[1].set_title("Comparison of the imaginary parts of the E-Field")
+    axs[2].set_title("Comparison of the imaginary parts of the E-Field")
     axs[2].set_ylabel("imaginary part of E-Field")
     axs[2].set_xlabel("Time in fs")
     axs[2].grid(True)
