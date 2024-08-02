@@ -25,7 +25,7 @@ Variables and settings
 # Logging Options
 logging.basicConfig(
         level=logging.INFO,
-        encoding="utf-8",
+        # encoding="utf-8",
         format="{asctime} - {levelname}: {message}",
         style="{",
         datefmt="%d-%m-%Y %H:%M:%S"
