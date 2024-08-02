@@ -47,6 +47,8 @@ def compareTimeDomain(filepath, label, prediction):
     axs[3].set_xlabel("Time in fs")
     axs[3].grid(True)
 
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
     plt.savefig(filepath)
     plt.close()
     logger.info(f"Saved comparison of random prediction and label to {filepath}")
