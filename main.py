@@ -91,7 +91,7 @@ test_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
 # TODO THIS IS TEMPORARY
 print(f'Number of Epochs:{num_epochs}')
 print(f'Batch size:{batch_size}')
-num_epochs = int(train_size / batch_size) + 1
+# num_epochs = int(train_size / batch_size) + 1
 print(f'Number of Epochs:{num_epochs}')
 print(f'Batch size:{batch_size}')
 print('Loading Data finished')
@@ -110,7 +110,6 @@ loss_values = []
 n_total_steps = len(train_loader)
 for epoch in range(num_epochs):     # iterate over epochs
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
-        n_total_steps = len(train_loader)
         # print(spectrograms.shape)
         # print(type(spectrograms))
         spectrograms = spectrograms.float()
