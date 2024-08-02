@@ -15,7 +15,10 @@ import torchvision.models as models     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
 import logging
 
-logger = logging.getLogger()
+import config
+
+logger = config.configure_logging(config.log_filepath)
+
 '''
 Custom DenseNet
 '''

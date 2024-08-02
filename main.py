@@ -46,13 +46,13 @@ OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
 # get the correct filepaths of all files
-log_filepath, loss_plot_filepath = helper.getLogFilepath(
-        directory=LogDirectory,
-        log_base_filename=LogName,
-        loss_plot_base_filename=TrainingLossPlotName
-        )
+# log_filepath, loss_plot_filepath = helper.getLogFilepath(
+#         directory=LogDirectory,
+#         log_base_filename=LogName,
+#         loss_plot_base_filename=TrainingLossPlotName
+#         )
 
-logger = config.configure_logging(log_filepath)
+logger = config.configure_logging(config.log_filepath)
 
 # Logger Settings
 # Log some information

@@ -1,6 +1,18 @@
 import sys
 import logging
 
+import helper
+
+LogDirectory = "./logs/"
+LogName = "training_"
+TrainingLossPlotName = "training_loss_"
+
+log_filepath, loss_plot_filepath = helper.getLogFilepath(
+        directory=LogDirectory,
+        log_base_filename=LogName,
+        loss_plot_base_filename=TrainingLossPlotName
+)
+
 '''
 Configure Logging
 '''

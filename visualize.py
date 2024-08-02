@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import logging
+import config
 
-logger = logging.getLogger()
+logger = config.configure_logging(config.log_filepath)
 
 def compareTimeDomain(filepath, label, prediction):
 
