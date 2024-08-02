@@ -16,8 +16,7 @@ import torch.nn as nn   # Custom DenseNet
 
 import config
 
-logger = config.configure_logging(config.log_filepath)
-
+logger = logging.getLogger()
 '''
 Custom DenseNet
 '''
