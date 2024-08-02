@@ -14,6 +14,7 @@ def compareTimeDomain(filepath, label, prediction):
     # Plotting the Intensity
     axs[0].plot(orig_abs, label="original pulse", color="green")
     axs[0].plot(pred_abs, label="predicted pulse", color="red")
+    axs[0].set_title("Comparison of the intensities of the E-Field")
     axs[0].set_ylabel("Intensity of E-Field")
     axs[0].set_xlabel("Time in fs")
     axs[0].grid(True)
@@ -22,14 +23,16 @@ def compareTimeDomain(filepath, label, prediction):
     # Plotting the Real Part
     axs[1].plot(orig_real, label="original pulse", color="green")
     axs[1].plot(pred_real, label="predicted pulse", color="red")
-    axs[1].set_ylabel("Real Part of E-Field")
+    axs[1].set_title("Comparison of the real parts of the E-Field")
+    axs[1].set_ylabel("real part of E-Field")
     axs[1].set_xlabel("Time in fs")
     axs[1].grid(True)
     axs[1].legend()
 
     axs[2].plot(orig_imag, label="original pulse", color="green")
     axs[2].plot(pred_imag, label="predicted pulse", color="red")
-    axs[2].set_ylabel("Imaginary Part of E-Field")
+    axs[1].set_title("Comparison of the imaginary parts of the E-Field")
+    axs[2].set_ylabel("imaginary part of E-Field")
     axs[2].set_xlabel("Time in fs")
     axs[2].grid(True)
     axs[2].legend()
@@ -37,11 +40,11 @@ def compareTimeDomain(filepath, label, prediction):
     # Plot Intensity difference
     intensity_diff = orig_abs - pred_abs
     axs[3].plot(intensity_diff, color="blue")
+    axs[3].set_title("Intensity difference of the original and predicted pulse")
     axs[3].set_ylabel("Intensity difference of the original and predicted pulse")
     axs[3].set_xlabel("Time in fs")
     axs[3].grid(True)
 
-    plt.tight_layout()
     plt.savefig("./prediction.png")
     plt.close()
 
