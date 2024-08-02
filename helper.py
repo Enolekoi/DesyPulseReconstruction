@@ -312,8 +312,9 @@ def save_plot_training_loss(loss_values, directory, base_filename):
     
     # plot training loss over time
     plt.plot(loss_values)
-    plt.xlabel('Time')
-    plt.ylabel('Loss')
+    plt.xlabel('Number of Steps')
+    plt.ylabel('Loss (logarithmic)')
+    plt.yscale('log')
     plt.title('Training loss over time')
     plt.savefig(filepath)
     plt.close()
