@@ -283,3 +283,38 @@ def plotTimeDomain(TimeDomain, TimeDomainLabel):
 
     plt.tight_layout() # Place plots close together
     plt.show()  # show figure
+
+'''
+Plot Training Loss
+'''
+def save_plot_training_loss(loss_values, directory, base_filename):
+
+    # Check if directory exists, if not create it
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # Get a list of all files in the directory
+    files = os.listdir(directory)
+
+    # Only filter out matching file names
+    matching_files = [f for f in files if f.startswith(base_filename) and f.endswith('.png')]
+    
+    # Determin what the next index is
+    if matching_files:
+        number = numbers = [int(f[len(base_filename):-4]) for f in matching_files if f[len(base_filename):-4].isdigit()]
+        next_number = max(numbers) + 1 if numbers else 1
+    else:
+        next_number = 1
+
+    # Get the new filename
+    new_filename = f"{base_filename}{next_number}.png"
+    filepath = os.path.join(directory, new_filename)
+    
+    # plot training loss over time
+    plt.plot(loss_values)
+    plt.xlabel('Time')
+    plt.ylabel('Loss')
+    plt.title('Training loss over time')
+    plt.savefig(filepath)
+    plt.close()
+    print(f"Plot writen to {filepath}")

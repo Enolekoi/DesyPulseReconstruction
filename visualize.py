@@ -3,15 +3,15 @@ import numpy as np
 
 def visualize(spectrogram, label, prediction):
 
-    real = label[:,1]
-    imag = label[:,2]
+    real = label[:256]
+    imag = label[256:]
     abs = np.abs(real + 1j* imag) 
    
     fig = plt.figure() 
     ax1 = plt.subplot2grid((2, 3), (0, 0), colspan=3)  # colspan=3 means the plot spans 3 columns
     ax1.plot(label[:,0], abs)
     ax1.set_title('Zeitsignal')
-    if((prediction) == len(spectrogram)):
+    if((prediction) == len(label)):
         ax1.plot(label[:,0], prediction)
         ax1.set_title('Vorhergesagtes Zeitsignal')
     else:

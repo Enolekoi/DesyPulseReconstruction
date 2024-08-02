@@ -11,6 +11,8 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import matplotlib.pyplot as plt
 import matplotlib
 
+import random
+
 # Classes, methods and functions from different files
 import helper
 import visualize as vis
@@ -18,15 +20,16 @@ import visualize as vis
 '''
 Variables and settings
 '''
-matplotlib.use('Agg')  # Or any other X11 back-end
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device!')
-
 if device == 'cuda':
     torch.cuda.empty_cache()
 
 # Paths
+LogDirectory = "./logs/"
+TrainingLossImageName = "training_loss_"
+
 Path = "/mnt/data/desy/frog_simulated/grid_256/"
 SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
@@ -83,7 +86,7 @@ train_data, validation_data, test_data = random_split(data, [train_size, validat
 # Data Loaders
 train_loader = DataLoader(train_data, batch_size = batch_size, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = batch_size, shuffle=False)
-train_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
+test_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
 
 # TODO THIS IS TEMPORARY
 num_epochs = int(train_size / batch_size) + 1
@@ -126,21 +129,23 @@ for epoch in range(num_epochs):     # iterate over epochs
             # print(loss)
         # Write loss into array
         loss_values.append(loss.item())
+helper.save_plot_training_loss(loss_values, LogDirectory, TrainingLossImageName)
+print('Training finished')
 
 # Visualize training
-plt.plot(loss_values)
-plt.xlabel('Time')
-plt.ylabel('Loss')
-plt.title('Training loss over time')
-plt.show()
-
-print('Training finished')
 '''
 validation
 '''
-# print('Starting Validation...')
-# visualize random prediction
-# image, label = data[0]
-# prediction = np.zeros(1)
-# vis.visualize(image, label, prediction)
+print('Starting Validation...')
+model.eval()
+with torch.no_grad():
+    validation_sample = random.choice(validation_data)
+    spectrogram, label = validation_sample
+    spectrogram = spectrogram.float().unsqueeze(0).to(device)
+    label = label.float().to(device)
 
+    prediciton = model(spectrogram).cpu().numpy().flatten()
+    
+    original_label = label.cpu().numpy().flatten()
+
+    # vis.visualize(spectrogram, original_label, prediciton)
