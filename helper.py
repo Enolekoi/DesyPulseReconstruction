@@ -289,8 +289,6 @@ def plotTimeDomain(TimeDomain, TimeDomainLabel):
 Plot Training Loss
 '''
 def save_plot_training_loss(loss_values, filepath):
-  filepath = os.path.join(directory, new_filename)
-    
     # plot training loss over time
     plt.plot(loss_values)
     plt.xlabel('Number of Steps')
