@@ -51,10 +51,10 @@ OUTPUT_TIMESTEP = 5    # [fs]
 OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
-logging.info("Size of Output Tensor: {2*OUTPUT_SIZE} Elements")
-logging.info("Batch Size: {BATCH_SIZE} Elements")
-logging.info("Number of Epochs: {NUM_EPOCHS}")
-logging.info("Learning Rate: {LEARNING_RATE}")
+logging.info(f"Size of Output Tensor: {2*OUTPUT_SIZE} Elements")
+logging.info(f"Batch Size: {BATCH_SIZE} Elements")
+logging.info(f"Number of Epochs: {NUM_EPOCHS}")
+logging.info(f"Learning Rate: {LEARNING_RATE}")
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(OUTPUT_NUM_DELAYS, OUTPUT_TIMESTEP, OUTPUT_NUM_WAVELENGTH, OUTPUT_START_WAVELENGTH, OUTPUT_END_WAVELENGTH)
@@ -94,7 +94,7 @@ data = helper.SimulatedDataset(path=Path,
 ################
 length_dataset = len(data)  # get length of data
 # print(f'Size of Dataset: {length_dataset}')
-logging.info(f"Size of dataset: {lenght_dataset}")
+logging.info(f"Size of dataset: {length_dataset}")
 
 # get ratios
 train_size = int(0.8 * length_dataset)  # amount of training data (80%)
