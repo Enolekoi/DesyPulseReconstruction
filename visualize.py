@@ -12,7 +12,7 @@ def compareTimeDomain(filepath, label, prediction):
     orig_abs = np.abs(orig_real + 1j* orig_imag) 
     pred_abs = np.abs(pred_real + 1j* pred_imag)
 
-    fig, axs = plt.subplots(4,1)
+    fig, axs = plt.subplots(4,1, figsize=(8,12))
     # Plotting the Intensity
     axs[0].plot(orig_abs, label="original pulse", color="green")
     axs[0].plot(pred_abs, label="predicted pulse", color="red")
