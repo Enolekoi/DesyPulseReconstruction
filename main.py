@@ -84,16 +84,11 @@ test_size = length_dataset - train_size - validation_size   # amount of test dat
 train_data, validation_data, test_data = random_split(data, [train_size, validation_size, test_size])   # split data
 
 # Data Loaders
-train_loader = DataLoader(train_data, batch_size = batch_size, shuffle=True)
+train_loader = DataLoader(train_data, batch_size = num_epochs, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = batch_size, shuffle=False)
 test_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
 
 # TODO THIS IS TEMPORARY
-print(f'Number of Epochs:{num_epochs}')
-print(f'Batch size:{batch_size}')
-# num_epochs = int(train_size / batch_size) + 1
-print(f'Number of Epochs:{num_epochs}')
-print(f'Batch size:{batch_size}')
 print('Loading Data finished')
 '''
 Training
@@ -108,7 +103,6 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 loss_values = []
 
 n_total_steps = len(train_loader)
-print(f'Total Steps: {n_total_steps}')
 for epoch in range(num_epochs):     # iterate over epochs
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
         # print(spectrograms.shape)
