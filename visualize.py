@@ -3,7 +3,7 @@ import numpy as np
 import logging
 
 def compareTimeDomain(filepath, label, prediction):
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger()
 
     orig_real = label[:256]
     orig_imag = label[256:]
