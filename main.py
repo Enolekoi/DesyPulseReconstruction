@@ -76,6 +76,7 @@ data = helper.SimulatedDataset(path=Path,
 ## Split Data ##
 ################
 length_dataset = len(data)  # get length of data
+print(f'Size of Dataset: {length_dataset}')
 # get ratios
 train_size = int(0.8 * length_dataset)  # amount of training data (80%)
 validation_size = int(0.1 * length_dataset)     # amount of validation data (10%)
@@ -84,7 +85,7 @@ test_size = length_dataset - train_size - validation_size   # amount of test dat
 train_data, validation_data, test_data = random_split(data, [train_size, validation_size, test_size])   # split data
 
 # Data Loaders
-train_loader = DataLoader(train_data, batch_size = num_epochs, shuffle=True)
+train_loader = DataLoader(train_data, batch_size = batch_size, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = batch_size, shuffle=False)
 test_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
 
