@@ -19,6 +19,7 @@ import helper
 import visualize as vis
 
 import logging
+import sys
 '''
 Variables and settings
 '''
@@ -53,7 +54,7 @@ log_filepath, loss_plot_filepath = helper.getLogFilepath(
 logger = logging.getLogger(__name__)    # create logger with the name of the current module
 logging.basicConfig()
 
-logging_console_handler = logging.StreamHandler()   # create a handler for the console log
+logging_console_handler = logging.StreamHandler(sys.stdout)   # create a handler for the console log
 logging_file_handler = logging.FileHandler(         # create a handler for the file log
         log_filepath,
         encoding="utf-8"
