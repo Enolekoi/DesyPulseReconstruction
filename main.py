@@ -43,7 +43,6 @@ OUTPUT_TIMESTEP = 5    # [fs]
 OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
-
 # get the correct filepaths of all files
 log_filepath, loss_plot_filepath = helper.getLogFilepath(
         directory=LogDirectory,
@@ -52,6 +51,7 @@ log_filepath, loss_plot_filepath = helper.getLogFilepath(
         )
 # Logger Settings
 logger = logging.getLogger(__name__)    # create logger with the name of the current module
+logging.basicConfig()
 
 logging_console_handler = logging.StreamHandler()   # create a handler for the console log
 logging_file_handler = logging.FileHandler(         # create a handler for the file log
