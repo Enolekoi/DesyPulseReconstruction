@@ -55,8 +55,8 @@ logger = logging.getLogger(__name__)    # create logger with the name of the cur
 
 logging_console_handler = logging.StreamHandler(sys.stdout)   # create a handler for the console log
 logging_file_handler = logging.FileHandler(         # create a handler for the file log
-        log_filepath,
-        encoding="utf-8"
+        log_filepath
+        # encoding="utf-8"
 )
 logging_formatter = logging.Formatter(  # create a formatter
         "{asctime} - {name} - {funcName} - {levelname}: {message}",
@@ -203,3 +203,7 @@ with torch.no_grad():
     vis.compareTimeDomain("./random_prediction.png", original_label, prediction)
     # vis.visualize(spectrogram, original_label, prediciton)
 logging.info("Validation finished!")
+
+for handler in logger.handlers:
+    handler.flush()
+    handler.close()
