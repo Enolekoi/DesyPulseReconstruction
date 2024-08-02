@@ -66,11 +66,12 @@ logging_formatter = logging.Formatter(  # create a formatter
 )
 logging_console_handler.setFormatter(logging_formatter)     # add the formatter to the console log handler
 logging_file_handler.setFormatter(logging_formatter)        # add the formatter to the console file handler
-
+logging_console_handler.setLevel(logging.DEBUG)     # Set the logger level to debug
+logging_file_handler.setLevel(logging.DEBUG)        # Set the logger level to debug
 logger.addHandler(logging_console_handler)  # add the console log handler to the logger
 logger.addHandler(logging_file_handler)     # add the file log handler to the logger
 
-logger.setLevel(logging.DEBUG)  # Set the logger level to debug
+# logger.setLevel(logging.DEBUG)  # Set the logger level to debug
 # logger.setLevel(logging.INFO)   # Set the logger level to info
 
 # Log some information
