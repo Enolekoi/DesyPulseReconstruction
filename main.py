@@ -63,7 +63,7 @@ label_transform = helper.ReadLabelFromEs()
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # print(f'Using {device} as device!')
-logging.info("Device used (cuda/cpu): {device}")
+logging.info(f"Device used (cuda/cpu): {device}")
 if device == 'cuda':
     torch.cuda.empty_cache()
 '''
@@ -94,16 +94,16 @@ data = helper.SimulatedDataset(path=Path,
 ################
 length_dataset = len(data)  # get length of data
 # print(f'Size of Dataset: {length_dataset}')
-logging.info("Size of dataset: {lenght_dataset}")
+logging.info(f"Size of dataset: {lenght_dataset}")
 
 # get ratios
 train_size = int(0.8 * length_dataset)  # amount of training data (80%)
 validation_size = int(0.1 * length_dataset)     # amount of validation data (10%)
 test_size = length_dataset - train_size - validation_size   # amount of test data (10%)
 
-logging.info("Size of training data: {train_size}")
-logging.info("Size of validation data: {validation_size}")
-logging.info("Size of test data: {test_size}")
+logging.info(f"Size of training data: {train_size}")
+logging.info(f"Size of validation data: {validation_size}")
+logging.info(f"Size of test data: {test_size}")
 
 # split 
 train_data, validation_data, test_data = random_split(data, [train_size, validation_size, test_size])   # split data
@@ -151,20 +151,20 @@ for epoch in range(NUM_EPOCHS):     # iterate over epochs
         # Print information (every 100 steps)
         if (i+1) % 10 == 0:
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-            logging.info("Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}")
+            logging.info(f"Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}")
         # Write loss into array
         loss_values.append(loss.item())
 helper.save_plot_training_loss(loss_values, LogDirectory, TrainingLossImageName)
 logging.info("Saved plot of training loss!")
-print('Training finished')
+# print('Training finished')
 logging.info("Training finished!")
 
 # Visualize training
 '''
 validation
 '''
-print('Starting Validation...')
-logging.info("Loading Model finished!")
+# print('Starting Validation...')
+logging.info("Starting Validation...")
 model.eval()
 with torch.no_grad():
     validation_sample = random.choice(validation_data)
@@ -177,3 +177,4 @@ with torch.no_grad():
     original_label = label.cpu().numpy().flatten()
 
     # vis.visualize(spectrogram, original_label, prediciton)
+logging.info("Validation finished!")
