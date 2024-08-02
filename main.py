@@ -70,7 +70,7 @@ logging_file_handler.setLevel(logging.DEBUG)        # Set the logger level to de
 logger.addHandler(logging_console_handler)  # add the console log handler to the logger
 logger.addHandler(logging_file_handler)     # add the file log handler to the logger
 
-# logger.setLevel(logging.DEBUG)  # Set the logger level to debug
+logger.setLevel(logging.DEBUG)  # Set the logger level to debug
 # logger.setLevel(logging.INFO)   # Set the logger level to info
 
 # Log some information
