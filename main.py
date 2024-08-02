@@ -143,7 +143,7 @@ logger.info("Loading Data finished!")
 '''
 Training
 '''
-print('Starting Training...')
+# print('Starting Training...')
 logger.info("Starting Training...")
 ########################
 ## loss and optimizer ##

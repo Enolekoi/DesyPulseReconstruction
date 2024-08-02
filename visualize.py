@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import logging
 
 def compareTimeDomain(filepath, label, prediction):
+    logger = logging.getLogger(__name__)
     orig_real = label[:256]
     orig_imag = label[256:]
     pred_real = prediction[:256]
@@ -45,8 +47,9 @@ def compareTimeDomain(filepath, label, prediction):
     axs[3].set_xlabel("Time in fs")
     axs[3].grid(True)
 
-    plt.savefig("./prediction.png")
+    plt.savefig(filepath)
     plt.close()
+    logger.info(f"Saved comparison of random prediction and label to {filepath}")
 
 
 def visualize(spectrogram, label, prediction):
@@ -63,6 +66,7 @@ def visualize(spectrogram, label, prediction):
         ax1.plot(label[:,0], prediction)
         ax1.set_title('Vorhergesagtes Zeitsignal')
     else:
+
         print('Length of Prediction and Label not the same')
     
     

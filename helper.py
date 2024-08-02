@@ -103,6 +103,7 @@ class ResampleSpectrogram(object):
         output_stop_wavelength = end_wavelength_out    # the last element of the wavelength output axis 
         output_start_time = -int(output_number_rows/2) * output_time_step     # calculate time at which the output time axis starts
         output_end_time = output_start_time + (output_time_step * output_number_rows) - output_time_step    # calculate the last element of the output time axis 
+        self.logger = logging.getLogger(__name__)
 
         ######################## Used here to save time later
         ## Define output axis ##
@@ -130,7 +131,8 @@ class ResampleSpectrogram(object):
             # check if 1st line has 5 Elements in total
             if(first_line_len != NUM_HEADER_ELEMENTS):
                 # the file has the wrong format
-                print(f'Error: Number of Header Elements != {NUM_HEADER_ELEMENTS}')
+                self.logger.error(f"Number of Header Elements != {NUM_HEADER_ELEMENTS}")
+                # print(f'Error: Number of Header Elements != {NUM_HEADER_ELEMENTS}')
                 return
             else:
                 # fist line has 5 Elements -> write into header
@@ -289,6 +291,7 @@ def plotTimeDomain(TimeDomain, TimeDomainLabel):
 Plot Training Loss
 '''
 def save_plot_training_loss(loss_values, filepath):
+    logger = logging.getLogger(__name__)
     # plot training loss over time
     plt.plot(loss_values)
     plt.xlabel('Number of Steps')
@@ -297,7 +300,8 @@ def save_plot_training_loss(loss_values, filepath):
     plt.title('Training loss over time')
     plt.savefig(filepath)
     plt.close()
-    print(f"Plot writen to {filepath}")
+
+    logger.info(f"Plot writen to {filepath}")
 
 '''
 get Log Filepaths
