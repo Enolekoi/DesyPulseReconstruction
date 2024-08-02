@@ -23,8 +23,12 @@ import logging
 Variables and settings
 '''
 # Logging Options
-logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(format="%(levelname)s:%(name)s:%(message)s")
+logging.basicConfig(
+        level=logging.DEBUG,
+        format="{asctime} - {levelname}: {message}",
+        style="{",
+        datefmt="%m-%d-%Y %H:%M:%S"
+)
 logging.debug("Test Message")
 
 # Define device used
