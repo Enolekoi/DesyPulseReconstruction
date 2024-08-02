@@ -191,6 +191,19 @@ with torch.no_grad():
     prediciton = model(spectrogram).cpu().numpy().flatten()
     
     original_label = label.cpu().numpy().flatten()
+    
+    orig_real = original_label[:256]
+    orig_imag = original_label[256:]
+    pred_real = prediciton[:256]
+    pred_imag = prediciton[256:]
+    
+    orig_abs = np.abs(orig_real + 1j* orig_imag) 
+    pred_abs = np.abs(pred_real + 1j* pred_imag)
 
+    plt.plot(orig_abs, label="original time domain signal")
+    plt.plot(pred_abs, label="predicted time domain signal")
+    plt.legend()
+    plt.savefig("./prediction.png")
+    plt.close()
     # vis.visualize(spectrogram, original_label, prediciton)
 logging.info("Validation finished!")
