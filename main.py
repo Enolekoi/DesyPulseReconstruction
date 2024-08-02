@@ -89,8 +89,11 @@ validation_loader = DataLoader(validation_data, batch_size = batch_size, shuffle
 test_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
 
 # TODO THIS IS TEMPORARY
+print(f'Number of Epochs:{num_epochs}')
+print(f'Batch size:{batch_size}')
 num_epochs = int(train_size / batch_size) + 1
-
+print(f'Number of Epochs:{num_epochs}')
+print(f'Batch size:{batch_size}')
 print('Loading Data finished')
 '''
 Training
