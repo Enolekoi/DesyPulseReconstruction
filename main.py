@@ -18,9 +18,15 @@ import random
 import helper
 import visualize as vis
 
+import logging
 '''
 Variables and settings
 '''
+# Logging Options
+logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(format="%(levelname)s:%(name)s:%(message)s")
+logging.debug("Test Message")
+
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device!')
@@ -36,16 +42,16 @@ SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
 
 # Constants
+OUTPUT_SIZE = 256
+BATCH_SIZE = 10
+NUM_EPOCHS = 2
+LEARNING_RATE = 0.0001
+
 OUTPUT_NUM_DELAYS = 512 
 OUTPUT_NUM_WAVELENGTH = 512 
 OUTPUT_TIMESTEP = 5    # [fs]
 OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
-
-output_size = 128
-batch_size = 10
-num_epochs = 2
-learning_rate = 0.0001
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(OUTPUT_NUM_DELAYS, OUTPUT_TIMESTEP, OUTPUT_NUM_WAVELENGTH, OUTPUT_START_WAVELENGTH, OUTPUT_END_WAVELENGTH)
@@ -57,7 +63,7 @@ Load Model
 
 print('Loading Model...')
 # Load custom DenseNet
-model = helper.CustomDenseNet(output_scale=40)
+model = helper.CustomDenseNet(output_scale=40, num_outputs=2*OUTPUT_SIZE)
 model.float()
 model.to(device)
 model.eval()
@@ -86,9 +92,9 @@ test_size = length_dataset - train_size - validation_size   # amount of test dat
 train_data, validation_data, test_data = random_split(data, [train_size, validation_size, test_size])   # split data
 
 # Data Loaders
-train_loader = DataLoader(train_data, batch_size = batch_size, shuffle=True)
-validation_loader = DataLoader(validation_data, batch_size = batch_size, shuffle=False)
-test_loader = DataLoader(test_data, batch_size = batch_size, shuffle=False)
+train_loader = DataLoader(train_data, batch_size = BATCH_SIZE, shuffle=True)
+validation_loader = DataLoader(validation_data, batch_size = BATCH_SIZE, shuffle=False)
+test_loader = DataLoader(test_data, batch_size = BATCH_SIZE, shuffle=False)
 
 print('Loading Data finished')
 '''
@@ -100,11 +106,11 @@ print('Starting Training...')
 ########################
 # criterion = nn.CrossEntropyLoss()
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 loss_values = []
 
 num_total_steps = len(train_loader)
-for epoch in range(num_epochs):     # iterate over epochs
+for epoch in range(NUM_EPOCHS):     # iterate over epochs
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
         # print(spectrograms.shape)
         # print(type(spectrograms))
@@ -124,7 +130,7 @@ for epoch in range(num_epochs):     # iterate over epochs
 
         # Print information (every 100 steps)
         if (i+1) % 10 == 0:
-            print(f'Epoch {epoch+1} / {num_epochs}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
+            print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
             # print(loss)
         # Write loss into array
         loss_values.append(loss.item())

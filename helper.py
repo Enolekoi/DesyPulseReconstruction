@@ -13,19 +13,20 @@ import torch    # Dataloader,
 from torch.utils.data import Dataset    # Dataloader,
 import torchvision.models as models     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
+import logging
 
 '''
 Custom DenseNet
 '''
 class CustomDenseNet(nn.Module):
-    def __init__(self, output_scale=100):
+    def __init__(self, output_scale=100, num_outputs=512):
         super(CustomDenseNet, self).__init__()
         # Load pretrained DenseNet
         self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
         # Get the number of features before the last layer
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
-        self.densenet.classifier = nn.Linear(num_features, 512)
+        self.densenet.classifier = nn.Linear(num_features, num_outputs)
         self.output_scale = output_scale
 
     def forward(self, x):
@@ -319,3 +320,7 @@ def save_plot_training_loss(loss_values, directory, base_filename):
     plt.savefig(filepath)
     plt.close()
     print(f"Plot writen to {filepath}")
+
+'''
+Logger
+'''
