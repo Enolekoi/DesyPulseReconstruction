@@ -288,28 +288,8 @@ def plotTimeDomain(TimeDomain, TimeDomainLabel):
 '''
 Plot Training Loss
 '''
-def save_plot_training_loss(loss_values, directory, base_filename):
-
-    # Check if directory exists, if not create it
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    # Get a list of all files in the directory
-    files = os.listdir(directory)
-
-    # Only filter out matching file names
-    matching_files = [f for f in files if f.startswith(base_filename) and f.endswith('.png')]
-    
-    # Determin what the next index is
-    if matching_files:
-        number = numbers = [int(f[len(base_filename):-4]) for f in matching_files if f[len(base_filename):-4].isdigit()]
-        next_number = max(numbers) + 1 if numbers else 1
-    else:
-        next_number = 1
-
-    # Get the new filename
-    new_filename = f"{base_filename}{next_number}.png"
-    filepath = os.path.join(directory, new_filename)
+def save_plot_training_loss(loss_values, filepath):
+  filepath = os.path.join(directory, new_filename)
     
     # plot training loss over time
     plt.plot(loss_values)
@@ -322,5 +302,42 @@ def save_plot_training_loss(loss_values, directory, base_filename):
     print(f"Plot writen to {filepath}")
 
 '''
-Logger
+get Log Filepaths
 '''
+def getLogFilepath(directory, log_base_filename, loss_plot_base_filename):
+
+    # Check if directory exists, if not create it
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    # Get a list of all files in the directory
+    files = os.listdir(directory)
+
+    # Only filter out matching file names
+    matching_loss_plot_files = [f for f in files if f.startswith(loss_plot_base_filename) and f.endswith('.png')]
+    matching_log_files= [f for f in files if f.startswith(log_base_filename) and f.endswith('.png')]
+
+    # Determin what the next loss plot index is
+    if matching_loss_plot_files:
+        number = numbers = [int(f[len(loss_plot_base_filename):-4]) for f in matching_loss_plot_files if f[len(loss_plot_base_filename):-4].isdigit()]
+        next_loss_plot_index = max(numbers) + 1 if numbers else 1
+    else:
+        next_loss_plot_index = 1
+
+    # Determin what the next loss plot index is
+    if matching_log_files:
+        number = numbers = [int(f[len(log_base_filename):-4]) for f in matching_log_files if f[len(log_base_filename):-4].isdigit()]
+        next_log_index = max(numbers) + 1 if numbers else 1
+    else:
+        next_log_index = 1
+
+    # get the largest index
+    next_index = max(next_loss_plot_index, next_log_index)
+
+    # Get the new filename
+    new_loss_plot_filename = f"{loss_plot_base_filename}{next_index}.png"
+    new_log_filename = f"{log_base_filename}{next_index}.log"
+    loss_plot_filepath = os.path.join(directory, new_loss_plot_filename)
+    log_filepath = os.path.join(directory, new_log_filename)
+
+    return log_filepath, loss_plot_filepath

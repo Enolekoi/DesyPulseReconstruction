@@ -22,23 +22,38 @@ import logging
 '''
 Variables and settings
 '''
-# Logging Options
-logging.basicConfig(
-        level=logging.INFO,
-        filename="./logs/test.log",
-        # encoding="utf-8",
-        format="{asctime} - {levelname}: {message}",
-        style="{",
-        datefmt="%d-%m-%Y %H:%M:%S"
-)
-
 # Paths
 LogDirectory = "./logs/"
-TrainingLossImageName = "training_loss_"
+LogName = "training_"
+TrainingLossPlotName = "training_loss_"
 
 Path = "/mnt/data/desy/frog_simulated/grid_256/"
 SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
+
+# Logger Settings
+log_filepath, loss_plot_filepath = helper.getLogFilepath(
+        directory=LogDirectory,
+        log_base_filename=LogName,
+        loss_plot_base_filename=TrainingLossPlotName
+        )
+
+logger = logging.getLogger(__name__)
+logging_console_handler = logging.StreamHandler()
+logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.INFO)
+logging_file_handler = logging.FileHandler(
+        log_filepath,
+        encoding="utf-8"
+)
+logging_formatter = logging.Formatter(
+        "{asctime} - {name} - {funcName} - {levelname}: {message}",
+        datefmt="%d-%m-%Y %H:%M:%S",
+        style="{"
+)
+logging_console_handler.setFormatter(logging_formatter)
+logger.addHandler(logging_console_handler)
+logger.addHandler(logging_file_handler)
 
 # Constants
 OUTPUT_SIZE = 256
@@ -155,7 +170,7 @@ for epoch in range(NUM_EPOCHS):     # iterate over epochs
             logging.info(f"Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}")
         # Write loss into array
         loss_values.append(loss.item())
-helper.save_plot_training_loss(loss_values, LogDirectory, TrainingLossImageName)
+helper.save_plot_training_loss(loss_values, loss_plot_filepath)
 logging.info("Saved plot of training loss!")
 # print('Training finished')
 logging.info("Training finished!")
