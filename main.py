@@ -25,6 +25,7 @@ Variables and settings
 # Logging Options
 logging.basicConfig(
         level=logging.INFO,
+        filename="./logs/test.log",
         # encoding="utf-8",
         format="{asctime} - {levelname}: {message}",
         style="{",
