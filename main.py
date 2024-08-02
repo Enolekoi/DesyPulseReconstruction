@@ -108,6 +108,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 loss_values = []
 
 n_total_steps = len(train_loader)
+print(f'Total Steps: {n_total_steps}')
 for epoch in range(num_epochs):     # iterate over epochs
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
         # print(spectrograms.shape)
