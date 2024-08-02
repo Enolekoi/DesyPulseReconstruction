@@ -160,7 +160,7 @@ for epoch in range(NUM_EPOCHS):     # iterate over epochs
             logger.info(f"Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}")
         # Write loss into array
         loss_values.append(loss.item())
-helper.save_plot_training_loss(loss_values, loss_plot_filepath)
+helper.save_plot_training_loss(loss_values, config.loss_plot_filepath)
 logger.info("Saved plot of training loss!")
 # print('Training finished')
 logger.info("Training finished!")
