@@ -1,0 +1,26 @@
+02-08-2024 14:26:33 - __main__ - <module> - INFO: Size of Output Tensor: 512 Elements
+02-08-2024 14:26:33 - __main__ - <module> - INFO: Batch Size: 10 Elements
+02-08-2024 14:26:33 - __main__ - <module> - INFO: Number of Epochs: 1
+02-08-2024 14:26:33 - __main__ - <module> - INFO: Learning Rate: 0.0001
+02-08-2024 14:26:33 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+02-08-2024 14:26:33 - __main__ - <module> - INFO: Loading Model...
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Loading Model finished!
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Loading Data...
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Size of dataset: 1000
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Size of training data: 800
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Size of validation data: 100
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Size of test data: 100
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Loading Data finished!
+02-08-2024 14:26:35 - __main__ - <module> - INFO: Starting Training...
+02-08-2024 14:26:45 - __main__ - <module> - INFO: Epoch 1 / 1, Step 10 / 80, Loss = 2.6479046345
+02-08-2024 14:26:53 - __main__ - <module> - INFO: Epoch 1 / 1, Step 20 / 80, Loss = 0.7656838298
+02-08-2024 14:27:01 - __main__ - <module> - INFO: Epoch 1 / 1, Step 30 / 80, Loss = 0.4045691490
+02-08-2024 14:27:10 - __main__ - <module> - INFO: Epoch 1 / 1, Step 40 / 80, Loss = 0.2190554887
+02-08-2024 14:27:18 - __main__ - <module> - INFO: Epoch 1 / 1, Step 50 / 80, Loss = 0.1016480476
+02-08-2024 14:27:27 - __main__ - <module> - INFO: Epoch 1 / 1, Step 60 / 80, Loss = 0.0362899862
+02-08-2024 14:27:35 - __main__ - <module> - INFO: Epoch 1 / 1, Step 70 / 80, Loss = 0.0102210660
+02-08-2024 14:27:43 - __main__ - <module> - INFO: Epoch 1 / 1, Step 80 / 80, Loss = 0.0026209715
+02-08-2024 14:27:44 - __main__ - <module> - INFO: Saved plot of training loss!
+02-08-2024 14:27:44 - __main__ - <module> - INFO: Training finished!
+02-08-2024 14:27:44 - __main__ - <module> - INFO: Starting Validation...
+02-08-2024 14:27:44 - __main__ - <module> - INFO: Validation finished!
