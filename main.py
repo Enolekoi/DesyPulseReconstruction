@@ -31,30 +31,6 @@ Path = "/mnt/data/desy/frog_simulated/grid_256/"
 SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
 
-# Logger Settings
-log_filepath, loss_plot_filepath = helper.getLogFilepath(
-        directory=LogDirectory,
-        log_base_filename=LogName,
-        loss_plot_base_filename=TrainingLossPlotName
-        )
-
-logger = logging.getLogger(__name__)
-logging_console_handler = logging.StreamHandler()
-logger.setLevel(logging.DEBUG)
-# logger.setLevel(logging.INFO)
-logging_file_handler = logging.FileHandler(
-        log_filepath,
-        encoding="utf-8"
-)
-logging_formatter = logging.Formatter(
-        "{asctime} - {name} - {funcName} - {levelname}: {message}",
-        datefmt="%d-%m-%Y %H:%M:%S",
-        style="{"
-)
-logging_console_handler.setFormatter(logging_formatter)
-logger.addHandler(logging_console_handler)
-logger.addHandler(logging_file_handler)
-
 # Constants
 OUTPUT_SIZE = 256
 BATCH_SIZE = 10
@@ -67,6 +43,36 @@ OUTPUT_TIMESTEP = 5    # [fs]
 OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
+
+# get the correct filepaths of all files
+log_filepath, loss_plot_filepath = helper.getLogFilepath(
+        directory=LogDirectory,
+        log_base_filename=LogName,
+        loss_plot_base_filename=TrainingLossPlotName
+        )
+# Logger Settings
+logger = logging.getLogger(__name__)    # create logger with the name of the current module
+
+logging_console_handler = logging.StreamHandler()   # create a handler for the console log
+logging_file_handler = logging.FileHandler(         # create a handler for the file log
+        log_filepath,
+        encoding="utf-8"
+)
+logging_formatter = logging.Formatter(  # create a formatter
+        "{asctime} - {name} - {funcName} - {levelname}: {message}",
+        datefmt="%d-%m-%Y %H:%M:%S",
+        style="{"
+)
+logging_console_handler.setFormatter(logging_formatter)     # add the formatter to the console log handler
+logging_file_handler.setFormatter(logging_formatter)        # add the formatter to the console file handler
+
+logger.addHandler(logging_console_handler)  # add the console log handler to the logger
+logger.addHandler(logging_file_handler)     # add the file log handler to the logger
+
+logger.setLevel(logging.DEBUG)  # Set the logger level to debug
+# logger.setLevel(logging.INFO)   # Set the logger level to info
+
+# Log some information
 logging.info(f"Size of Output Tensor: {2*OUTPUT_SIZE} Elements")
 logging.info(f"Batch Size: {BATCH_SIZE} Elements")
 logging.info(f"Number of Epochs: {NUM_EPOCHS}")
@@ -82,6 +88,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 logging.info(f"Device used (cuda/cpu): {device}")
 if device == 'cuda':
     torch.cuda.empty_cache()
+
 '''
 Load Model
 '''
@@ -188,22 +195,10 @@ with torch.no_grad():
     spectrogram = spectrogram.float().unsqueeze(0).to(device)
     label = label.float().to(device)
 
-    prediciton = model(spectrogram).cpu().numpy().flatten()
+    prediction = model(spectrogram).cpu().numpy().flatten()
     
     original_label = label.cpu().numpy().flatten()
     
-    orig_real = original_label[:256]
-    orig_imag = original_label[256:]
-    pred_real = prediciton[:256]
-    pred_imag = prediciton[256:]
-    
-    orig_abs = np.abs(orig_real + 1j* orig_imag) 
-    pred_abs = np.abs(pred_real + 1j* pred_imag)
-
-    plt.plot(orig_abs, label="original time domain signal")
-    plt.plot(pred_abs, label="predicted time domain signal")
-    plt.legend()
-    plt.savefig("./prediction.png")
-    plt.close()
+    vis.compareTimeDomain("./random_prediction.png", original_label, prediction)
     # vis.visualize(spectrogram, original_label, prediciton)
 logging.info("Validation finished!")
