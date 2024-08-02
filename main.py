@@ -24,18 +24,12 @@ Variables and settings
 '''
 # Logging Options
 logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
+        encoding="utf-8",
         format="{asctime} - {levelname}: {message}",
         style="{",
-        datefmt="%m-%d-%Y %H:%M:%S"
+        datefmt="%d-%m-%Y %H:%M:%S"
 )
-logging.debug("Test Message")
-
-# Define device used
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(f'Using {device} as device!')
-if device == 'cuda':
-    torch.cuda.empty_cache()
 
 # Paths
 LogDirectory = "./logs/"
@@ -57,27 +51,39 @@ OUTPUT_TIMESTEP = 5    # [fs]
 OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
+logging.info("Size of Output Tensor: {2*OUTPUT_SIZE} Elements")
+logging.info("Batch Size: {BATCH_SIZE} Elements")
+logging.info("Number of Epochs: {NUM_EPOCHS}")
+logging.info("Learning Rate: {LEARNING_RATE}")
+
 # Transforms
 spec_transform = helper.ResampleSpectrogram(OUTPUT_NUM_DELAYS, OUTPUT_TIMESTEP, OUTPUT_NUM_WAVELENGTH, OUTPUT_START_WAVELENGTH, OUTPUT_END_WAVELENGTH)
 label_transform = helper.ReadLabelFromEs()
 
+# Define device used
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# print(f'Using {device} as device!')
+logging.info("Device used (cuda/cpu): {device}")
+if device == 'cuda':
+    torch.cuda.empty_cache()
 '''
 Load Model
 '''
-
-print('Loading Model...')
+logging.info("Loading Model...")
 # Load custom DenseNet
 model = helper.CustomDenseNet(output_scale=40, num_outputs=2*OUTPUT_SIZE)
 model.float()
 model.to(device)
 model.eval()
 
-print('Loading Model finished!')
+logging.info("Loading Model finished!")
+# print('Loading Model finished!')
 
 '''
 Load Data
 '''
-print('Loading Data...')
+# print('Loading Data...')
+logging.info("Loading Data...")
 data = helper.SimulatedDataset(path=Path,
                                label_filename=LabelFilename,
                                spec_filename=SpecFilename,
@@ -87,11 +93,18 @@ data = helper.SimulatedDataset(path=Path,
 ## Split Data ##
 ################
 length_dataset = len(data)  # get length of data
-print(f'Size of Dataset: {length_dataset}')
+# print(f'Size of Dataset: {length_dataset}')
+logging.info("Size of dataset: {lenght_dataset}")
+
 # get ratios
 train_size = int(0.8 * length_dataset)  # amount of training data (80%)
 validation_size = int(0.1 * length_dataset)     # amount of validation data (10%)
 test_size = length_dataset - train_size - validation_size   # amount of test data (10%)
+
+logging.info("Size of training data: {train_size}")
+logging.info("Size of validation data: {validation_size}")
+logging.info("Size of test data: {test_size}")
+
 # split 
 train_data, validation_data, test_data = random_split(data, [train_size, validation_size, test_size])   # split data
 
@@ -100,11 +113,14 @@ train_loader = DataLoader(train_data, batch_size = BATCH_SIZE, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = BATCH_SIZE, shuffle=False)
 test_loader = DataLoader(test_data, batch_size = BATCH_SIZE, shuffle=False)
 
-print('Loading Data finished')
+# print('Loading Data finished')
+logging.info("Loading Data finished!")
+
 '''
 Training
 '''
 print('Starting Training...')
+logging.info("Starting Training...")
 ########################
 ## loss and optimizer ##
 ########################
@@ -134,18 +150,21 @@ for epoch in range(NUM_EPOCHS):     # iterate over epochs
 
         # Print information (every 100 steps)
         if (i+1) % 10 == 0:
-            print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-            # print(loss)
+            # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
+            logging.info("Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}")
         # Write loss into array
         loss_values.append(loss.item())
 helper.save_plot_training_loss(loss_values, LogDirectory, TrainingLossImageName)
+logging.info("Saved plot of training loss!")
 print('Training finished')
+logging.info("Training finished!")
 
 # Visualize training
 '''
 validation
 '''
 print('Starting Validation...')
+logging.info("Loading Model finished!")
 model.eval()
 with torch.no_grad():
     validation_sample = random.choice(validation_data)
