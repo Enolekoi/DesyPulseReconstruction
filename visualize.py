@@ -40,7 +40,6 @@ def compareTimeDomain(filepath, label, prediction):
     axs[3].set_ylabel("Intensity difference of the original and predicted pulse")
     axs[3].set_xlabel("Time in fs")
     axs[3].grid(True)
-    axs[3].legend() 
 
     plt.tight_layout()
     plt.savefig("./prediction.png")
