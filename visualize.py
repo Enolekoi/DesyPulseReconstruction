@@ -71,7 +71,6 @@ def visualize(spectrogram, label, prediction):
         ax1.plot(label[:,0], prediction)
         ax1.set_title('Vorhergesagtes Zeitsignal')
     else:
-
         print('Length of Prediction and Label not the same')
     
     

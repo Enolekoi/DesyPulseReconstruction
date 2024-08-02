@@ -13,7 +13,6 @@ import torch    # Dataloader,
 from torch.utils.data import Dataset    # Dataloader,
 import torchvision.models as models     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
-import logging
 
 import config
 
@@ -305,5 +304,3 @@ def save_plot_training_loss(loss_values, filepath):
     plt.close()
 
     logger.info(f"Plot writen to {filepath}")
-
-
