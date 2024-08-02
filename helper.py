@@ -15,6 +15,7 @@ import torchvision.models as models     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
 import logging
 
+logger = logging.getLogger()
 '''
 Custom DenseNet
 '''
@@ -103,7 +104,6 @@ class ResampleSpectrogram(object):
         output_stop_wavelength = end_wavelength_out    # the last element of the wavelength output axis 
         output_start_time = -int(output_number_rows/2) * output_time_step     # calculate time at which the output time axis starts
         output_end_time = output_start_time + (output_time_step * output_number_rows) - output_time_step    # calculate the last element of the output time axis 
-        self.logger = logging.getLogger()
 
         ######################## Used here to save time later
         ## Define output axis ##
@@ -291,7 +291,6 @@ def plotTimeDomain(TimeDomain, TimeDomainLabel):
 Plot Training Loss
 '''
 def save_plot_training_loss(loss_values, filepath):
-    logger = logging.getLogger()
 
     # plot training loss over time
     plt.plot(loss_values)

@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import logging
 
+logger = logging.getLogger()
+
 def compareTimeDomain(filepath, label, prediction):
-    logger = logging.getLogger()
 
     orig_real = label[:256]
     orig_imag = label[256:]
