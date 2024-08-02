@@ -1,0 +1,34 @@
+02-08-2024 14:17:45 - __main__ - <module> - INFO: Size of Output Tensor: 512 Elements
+02-08-2024 14:17:45 - __main__ - <module> - INFO: Batch Size: 10 Elements
+02-08-2024 14:17:45 - __main__ - <module> - INFO: Number of Epochs: 2
+02-08-2024 14:17:45 - __main__ - <module> - INFO: Learning Rate: 0.0001
+02-08-2024 14:17:45 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+02-08-2024 14:17:45 - __main__ - <module> - INFO: Loading Model...
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Loading Model finished!
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Loading Data...
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Size of dataset: 1000
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Size of training data: 800
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Size of validation data: 100
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Size of test data: 100
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Loading Data finished!
+02-08-2024 14:17:47 - __main__ - <module> - INFO: Starting Training...
+02-08-2024 14:17:57 - __main__ - <module> - INFO: Epoch 1 / 2, Step 10 / 80, Loss = 2.4270484447
+02-08-2024 14:18:06 - __main__ - <module> - INFO: Epoch 1 / 2, Step 20 / 80, Loss = 0.7132125497
+02-08-2024 14:18:14 - __main__ - <module> - INFO: Epoch 1 / 2, Step 30 / 80, Loss = 0.2995836437
+02-08-2024 14:18:22 - __main__ - <module> - INFO: Epoch 1 / 2, Step 40 / 80, Loss = 0.1311209947
+02-08-2024 14:18:31 - __main__ - <module> - INFO: Epoch 1 / 2, Step 50 / 80, Loss = 0.0449557938
+02-08-2024 14:18:39 - __main__ - <module> - INFO: Epoch 1 / 2, Step 60 / 80, Loss = 0.0130211459
+02-08-2024 14:18:47 - __main__ - <module> - INFO: Epoch 1 / 2, Step 70 / 80, Loss = 0.0034542810
+02-08-2024 14:18:56 - __main__ - <module> - INFO: Epoch 1 / 2, Step 80 / 80, Loss = 0.0009950631
+02-08-2024 14:19:04 - __main__ - <module> - INFO: Epoch 2 / 2, Step 10 / 80, Loss = 0.0003898731
+02-08-2024 14:19:12 - __main__ - <module> - INFO: Epoch 2 / 2, Step 20 / 80, Loss = 0.0001486260
+02-08-2024 14:19:21 - __main__ - <module> - INFO: Epoch 2 / 2, Step 30 / 80, Loss = 0.0000532603
+02-08-2024 14:19:29 - __main__ - <module> - INFO: Epoch 2 / 2, Step 40 / 80, Loss = 0.0000178155
+02-08-2024 14:19:37 - __main__ - <module> - INFO: Epoch 2 / 2, Step 50 / 80, Loss = 0.0000069878
+02-08-2024 14:19:46 - __main__ - <module> - INFO: Epoch 2 / 2, Step 60 / 80, Loss = 0.0000021667
+02-08-2024 14:19:54 - __main__ - <module> - INFO: Epoch 2 / 2, Step 70 / 80, Loss = 0.0000008217
+02-08-2024 14:20:03 - __main__ - <module> - INFO: Epoch 2 / 2, Step 80 / 80, Loss = 0.0000002799
+02-08-2024 14:20:03 - __main__ - <module> - INFO: Saved plot of training loss!
+02-08-2024 14:20:03 - __main__ - <module> - INFO: Training finished!
+02-08-2024 14:20:03 - __main__ - <module> - INFO: Starting Validation...
+02-08-2024 14:20:03 - __main__ - <module> - INFO: Validation finished!
