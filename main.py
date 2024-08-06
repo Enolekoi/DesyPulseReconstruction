@@ -46,15 +46,26 @@ OUTPUT_START_WAVELENGTH = 350   # [nm]
 OUTPUT_END_WAVELENGTH = 550     # [nm]
 
 # get the correct filepaths of all files
-# log_filepath, loss_plot_filepath = helper.getLogFilepath(
-#         directory=LogDirectory,
-#         log_base_filename=LogName,
-#         loss_plot_base_filename=TrainingLossPlotName
-#         )
+log_filepath, loss_plot_filepath = config.getLogFilepath(
+        directory=LogDirectory,
+        log_base_filename=LogName,
+        loss_plot_base_filename=TrainingLossPlotName
+        )
 
-logger = config.configure_logging(config.log_filepath)
 
 # Logger Settings
+logging.basicConfig(
+        level=logging.DEBUG,
+        style="{",
+        format="{asctime} - {name} - {funcName} - {levelname}: {message}",
+        datefmt='%d-%m-%Y %H:%M:%S',
+        handlers=[
+            logging.FileHandler(log_filepath),
+            logging.StreamHandler()
+            ]
+)
+logger = logging.getLogger(__name__)
+
 # Log some information
 logger.info(f"Size of Output Tensor: {2*OUTPUT_SIZE} Elements")
 logger.info(f"Batch Size: {BATCH_SIZE} Elements")
