@@ -55,7 +55,7 @@ log_filepath, loss_plot_filepath = config.getLogFilepath(
 
 # Logger Settings
 logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         style="{",
         format="{asctime} - {name} - {funcName} - {levelname}: {message}",
         datefmt='%d-%m-%Y %H:%M:%S',
