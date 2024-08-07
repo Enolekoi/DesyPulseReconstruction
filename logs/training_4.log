@@ -1,0 +1,173 @@
+07-08-2024 10:39:29 - __main__ - <module> - INFO: Size of Output Tensor: 512 Elements
+07-08-2024 10:39:29 - __main__ - <module> - INFO: Batch Size: 10 Elements
+07-08-2024 10:39:29 - __main__ - <module> - INFO: Number of Epochs: 2
+07-08-2024 10:39:29 - __main__ - <module> - INFO: Learning Rate: 0.0001
+07-08-2024 10:39:29 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+07-08-2024 10:39:29 - __main__ - <module> - INFO: Loading Model...
+07-08-2024 10:39:31 - __main__ - <module> - INFO: Loading Model finished!
+07-08-2024 10:39:31 - __main__ - <module> - INFO: Loading Data...
+07-08-2024 10:39:31 - __main__ - <module> - INFO: Size of dataset: 1000
+07-08-2024 10:39:31 - __main__ - <module> - INFO: Size of training and validation data: 900
+07-08-2024 10:39:31 - __main__ - <module> - INFO: Size of test data: 100
+07-08-2024 10:41:11 - __main__ - <module> - INFO: Size of Output Tensor: 512 Elements
+07-08-2024 10:41:11 - __main__ - <module> - INFO: Batch Size: 10 Elements
+07-08-2024 10:41:11 - __main__ - <module> - INFO: Number of Epochs: 2
+07-08-2024 10:41:11 - __main__ - <module> - INFO: Learning Rate: 0.0001
+07-08-2024 10:41:11 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+07-08-2024 10:41:11 - __main__ - <module> - INFO: Loading Model...
+07-08-2024 10:41:13 - __main__ - <module> - INFO: Loading Model finished!
+07-08-2024 10:41:13 - __main__ - <module> - INFO: Loading Data...
+07-08-2024 10:41:13 - __main__ - <module> - INFO: Size of dataset: 1000
+07-08-2024 10:41:13 - __main__ - <module> - INFO: Size of training and validation data: 900
+07-08-2024 10:41:13 - __main__ - <module> - INFO: Size of test data: 100
+07-08-2024 10:41:48 - __main__ - <module> - INFO: Size of Output Tensor: 512 Elements
+07-08-2024 10:41:48 - __main__ - <module> - INFO: Batch Size: 10 Elements
+07-08-2024 10:41:48 - __main__ - <module> - INFO: Number of Epochs: 2
+07-08-2024 10:41:48 - __main__ - <module> - INFO: Learning Rate: 0.0001
+07-08-2024 10:41:48 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+07-08-2024 10:41:48 - __main__ - <module> - INFO: Loading Model...
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Loading Model finished!
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Loading Data...
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Size of dataset: 1000
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Size of training and validation data: 900
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Size of test data: 100
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Starting fold 1
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Starting to load data for fold 1...
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Finished loading data for fold 1!
+07-08-2024 10:41:50 - __main__ - <module> - INFO: Starting training for fold 1...
+07-08-2024 10:42:00 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 10, Loss = 8.9850025177
+07-08-2024 10:42:08 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 20, Loss = 3.0060966015
+07-08-2024 10:42:17 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 30, Loss = 1.0730942488
+07-08-2024 10:42:25 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 40, Loss = 0.3128399551
+07-08-2024 10:42:34 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 50, Loss = 0.1125688702
+07-08-2024 10:42:42 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 60, Loss = 0.0403745472
+07-08-2024 10:42:51 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 70, Loss = 0.0145525336
+07-08-2024 10:43:01 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 10, Loss = 0.0046762251
+07-08-2024 10:43:10 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 20, Loss = 0.0013636821
+07-08-2024 10:43:18 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 30, Loss = 0.0005907553
+07-08-2024 10:43:26 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 40, Loss = 0.0001655452
+07-08-2024 10:43:35 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 50, Loss = 0.0000762586
+07-08-2024 10:43:43 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 60, Loss = 0.0000225901
+07-08-2024 10:43:52 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 70, Loss = 0.0000091303
+07-08-2024 10:59:31 - __main__ - <module> - INFO: Size of Output Tensor: 512 Elements
+07-08-2024 10:59:31 - __main__ - <module> - INFO: Batch Size: 10 Elements
+07-08-2024 10:59:31 - __main__ - <module> - INFO: Number of Epochs: 2
+07-08-2024 10:59:31 - __main__ - <module> - INFO: Learning Rate: 0.0001
+07-08-2024 10:59:31 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+07-08-2024 10:59:31 - __main__ - <module> - INFO: Loading Model...
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Loading Model finished!
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Loading Data...
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Size of dataset: 1000
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Size of training and validation data: 900
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Size of test data: 100
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Starting fold 1
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Starting to load data for fold 1...
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Finished loading data for fold 1!
+07-08-2024 10:59:33 - __main__ - <module> - INFO: Starting training for fold 1...
+07-08-2024 10:59:43 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 10, Loss = 8.2418813705
+07-08-2024 10:59:51 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 20, Loss = 2.8547742367
+07-08-2024 11:00:00 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 30, Loss = 1.0473291874
+07-08-2024 11:00:08 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 40, Loss = 0.2873597145
+07-08-2024 11:00:17 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 50, Loss = 0.1014574990
+07-08-2024 11:00:26 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 60, Loss = 0.0391606502
+07-08-2024 11:00:34 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 1 / 2, Step 70, Loss = 0.0117000509
+07-08-2024 11:00:45 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 10, Loss = 0.0037027709
+07-08-2024 11:00:53 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 20, Loss = 0.0012857280
+07-08-2024 11:01:02 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 30, Loss = 0.0004590603
+07-08-2024 11:01:10 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 40, Loss = 0.0001875016
+07-08-2024 11:01:19 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 50, Loss = 0.0000589447
+07-08-2024 11:01:27 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 60, Loss = 0.0000233560
+07-08-2024 11:01:36 - __main__ - <module> - INFO: Fold 1 / 5, Epoch 2 / 2, Step 70, Loss = 0.0000077532
+07-08-2024 11:01:38 - __main__ - <module> - INFO: Saved plot of training loss for 1!
+07-08-2024 11:01:38 - __main__ - <module> - INFO: Fold 1 Training finished!
+07-08-2024 11:01:49 - __main__ - <module> - INFO: Fold 1, Validation Loss: 0.3342083097
+07-08-2024 11:01:49 - __main__ - <module> - INFO: Starting fold 2
+07-08-2024 11:01:49 - __main__ - <module> - INFO: Starting to load data for fold 2...
+07-08-2024 11:01:49 - __main__ - <module> - INFO: Finished loading data for fold 2!
+07-08-2024 11:01:49 - __main__ - <module> - INFO: Starting training for fold 2...
+07-08-2024 11:01:58 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 1 / 2, Step 10, Loss = 0.1925748438
+07-08-2024 11:02:06 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 1 / 2, Step 20, Loss = 0.0432099067
+07-08-2024 11:02:15 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 1 / 2, Step 30, Loss = 0.0211000014
+07-08-2024 11:02:23 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 1 / 2, Step 40, Loss = 0.0062544928
+07-08-2024 11:02:32 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 1 / 2, Step 50, Loss = 0.0025165784
+07-08-2024 11:02:40 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 1 / 2, Step 60, Loss = 0.0008754007
+07-08-2024 11:02:49 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 1 / 2, Step 70, Loss = 0.0003025001
+07-08-2024 11:02:59 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 2 / 2, Step 10, Loss = 0.0000850231
+07-08-2024 11:03:08 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 2 / 2, Step 20, Loss = 0.0000312486
+07-08-2024 11:03:16 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 2 / 2, Step 30, Loss = 0.0000108075
+07-08-2024 11:03:25 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 2 / 2, Step 40, Loss = 0.0000040759
+07-08-2024 11:03:33 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 2 / 2, Step 50, Loss = 0.0000016750
+07-08-2024 11:03:42 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 2 / 2, Step 60, Loss = 0.0000005913
+07-08-2024 11:03:51 - __main__ - <module> - INFO: Fold 2 / 5, Epoch 2 / 2, Step 70, Loss = 0.0000001953
+07-08-2024 11:03:52 - __main__ - <module> - INFO: Saved plot of training loss for 2!
+07-08-2024 11:03:52 - __main__ - <module> - INFO: Fold 2 Training finished!
+07-08-2024 11:04:04 - __main__ - <module> - INFO: Fold 2, Validation Loss: 0.0000093607
+07-08-2024 11:04:04 - __main__ - <module> - INFO: Starting fold 3
+07-08-2024 11:04:04 - __main__ - <module> - INFO: Starting to load data for fold 3...
+07-08-2024 11:04:04 - __main__ - <module> - INFO: Finished loading data for fold 3!
+07-08-2024 11:04:04 - __main__ - <module> - INFO: Starting training for fold 3...
+07-08-2024 11:04:12 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 1 / 2, Step 10, Loss = 0.2321261019
+07-08-2024 11:04:21 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 1 / 2, Step 20, Loss = 0.0275234673
+07-08-2024 11:04:29 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 1 / 2, Step 30, Loss = 0.0220972206
+07-08-2024 11:04:38 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 1 / 2, Step 40, Loss = 0.0051541994
+07-08-2024 11:04:46 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 1 / 2, Step 50, Loss = 0.0020848294
+07-08-2024 11:04:55 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 1 / 2, Step 60, Loss = 0.0008724883
+07-08-2024 11:05:03 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 1 / 2, Step 70, Loss = 0.0003191714
+07-08-2024 11:05:14 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 2 / 2, Step 10, Loss = 0.0000829447
+07-08-2024 11:05:22 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 2 / 2, Step 20, Loss = 0.0000303232
+07-08-2024 11:05:31 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 2 / 2, Step 30, Loss = 0.0000109294
+07-08-2024 11:05:39 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 2 / 2, Step 40, Loss = 0.0000041738
+07-08-2024 11:05:47 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 2 / 2, Step 50, Loss = 0.0000014832
+07-08-2024 11:05:56 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 2 / 2, Step 60, Loss = 0.0000005138
+07-08-2024 11:06:04 - __main__ - <module> - INFO: Fold 3 / 5, Epoch 2 / 2, Step 70, Loss = 0.0000001841
+07-08-2024 11:06:06 - __main__ - <module> - INFO: Saved plot of training loss for 3!
+07-08-2024 11:06:06 - __main__ - <module> - INFO: Fold 3 Training finished!
+07-08-2024 11:06:18 - __main__ - <module> - INFO: Fold 3, Validation Loss: 0.0000061113
+07-08-2024 11:06:18 - __main__ - <module> - INFO: Starting fold 4
+07-08-2024 11:06:18 - __main__ - <module> - INFO: Starting to load data for fold 4...
+07-08-2024 11:06:18 - __main__ - <module> - INFO: Finished loading data for fold 4!
+07-08-2024 11:06:18 - __main__ - <module> - INFO: Starting training for fold 4...
+07-08-2024 11:06:26 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 1 / 2, Step 10, Loss = 0.2523453832
+07-08-2024 11:06:35 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 1 / 2, Step 20, Loss = 0.0285934340
+07-08-2024 11:06:43 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 1 / 2, Step 30, Loss = 0.0249815118
+07-08-2024 11:06:52 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 1 / 2, Step 40, Loss = 0.0073580579
+07-08-2024 11:07:00 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 1 / 2, Step 50, Loss = 0.0028148531
+07-08-2024 11:07:09 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 1 / 2, Step 60, Loss = 0.0010138939
+07-08-2024 11:07:17 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 1 / 2, Step 70, Loss = 0.0003517863
+07-08-2024 11:07:27 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 2 / 2, Step 10, Loss = 0.0001099089
+07-08-2024 11:07:36 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 2 / 2, Step 20, Loss = 0.0000364776
+07-08-2024 11:07:44 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 2 / 2, Step 30, Loss = 0.0000135726
+07-08-2024 11:07:53 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 2 / 2, Step 40, Loss = 0.0000052275
+07-08-2024 11:08:01 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 2 / 2, Step 50, Loss = 0.0000017308
+07-08-2024 11:08:10 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 2 / 2, Step 60, Loss = 0.0000005741
+07-08-2024 11:08:19 - __main__ - <module> - INFO: Fold 4 / 5, Epoch 2 / 2, Step 70, Loss = 0.0000002573
+07-08-2024 11:08:20 - __main__ - <module> - INFO: Saved plot of training loss for 4!
+07-08-2024 11:08:20 - __main__ - <module> - INFO: Fold 4 Training finished!
+07-08-2024 11:08:32 - __main__ - <module> - INFO: Fold 4, Validation Loss: 0.0000028029
+07-08-2024 11:08:32 - __main__ - <module> - INFO: Starting fold 5
+07-08-2024 11:08:32 - __main__ - <module> - INFO: Starting to load data for fold 5...
+07-08-2024 11:08:32 - __main__ - <module> - INFO: Finished loading data for fold 5!
+07-08-2024 11:08:32 - __main__ - <module> - INFO: Starting training for fold 5...
+07-08-2024 11:08:41 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 1 / 2, Step 10, Loss = 0.2854394615
+07-08-2024 11:08:49 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 1 / 2, Step 20, Loss = 0.0136724059
+07-08-2024 11:08:58 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 1 / 2, Step 30, Loss = 0.0211120006
+07-08-2024 11:09:06 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 1 / 2, Step 40, Loss = 0.0103170797
+07-08-2024 11:09:15 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 1 / 2, Step 50, Loss = 0.0027814163
+07-08-2024 11:09:23 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 1 / 2, Step 60, Loss = 0.0008906992
+07-08-2024 11:09:32 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 1 / 2, Step 70, Loss = 0.0003300464
+07-08-2024 11:09:42 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 2 / 2, Step 10, Loss = 0.0001086715
+07-08-2024 11:09:51 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 2 / 2, Step 20, Loss = 0.0000380910
+07-08-2024 11:09:59 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 2 / 2, Step 30, Loss = 0.0000138556
+07-08-2024 11:10:08 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 2 / 2, Step 40, Loss = 0.0000049046
+07-08-2024 11:10:17 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 2 / 2, Step 50, Loss = 0.0000016597
+07-08-2024 11:10:25 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 2 / 2, Step 60, Loss = 0.0000006822
+07-08-2024 11:10:34 - __main__ - <module> - INFO: Fold 5 / 5, Epoch 2 / 2, Step 70, Loss = 0.0000002031
+07-08-2024 11:10:35 - __main__ - <module> - INFO: Saved plot of training loss for 5!
+07-08-2024 11:10:35 - __main__ - <module> - INFO: Fold 5 Training finished!
+07-08-2024 11:10:47 - __main__ - <module> - INFO: Fold 5, Validation Loss: 0.0000024694
+07-08-2024 11:10:47 - __main__ - <module> - INFO: Cross-validation finished! Results: [0.33420830965042114, 9.360672265756875e-06, 6.111263701313874e-06, 2.802945346047636e-06, 2.469379523972748e-06]
+07-08-2024 11:10:47 - __main__ - <module> - INFO: Average Validation Loss: 0.0668458108
+07-08-2024 11:10:47 - __main__ - <module> - INFO: Starting Test Step...
+07-08-2024 11:10:54 - __main__ - <module> - INFO: Test Loss: 0.0000024694
+07-08-2024 11:10:55 - visualize - compareTimeDomain - INFO: Saved comparison of random prediction and label to ./random_test_prediction.png
+07-08-2024 11:10:55 - __main__ - <module> - INFO: Test Step finished!
