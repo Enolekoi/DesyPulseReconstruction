@@ -130,12 +130,12 @@ fold_results = []
 for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_val_data)):
     logger.info(f"Starting fold {fold+1}")
 
-    train_subset = Subset(train_val_data, train_idx)
-    validation_subset = Subset(train_val_data, validation_idx)
+    train_subset = Subset(train_validation_data, train_idx)
+    validation_subset = Subset(train_validation_data, validation_idx)
     logger.info(f"Starting to load data for fold {fold+1}...")
     # Data Loaders
-    train_loader = DataLoader(train_data, batch_size = BATCH_SIZE, shuffle=True)
-    validation_loader = DataLoader(validation_data, batch_size = BATCH_SIZE, shuffle=False)
+    train_loader = DataLoader(train_subset, batch_size = BATCH_SIZE, shuffle=True)
+    validation_loader = DataLoader(validation_subset, batch_size = BATCH_SIZE, shuffle=False)
     logger.info(f"Finished loading data for fold {fold+1}!")
 
     '''
