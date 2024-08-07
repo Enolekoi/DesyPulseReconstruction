@@ -175,7 +175,7 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
                 logger.info(f"Fold {fold+1} / {NUMBER_FOLDS}, Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
             # Write loss into array
             loss_values.append(loss.item())
-    vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}_fold{fold+1}")
+    # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
     logger.info(f"Saved plot of training loss for {fold+1}!")
     logger.info(f"Fold {fold+1} Training finished!")
     

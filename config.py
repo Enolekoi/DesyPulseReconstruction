@@ -40,7 +40,7 @@ def getLogFilepath(directory, log_base_filename, loss_plot_base_filename):
     next_index = max(next_loss_plot_index, next_log_index)
 
     # Get the new filename
-    new_loss_plot_filename = f"{loss_plot_base_filename}{next_index}.png"
+    new_loss_plot_filename = f"{loss_plot_base_filename}{next_index}"
     new_log_filename = f"{log_base_filename}{next_index}.log"
     loss_plot_filepath = os.path.join(directory, new_loss_plot_filename)
     log_filepath = os.path.join(directory, new_log_filename)
