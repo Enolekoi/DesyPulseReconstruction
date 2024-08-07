@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, random_split, Subset
 import matplotlib
 matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering
 import matplotlib.pyplot as plt
@@ -127,7 +127,7 @@ train_validation_data, test_data = random_split(data, [train_validation_size, te
 k_folds = KFold(n_splits=NUMBER_FOLDS, shuffle=True, random_state=42)
 fold_results = []
 
-for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_val_data)):
+for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validation_data)):
     logger.info(f"Starting fold {fold+1}")
 
     train_subset = Subset(train_validation_data, train_idx)
