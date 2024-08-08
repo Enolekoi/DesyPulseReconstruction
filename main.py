@@ -25,32 +25,20 @@ import config
 Variables and settings
 '''
 # Paths
-LogDirectory = "./logs/"
-LogName = "training_"
-TrainingLossPlotName = "training_loss_"
+# LogDirectory = "./logs/"
+# LogName = "training_"
+# TrainingLossPlotName = "training_loss_"
 
 Path = "/mnt/data/desy/frog_simulated/grid_256/"
 SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
 
 # Constants
-OUTPUT_SIZE = 256
-BATCH_SIZE = 10
-NUM_EPOCHS = 2
-LEARNING_RATE = 0.0001
-NUMBER_FOLDS = 5
-
-OUTPUT_NUM_DELAYS = 512 
-OUTPUT_NUM_WAVELENGTH = 512 
-OUTPUT_TIMESTEP = 5    # [fs]
-OUTPUT_START_WAVELENGTH = 350   # [nm]
-OUTPUT_END_WAVELENGTH = 550     # [nm]
-
 # get the correct filepaths of all files
 log_filepath, loss_plot_filepath = config.getLogFilepath(
-        directory=LogDirectory,
-        log_base_filename=LogName,
-        loss_plot_base_filename=TrainingLossPlotName
+        directory=config.LogDirectory,
+        log_base_filename=config.LogName,
+        loss_plot_base_filename=config.TrainingLossPlotName
         )
 
 
@@ -68,13 +56,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Log some information
-logger.info(f"Size of Output Tensor: {2*OUTPUT_SIZE} Elements")
-logger.info(f"Batch Size: {BATCH_SIZE} Elements")
-logger.info(f"Number of Epochs: {NUM_EPOCHS}")
-logger.info(f"Learning Rate: {LEARNING_RATE}")
+logger.info(f"Size of Output Tensor: {2*config.OUTPUT_SIZE} Elements")
+logger.info(f"Batch Size: {config.BATCH_SIZE} Elements")
+logger.info(f"Number of Epochs: {config.NUM_EPOCHS}")
+logger.info(f"Learning Rate: {config.LEARNING_RATE}")
 
 # Transforms
-spec_transform = helper.ResampleSpectrogram(OUTPUT_NUM_DELAYS, OUTPUT_TIMESTEP, OUTPUT_NUM_WAVELENGTH, OUTPUT_START_WAVELENGTH, OUTPUT_END_WAVELENGTH)
+spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
 label_transform = helper.ReadLabelFromEs()
 
 # Define device used
@@ -89,7 +77,7 @@ Load Model
 '''
 logger.info("Loading Model...")
 # Load custom DenseNet
-model = helper.CustomDenseNet(output_scale=40, num_outputs=2*OUTPUT_SIZE)
+model = helper.CustomDenseNet(output_scale=40, num_outputs=2*config.OUTPUT_SIZE)
 model.float()
 model.to(device)
 model.eval()
@@ -124,7 +112,7 @@ logger.info(f"Size of test data: {test_size}")
 # split 
 train_validation_data, test_data = random_split(data, [train_validation_size, test_size])   # split data
 
-k_folds = KFold(n_splits=NUMBER_FOLDS, shuffle=True, random_state=42)
+k_folds = KFold(n_splits=config.NUMBER_FOLDS, shuffle=True, random_state=42)
 fold_results = []
 
 for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validation_data)):
@@ -134,8 +122,8 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
     validation_subset = Subset(train_validation_data, validation_idx)
     logger.info(f"Starting to load data for fold {fold+1}...")
     # Data Loaders
-    train_loader = DataLoader(train_subset, batch_size = BATCH_SIZE, shuffle=True)
-    validation_loader = DataLoader(validation_subset, batch_size = BATCH_SIZE, shuffle=False)
+    train_loader = DataLoader(train_subset, batch_size = config.BATCH_SIZE, shuffle=True)
+    validation_loader = DataLoader(validation_subset, batch_size = config.BATCH_SIZE, shuffle=False)
     logger.info(f"Finished loading data for fold {fold+1}!")
 
     '''
@@ -147,11 +135,11 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
     ########################
     # criterion = nn.CrossEntropyLoss() 
     criterion = nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     loss_values = []
 
     # num_total_steps = len(train_loader)
-    for epoch in range(NUM_EPOCHS):     # iterate over epochs
+    for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         model.train()       
         for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
             # make spectrograms float for compatability with the model
@@ -172,7 +160,7 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
             # Print information (every 100 steps)
             if (i+1) % 10 == 0:
                 # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-                logger.info(f"Fold {fold+1} / {NUMBER_FOLDS}, Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
+                logger.info(f"Fold {fold+1} / {config.NUMBER_FOLDS}, Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
             # Write loss into array
             loss_values.append(loss.item())
     # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
@@ -201,7 +189,7 @@ logger.info(f"Average Validation Loss: {np.mean(fold_results):.10f}")
 Testing
 '''
 logger.info("Starting Test Step...")
-test_loader = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=False)
+test_loader = DataLoader(test_data, batch_size=config.BATCH_SIZE, shuffle=False)
 test_losses = []
 
 model.eval()
