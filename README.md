@@ -18,3 +18,4 @@ To train the model execute:
 - Log files for each training step are saved to the `./logs` directory
 - A plot of the training loss is saved tot the `./logs` directory
 - After training a random spectrogram from the test dataset is selected and a time domain pulse is reconstructed. It is then compared to the (label) time domain signal and saved to `./random_test_prediction.png`
+- The training dataset is expected to be in the `/mnt/data/desy/frog_simulated/grid_256/` directory (this can be changed in `./config.py`)
