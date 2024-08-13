@@ -2,12 +2,12 @@
 A DenseNet that uses FROG-traces (spectrograms) to predict the corresponding time domain pulse
 
 ## Dependencies
--`python`
--`numpy`
--`pytorch`
--`matplotlib`
--`scikit-learn`
--`pandas`
+- `python`
+- `numpy`
+- `pytorch`
+- `matplotlib`
+- `scikit-learn`
+- `pandas`
 
 ## Training
 To train the model execute:
