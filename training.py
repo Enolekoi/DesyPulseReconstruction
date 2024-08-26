@@ -149,8 +149,6 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
     logger.info(f"Saved plot of training loss for {fold+1}!")
     logger.info(f"Fold {fold+1} Training finished!")
     
-    # Write state_dict of model to file
-    torch.save(model.state_dict(), config.model_filepath)
     
     model.eval()
     with torch.no_grad():
@@ -169,6 +167,10 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
 
 logger.info(f"Cross-validation finished! Results: {fold_results}")
 logger.info(f"Average Validation Loss: {np.mean(fold_results):.10f}")
+
+# Write state_dict of model to file
+torch.save(model.state_dict(), config.model_filepath)
+logger.info("Saved Model")
 
 '''
 Testing
