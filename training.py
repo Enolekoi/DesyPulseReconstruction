@@ -61,8 +61,8 @@ logger.info("Loading Model...")
 # Load custom DenseNet
 model = helper.CustomDenseNet(
     num_outputs=2*config.OUTPUT_SIZE,
-    output_intensity_scale=10,
-    output_phase_scale=2000
+    output_intensity_scale=20,
+    output_phase_scale=2500
     )
 model.float()
 model.to(device)
