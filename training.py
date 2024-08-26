@@ -24,24 +24,6 @@ import config
 '''
 Variables and settings
 '''
-# Paths
-# LogDirectory = "./logs/"
-# LogName = "training_"
-# TrainingLossPlotName = "training_loss_"
-
-Path = "/mnt/data/desy/frog_simulated/grid_256/"
-SpecFilename = "as.dat"
-LabelFilename = "Es.dat"
-
-# Constants
-# get the correct filepaths of all files
-log_filepath, loss_plot_filepath = config.getLogFilepath(
-        directory=config.LogDirectory,
-        log_base_filename=config.LogName,
-        loss_plot_base_filename=config.TrainingLossPlotName
-        )
-
-
 # Logger Settings
 logging.basicConfig(
         level=logging.INFO,
@@ -49,7 +31,7 @@ logging.basicConfig(
         format="{asctime} - {name} - {funcName} - {levelname}: {message}",
         datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
-            logging.FileHandler(log_filepath),
+            logging.FileHandler(config.log_filepath),
             logging.StreamHandler()
             ]
 )
@@ -90,9 +72,9 @@ Load Data
 '''
 # print('Loading Data...')
 logger.info("Loading Data...")
-data = helper.SimulatedDataset(path=Path,
-                               label_filename=LabelFilename,
-                               spec_filename=SpecFilename,
+data = helper.SimulatedDataset(path=config.Path,
+                               label_filename=config.LabelFilename,
+                               spec_filename=config.SpecFilename,
                                transform=spec_transform,
                                target_transform=label_transform)
 ################
@@ -166,6 +148,9 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
     # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
     logger.info(f"Saved plot of training loss for {fold+1}!")
     logger.info(f"Fold {fold+1} Training finished!")
+    
+    # Write state_dict of model to file
+    torch.save(model.state_dict(), config.model_filepath)
     
     model.eval()
     with torch.no_grad():
