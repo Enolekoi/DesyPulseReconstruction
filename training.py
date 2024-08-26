@@ -149,7 +149,6 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
     logger.info(f"Saved plot of training loss for {fold+1}!")
     logger.info(f"Fold {fold+1} Training finished!")
     
-    
     model.eval()
     with torch.no_grad():
         val_losses = []

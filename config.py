@@ -19,7 +19,7 @@ ModelName = "trained_model_"
 LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
-Path = "/mnt/data/desy/frog_simulated/grid_256/"
+Path = "/mnt/data/desy/frog_simulated/grid_256_v2/"
 SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
 

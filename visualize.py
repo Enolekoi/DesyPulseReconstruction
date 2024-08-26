@@ -4,8 +4,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# TODO:
 '''
-Plot Training Loss
+save_plot_training_loss()
+Plot the training loss ( Currently UNUSED )
 '''
 def save_plot_training_loss(loss_values, filepath):
 
@@ -38,10 +40,8 @@ def compareTimeDomain(filepath, label, prediction):
     pred_intensity = prediction[:256]
     pred_phase = prediction[256:]
     
-    # orig_abs = np.abs(orig_real + 1j* orig_imag) 
-    # pred_abs = np.abs(pred_real + 1j* pred_imag)
-
     fig, axs = plt.subplots(3,1, figsize=(8,14))
+
     # Plotting the Intensity
     axs[0].plot(orig_intensity, label="original pulse", color="green")
     axs[0].plot(pred_intensity, label="predicted pulse", color="red")
