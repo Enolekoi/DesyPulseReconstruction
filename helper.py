@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 Custom DenseNet Class
 '''
 class CustomDenseNet(nn.Module):
-    def __init__(self, output_scale=100, num_outputs=512):
+    def __init__(self, output_intensity_scale=100, output_phase_scale=100, num_outputs=512):
         super(CustomDenseNet, self).__init__()
         # Load pretrained DenseNet
         self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
@@ -31,13 +31,25 @@ class CustomDenseNet(nn.Module):
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
         self.densenet.classifier = nn.Linear(num_features, num_outputs)
-        self.output_scale = output_scale
+        self.num_outputs = num_outputs
+        self.output_intensity_scale = output_intensity_scale
+        self.output_phase_scale = output_phase_scale
 
     def forward(self, x):
         # get the output of the densenet
         x = self.densenet(x)
-        # use tanh activation function to scale the output to [-1, 1] and then scale it to [-100, 100]
-        x = torch.tanh(x) * self.output_scale
+
+        # Split the output into two halves
+        half_size = int(self.num_outputs// 2)
+        x_intensity = x[:, :half_size]  # First half
+        x_phase = x[:, half_size:]      # Second half
+
+        # use tanh activation function to scale the output to [-1, 1] and then scale it
+        x_intensity = torch.tanh(x_intensity) * self.output_intensity_scale
+        x_phase = torch.tanh(x_phase) * self.output_phase_scale
+
+        # Concatenate the two halves back together
+        x = torch.cat((x_intensity, x_phase), dim=1)
         return x
 
 '''
