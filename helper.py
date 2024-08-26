@@ -18,8 +18,9 @@ import logging
 import config
 
 logger = logging.getLogger(__name__)
+
 '''
-Custom DenseNet
+Custom DenseNet Class
 '''
 class CustomDenseNet(nn.Module):
     def __init__(self, output_scale=100, num_outputs=512):
@@ -40,7 +41,7 @@ class CustomDenseNet(nn.Module):
         return x
 
 '''
-Class holding Time Domain Data
+Time Domain Data Class
 '''
 class TimeDomain:
     def __init__(self, time_axis, intensity, phase, real, imag):
@@ -51,7 +52,7 @@ class TimeDomain:
         self.imag = imag
 
 '''
-Dataloader
+Custom Dataloader Class
 '''
 class SimulatedDataset(Dataset):
     def __init__(self, path, label_filename, spec_filename, transform=None, target_transform=None):
@@ -94,7 +95,8 @@ class SimulatedDataset(Dataset):
         return output_spec, label
 
 '''
-RESAMPLE SPECTROGRAMS
+ResampleSpectrogram()
+Transform Class that resamples spectrograms to use the same axis and size
 '''
 class ResampleSpectrogram(object):
 
@@ -187,23 +189,27 @@ class ResampleSpectrogram(object):
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
  
 '''
-READ Labels (Real and Imaginary Part) from Es.dat
+READ Labels (intensity and Phase) from Es.dat
 '''
 class ReadLabelFromEs(object):
     def __init__(self):
         pass
 
     def __call__(self, path):    
-        # Read Ek.dat file and place columns in arrays
-        # Inputs:
-        # Path = Path to Ek.dat
-        # Outputs:
-        # time_axis = Array containing time axis of time signal
-        # intensity = Array containing intensity of time signal (squared amplitude)
-        # phase = Array containing phase of time signal
-        # real_part = Array containing real part of time signal
-        # imag_part = Array containing imaginary part of time signal
-
+        '''
+        Read Ek.dat file and place columns in arrays
+        Inputs:
+            Path -> Path to Ek.dat 
+        Outputs:
+            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+            [
+                time_axis   -> Array containing time axis of time signal
+                intensity   -> Array containing intensity of time signal (squared amplitude)
+                phase       -> Array containing phase of time signal
+                real_part   -> Array containing real part of time signal
+                imag_part   -> Array containing imaginary part of time signal
+            ]
+        '''
         # read the dataframe
         dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
         
@@ -212,5 +218,5 @@ class ReadLabelFromEs(object):
                                       phase = dataframe[2].to_numpy(), 
                                       real = dataframe[3].to_numpy(),
                                       imag = dataframe[4].to_numpy())
-        label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
+        label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
         return label
