@@ -280,8 +280,8 @@ class UnscaleLabel(object):
         half_size = int(length_label //2)
         intensity_scaled = scaled_label[:half_size]  # First half -> intensity
         phase_scaled = scaled_label[half_size:]      # Second half -> phase
-        intensity = intensity_scaled * self.max_intensity
-        phase = phase_scaled * self.max_phase
+        intensity = torch.from_numpy(intensity_scaled * self.max_intensity).float()
+        phase = torch.from_numpy(phase_scaled * self.max_phase).float()
 
         # Concatenate the two halves back together
         label = torch.cat((intensity, phase), dim=0)
