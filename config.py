@@ -20,12 +20,14 @@ OUTPUT_END_WAVELENGTH = 550     # [nm]
 ModelDirectory = "./models/"
 LogDirectory = "./logs/"
 ModelName = "trained_model_"
+ModelPath = "trained_model_"
 LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
 Path = "/mnt/data/desy/frog_simulated/grid_256_v2/"
 SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
+
 
 logger = logging.getLogger(__name__)
 
