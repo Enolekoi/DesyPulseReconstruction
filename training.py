@@ -157,6 +157,8 @@ for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validatio
     logger.info(f"Fold {fold+1} Training finished!")
     
     model.eval()
+
+    logger.info(f"Starting Validation of fold {fold+1}")
     with torch.no_grad():
         val_losses = []
         for spectrograms, labels in validation_loader:
@@ -202,7 +204,7 @@ with torch.no_grad():
         test_sample = random.choice(test_data)
         spectrogram, label = test_sample
         spectrogram = spectrogram.float().unsqueeze(0).to(device)
-        label = label.float().to(device)
+        label = label.float().cpu()
         label = label_unscaler(label.numpy())
 
         prediction = model(spectrogram).cpu().numpy().flatten()
