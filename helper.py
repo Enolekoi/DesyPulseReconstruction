@@ -246,8 +246,8 @@ class ScaleLabel(object):
         '''
         length_label = len(label)
         half_size = int(length_label //2)
-        intensity = label[:, :half_size]  # First half -> intensity
-        phase = label[:, half_size:]      # Second half -> phase
+        intensity = label[:half_size]  # First half -> intensity
+        phase = label[half_size:]      # Second half -> phase
         intensity_scaled = intensity / self.max_intensity
         phase_scaled = phase / self.max_phase
 
@@ -277,8 +277,8 @@ class UnscaleLabel(object):
         '''
         length_label = len(scaled_label)
         half_size = int(length_label //2)
-        intensity_scaled = scaled_label[:, :half_size]  # First half -> intensity
-        phase_scaled = scaled_label[:, half_size:]      # Second half -> phase
+        intensity_scaled = scaled_label[:half_size]  # First half -> intensity
+        phase_scaled = scaled_label[half_size:]      # Second half -> phase
         intensity = intensity_scaled * self.max_intensity
         phase = phase_scaled * self.max_phase
 
