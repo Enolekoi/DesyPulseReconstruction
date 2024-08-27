@@ -223,6 +223,7 @@ class ReadLabelFromEs(object):
                                       real = dataframe[3].to_numpy(),
                                       imag = dataframe[4].to_numpy())
         label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
+        label = torch.from_numpy(label).float()
         return label
 
 class ScaleLabel(object):
