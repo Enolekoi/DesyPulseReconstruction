@@ -78,3 +78,7 @@ plt.title("Prediction of Time Domain")
 plt.savefig(filepath)
 plt.close()
 # plt.show()
+
+for handler in logger.handlers:
+    handler.flush()
+    handler.close()
