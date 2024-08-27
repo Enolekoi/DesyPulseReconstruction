@@ -92,7 +92,7 @@ length_dataset = len(data)  # get length of data
 logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios
-test_size = int(0.1 * length_dataset)     # amount of validation data (10%)
+test_size = int(0.1 * length_dataset)     # amount of test data (10%)
 train_validation_size = length_dataset - test_size # amount of training and validation data (90%)
 
 logger.info(f"Size of training and validation data: {train_validation_size}")
@@ -204,8 +204,8 @@ with torch.no_grad():
         test_sample = random.choice(test_data)
         spectrogram, label = test_sample
         spectrogram = spectrogram.float().unsqueeze(0).to(device)
-        label = label.float().cpu()
-        label = label_unscaler(label.numpy())
+        label = label.float().cpu().numpy().flatten()
+        label = label_unscaler(label)
 
         prediction = model(spectrogram).cpu().numpy().flatten()
         prediction = label_unscaler(prediction)

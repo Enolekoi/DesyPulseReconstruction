@@ -35,10 +35,10 @@ Outputs:
 '''
 def compareTimeDomain(filepath, label, prediction):
     
-    orig_intensity = label[:256]
-    orig_phase = label[256:]
-    pred_intensity = prediction[:256]
-    pred_phase = prediction[256:]
+    orig_intensity = label[:256].numpy()
+    orig_phase = label[256:].numpy()
+    pred_intensity = prediction[:256].numpy()
+    pred_phase = prediction[256:].numpy()
     
     fig, axs = plt.subplots(3,1, figsize=(8,14))
 
