@@ -45,7 +45,11 @@ logger.info(f"Learning Rate: {config.LEARNING_RATE}")
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
-label_transform = helper.ReadLabelFromEs()
+label_reader = helper.ReadLabelFromEs()
+label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
+label_transform = transforms.Compose([label_reader, label_scaler])
+
+label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -60,10 +64,9 @@ Load Model
 logger.info("Loading Model...")
 # Load custom DenseNet
 model = helper.CustomDenseNet(
-    num_outputs=2*config.OUTPUT_SIZE,
-    output_intensity_scale=20,
-    output_phase_scale=2500
+    num_outputs=2*config.OUTPUT_SIZE
     )
+
 model.float()
 model.to(device)
 model.eval()
@@ -200,8 +203,10 @@ with torch.no_grad():
         spectrogram, label = test_sample
         spectrogram = spectrogram.float().unsqueeze(0).to(device)
         label = label.float().to(device)
+        label = label_unscaler(label)
 
         prediction = model(spectrogram).cpu().numpy().flatten()
+        prediction = label_unscaler(prediction)
         original_label = label.cpu().numpy().flatten()
         vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
 

@@ -19,11 +19,14 @@ import config
 
 logger = logging.getLogger(__name__)
 
+# TODO:
+# Implement own MSE loss function that considers ambiguities in phase retrieval (Trebino, p. 63)
+
 '''
 Custom DenseNet Class
 '''
 class CustomDenseNet(nn.Module):
-    def __init__(self, output_intensity_scale=100, output_phase_scale=100, num_outputs=512):
+    def __init__(self, num_outputs=512):
         super(CustomDenseNet, self).__init__()
         # Load pretrained DenseNet
         self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
@@ -32,24 +35,13 @@ class CustomDenseNet(nn.Module):
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
         self.densenet.classifier = nn.Linear(num_features, num_outputs)
         self.num_outputs = num_outputs
-        self.output_intensity_scale = output_intensity_scale
-        self.output_phase_scale = output_phase_scale
 
     def forward(self, x):
         # get the output of the densenet
         x = self.densenet(x)
-
-        # Split the output into two halves
-        half_size = int(self.num_outputs// 2)
-        x_intensity = x[:, :half_size]  # First half
-        x_phase = x[:, half_size:]      # Second half
-
         # use tanh activation function to scale the output to [-1, 1] and then scale it
-        x_intensity = torch.tanh(x_intensity) * self.output_intensity_scale
-        x_phase = torch.tanh(x_phase) * self.output_phase_scale
+        x = torch.tanh(x)
 
-        # Concatenate the two halves back together
-        x = torch.cat((x_intensity, x_phase), dim=1)
         return x
 
 '''
@@ -231,4 +223,66 @@ class ReadLabelFromEs(object):
                                       real = dataframe[3].to_numpy(),
                                       imag = dataframe[4].to_numpy())
         label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
+        return label
+
+class ScaleLabel(object):
+    def __init__(self, max_intensity, max_phase):
+        '''
+        Inputs:
+            max_intensity   -> >= maximum intesity in dataset
+            max_phase       -> >= maximum phase in dataset
+        '''
+        self.max_intensity = max_intensity
+        self.max_phase = max_phase
+
+    def __call__(self, label):    
+        '''
+        Scale the values of intensity and phase to [-1,1]
+        Inputs:
+            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+        Outputs:
+            scaled_label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+                scaled to [-1,1]
+        '''
+        length_label = len(label)
+        half_size = int(length_label //2)
+        intensity = label[:, :half_size]  # First half -> intensity
+        phase = label[:, half_size:]      # Second half -> phase
+        intensity_scaled = intensity / self.max_intensity
+        phase_scaled = phase / self.max_phase
+
+        # Concatenate the two halves back together
+        scaled_label = torch.cat((intensity_scaled, phase_scaled), dim=1)
+
+        return scaled_label
+
+class UnscaleLabel(object):
+    def __init__(self, max_intensity, max_phase):
+        '''
+        Inputs:
+            max_intensity   -> >= maximum intesity in dataset (needs to be the same as in ScaleLabel)
+            max_phase       -> >= maximum phase in dataset (needst to be the same as in ScaleLabel)
+        '''
+        self.max_intensity = max_intensity
+        self.max_phase = max_phase
+
+    def __call__(self, scaled_label):    
+        '''
+        Scale the values of intensity and phase to [-1,1]
+        Inputs:
+            scaled_label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+                scaled to [-1,1]
+        Outputs:
+            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+        '''
+        length_label = len(scaled_label)
+        half_size = int(length_label //2)
+        intensity_scaled = scaled_label[:, :half_size]  # First half -> intensity
+        phase_scaled = scaled_label[:, half_size:]      # Second half -> phase
+        intensity = intensity_scaled * self.max_intensity
+        phase = phase_scaled * self.max_phase
+
+        # Concatenate the two halves back together
+        label = torch.cat((intensity, phase), dim=1)
+
         return label
