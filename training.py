@@ -203,7 +203,7 @@ with torch.no_grad():
         spectrogram, label = test_sample
         spectrogram = spectrogram.float().unsqueeze(0).to(device)
         label = label.float().to(device)
-        label = label_unscaler(label)
+        label = label_unscaler(label.numpy())
 
         prediction = model(spectrogram).cpu().numpy().flatten()
         prediction = label_unscaler(prediction)
