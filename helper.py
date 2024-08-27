@@ -252,7 +252,7 @@ class ScaleLabel(object):
         phase_scaled = torch.from_numpy(phase / self.max_phase).float()
 
         # Concatenate the two halves back together
-        scaled_label = torch.cat((intensity_scaled, phase_scaled), dim=1)
+        scaled_label = torch.cat((intensity_scaled, phase_scaled), dim=0)
 
         return scaled_label
 
@@ -283,6 +283,6 @@ class UnscaleLabel(object):
         phase = torch.from_numpy(phase_scaled * self.max_phase).float()
 
         # Concatenate the two halves back together
-        label = torch.cat((intensity, phase), dim=1)
+        label = torch.cat((intensity, phase), dim=0)
 
         return label
