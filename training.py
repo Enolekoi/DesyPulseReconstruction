@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
-import torch.optim.lr_scheduler
+import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader, random_split, Subset
 import matplotlib
 matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering
@@ -124,7 +124,7 @@ logger.info(f"Starting training...")
 criterion = nn.MSELoss()
 # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-scheduler = ExponentialLR(optimizer, gamma=0.9)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, verbose=True)
 loss_values = []
 
 # num_total_steps = len(train_loader)
