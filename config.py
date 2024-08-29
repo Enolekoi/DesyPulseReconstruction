@@ -4,7 +4,7 @@ import os
 
 OUTPUT_SIZE = 256
 BATCH_SIZE = 10
-NUM_EPOCHS = 5
+NUM_EPOCHS = 1
 LEARNING_RATE = 0.0001
 # NUMBER_FOLDS = 5
 NUMBER_FOLDS = 2
@@ -25,8 +25,8 @@ ModelPath = "trained_model_"
 LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
-Path = "/mnt/data/desy/frog_simulated/grid_256_v2/"
-SpecFilename = "as.dat"
+Path = "/mnt/data/desy/frog_simulated/grid_512_v2/"
+SpecFilename = "as_gn01.dat"
 LabelFilename = "Es.dat"
 
 

@@ -94,7 +94,7 @@ logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios
 test_size = int(0.1 * length_dataset)     # amount of test data (10%)
-train_validation_size = length_dataset - test_size # amount of training and validation data (90%)
+train_validation_size = 0.5*(length_dataset - test_size) # amount of training and validation data (90%)
 
 logger.info(f"Size of training and validation data: {train_validation_size}")
 logger.info(f"Size of test data: {test_size}")
@@ -127,6 +127,11 @@ for lr in lrs:
     '''
     Training 
     '''
+    logger.info("Reinitialize the model")
+    model = helper.CustomDenseNet(num_outputs=2*config.OUTPUT_SIZE)
+    model.float()
+    model.to(device)
+    
     logger.info(f"Starting training for learning rate {lr}...")
     ########################
     ## loss and optimizer ##
