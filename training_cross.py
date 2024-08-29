@@ -101,17 +101,9 @@ logger.info(f"Size of test data: {test_size}")
 
 # split 
 train_validation_data, test_data = random_split(data, [train_validation_size, test_size])   # split data
-validation_size = int(0.2* train_validation_size)
-train_size = train_validation_size - validation_size
 
-train_data, validation_data = random_split(train_validation_data, [train_size, validation_size])
-
-# Data Loaders
-train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)
-validation_loader = DataLoader(validation_data, batch_size = config.BATCH_SIZE, shuffle=False)
-logger.info("Finished loading data!")
-
-# different learning rates
+# k_folds = KFold(n_splits=config.NUMBER_FOLDS, shuffle=True, random_state=42)
+# fold_results = []
 lrs = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 best_loss = float('inf')
 best_lr = None
@@ -119,71 +111,84 @@ best_lr = None
 for lr in lrs:
     logger.info(f"Starting training for Learning Rate {lr}")
     # for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validation_data)):
-    '''
-    Training 
-    '''
-    logger.info(f"Starting training for learning rate {lr}...")
-    ########################
-    ## loss and optimizer ##
-    ########################
-    # criterion = nn.CrossEntropyLoss() 
-    criterion = nn.MSELoss()
-    # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    loss_values = []
-
-    # num_total_steps = len(train_loader)
-    for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
-        model.train()       
-        for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
-            # make spectrograms float for compatability with the model
-            spectrograms = spectrograms.float()
-            # send spectrogram and label data to selected device
-            spectrograms = spectrograms.to(device)
-            labels = labels.float().to(device)
-            
-            # Forward pass
-            outputs = model(spectrograms)
-            loss = criterion(outputs, labels)
+    if true:
+        logger.info(f"Starting fold {fold+1}")
     
-            # Backward pass
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+        train_subset = Subset(train_validation_data, train_idx)
+        validation_subset = Subset(train_validation_data, validation_idx)
+        logger.info(f"Starting to load data for fold {fold+1}...")
+        # Data Loaders
+        train_loader = DataLoader(train_subset, batch_size = config.BATCH_SIZE, shuffle=True)
+        validation_loader = DataLoader(validation_subset, batch_size = config.BATCH_SIZE, shuffle=False)
+        logger.info(f"Finished loading data for fold {fold+1}!")
     
-            # Print information (every 100 steps)
-            if (i+1) % 10 == 0:
-                # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-                logger.info(f"Learning Rate {lr:.6f}, Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
-            # Write loss into array
-            loss_values.append(loss.item())
-    # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
-    # logger.info(f"Saved plot of training loss for {fold+1}!")
-    logger.info(f"Learning Rate {lr} Training finished!")
+        '''
+        Training 
+        '''
+        logger.info(f"Starting training for fold {fold+1}...")
+        ########################
+        ## loss and optimizer ##
+        ########################
+        # criterion = nn.CrossEntropyLoss() 
+        criterion = nn.MSELoss()
+        # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+        loss_values = []
     
-    model.eval()
-
-    logger.info(f"Starting Validation of learning rate {lr}")
-    with torch.no_grad():
-        val_losses = []
-        for spectrograms, labels in validation_loader:
-            spectrograms = spectrograms.float().to(device)
-            labels = labels.float().to(device)
-
-            outputs = model(spectrograms)
-            val_loss = criterion(outputs, labels)
-            val_losses.append(val_loss.item())
-
-        avg_val_loss = np.mean(val_losses)
-        logger.info(f"Learning rate {lr}, Validation Loss: {avg_val_loss:.10f}")
+        # num_total_steps = len(train_loader)
+        for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
+            model.train()       
+            for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
+                # make spectrograms float for compatability with the model
+                spectrograms = spectrograms.float()
+                # send spectrogram and label data to selected device
+                spectrograms = spectrograms.to(device)
+                labels = labels.float().to(device)
+                
+                # Forward pass
+                outputs = model(spectrograms)
+                loss = criterion(outputs, labels)
+        
+                # Backward pass
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+        
+                # Print information (every 100 steps)
+                if (i+1) % 10 == 0:
+                    # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
+                    logger.info(f"Fold {fold+1} / {config.NUMBER_FOLDS}, Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
+                # Write loss into array
+                loss_values.append(loss.item())
+        # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
+        # logger.info(f"Saved plot of training loss for {fold+1}!")
+        logger.info(f"Fold {fold+1} Training finished!")
+        
+        model.eval()
+    
+        logger.info(f"Starting Validation of fold {fold+1}")
+        with torch.no_grad():
+            val_losses = []
+            for spectrograms, labels in validation_loader:
+                spectrograms = spectrograms.float().to(device)
+                labels = labels.float().to(device)
+    
+                outputs = model(spectrograms)
+                val_loss = criterion(outputs, labels)
+                val_losses.append(val_loss.item())
+    
+            avg_val_loss = np.mean(val_losses)
+            fold_results.append(avg_val_loss)
+            logger.info(f"Fold {fold+1}, Validation Loss: {avg_val_loss:.10f}")
         # Track the best learning rate
         if avg_val_loss < best_loss:
             best_loss = avg_val_loss
             logger.info(f"New best average validation loss: {best_loss}")
             best_lr = lr
-            logger.info(f"New best learning rate: {best_lr}")
+        logger.info(f"Current best Learning Rate: {best_lr}")
 
-logger.info(f"Training for all Learning Rates finished! Best learning rate: {best_lr}, Best average validation loss: {best_loss}")
+    logger.info(f"Cross-validation finished! Results: {fold_results}")
+    logger.info(f"Average Validation Loss: {np.mean(fold_results):.10f}")
 
 # Write state_dict of model to file
 torch.save(model.state_dict(), config.model_filepath)
