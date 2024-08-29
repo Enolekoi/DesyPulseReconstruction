@@ -111,128 +111,105 @@ train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=Tr
 validation_loader = DataLoader(validation_data, batch_size = config.BATCH_SIZE, shuffle=False)
 logger.info("Finished loading data!")
 
-# different learning rates
-lrs = [
-        0.005, 0.001,
-        0.0005, 0.0001,
-        0.00005, 0.00001,
-        0.000005, 0.000001,
-        0.0000005, 0.0000001,
-        0.00000005, 0.0000001
-       ]
-best_loss = float('inf')
-best_lr = None
 
-for lr in lrs:
-    '''
-    Training 
-    '''
-    logger.info("Reinitialize the model")
-    model = helper.CustomDenseNet(num_outputs=4*config.OUTPUT_SIZE)
-    model.float()
-    model.to(device)
-    model.eval()
-    
-    logger.info(f"Starting training for learning rate {lr}...")
-    ########################
-    ## loss and optimizer ##
-    ########################
-    # criterion = nn.CrossEntropyLoss() 
-    criterion = nn.MSELoss()
-    # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    loss_values = []
+'''
+Training 
+'''
+logger.info(f"Starting training for learning rate {lr}...")
+########################
+## loss and optimizer ##
+########################
+# criterion = nn.CrossEntropyLoss() 
+criterion = nn.MSELoss()
+# optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+scheduler = ExponentialLR(optimizer, gamma=0.9)
+loss_values = []
 
-    # num_total_steps = len(train_loader)
-    for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
-        model.train()       
-        for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
-            # make spectrograms float for compatability with the model
-            spectrograms = spectrograms.float()
-            # send spectrogram and label data to selected device
-            spectrograms = spectrograms.to(device)
-            labels = labels.float().to(device)
-            
-            # Forward pass
-            outputs = model(spectrograms)
-            loss = criterion(outputs, labels)
-    
-            # Backward pass
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-    
-            # Print information (every 100 steps)
-            if (i+1) % 10 == 0:
-                # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-                logger.info(f"Learning Rate {lr:.6f}, Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
-            # Write loss into array
-            loss_values.append(loss.item())
-    # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
-    # logger.info(f"Saved plot of training loss for {fold+1}!")
-    logger.info(f"Learning Rate {lr} Training finished!")
-    
-    model.eval()
+# num_total_steps = len(train_loader)
+for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
+    model.train()       
+    for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
+        # make spectrograms float for compatability with the model
+        spectrograms = spectrograms.float()
+        # send spectrogram and label data to selected device
+        spectrograms = spectrograms.to(device)
+        labels = labels.float().to(device)
+        
+        # Forward pass
+        outputs = model(spectrograms)
+        loss = criterion(outputs, labels)
 
-    logger.info(f"Starting Validation of learning rate {lr}")
-    with torch.no_grad():
-        val_losses = []
-        for spectrograms, labels in validation_loader:
-            spectrograms = spectrograms.float().to(device)
-            labels = labels.float().to(device)
+        # Backward pass
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
-            outputs = model(spectrograms)
-            val_loss = criterion(outputs, labels)
-            val_losses.append(val_loss.item())
+        # Print information (every 100 steps)
+        if (i+1) % 10 == 0:
+            # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
+            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
+        # Write loss into array
+        loss_values.append(loss.item())
+    scheduler.step()
 
-        avg_val_loss = np.mean(val_losses)
-        logger.info(f"Learning rate {lr}, Validation Loss: {avg_val_loss:.10f}")
-        # Track the best learning rate
-        if avg_val_loss < best_loss:
-            best_loss = avg_val_loss
-            logger.info(f"New best average validation loss: {best_loss}")
-            best_lr = lr
-            logger.info(f"New best learning rate: {best_lr}")
+# vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
+# logger.info(f"Saved plot of training loss for {fold+1}!")
+logger.info("Training finished!")
 
-logger.info(f"Training for all Learning Rates finished! Best learning rate: {best_lr}, Best average validation loss: {best_loss}")
+model.eval()
+
+logger.info("Starting Validation")
+with torch.no_grad():
+    val_losses = []
+    for spectrograms, labels in validation_loader:
+        spectrograms = spectrograms.float().to(device)
+        labels = labels.float().to(device)
+
+        outputs = model(spectrograms)
+        val_loss = criterion(outputs, labels)
+        val_losses.append(val_loss.item())
+
+    avg_val_loss = np.mean(val_losses)
+    logger.info(f"Validation Loss: {avg_val_loss:.10f}")
 
 # Write state_dict of model to file
-# torch.save(model.state_dict(), config.model_filepath)
-# logger.info("Saved Model")
+torch.save(model.state_dict(), config.model_filepath)
+logger.info("Saved Model")
 
 # '''
 # Testing
 # '''
-# logger.info("Starting Test Step...")
-# test_loader = DataLoader(test_data, batch_size=config.BATCH_SIZE, shuffle=False)
-# test_losses = []
+logger.info("Starting Test Step...")
+test_loader = DataLoader(test_data, batch_size=config.BATCH_SIZE, shuffle=False)
+test_losses = []
 
-# model.eval()
-# with torch.no_grad():
-#     for spectrograms, labels in test_loader:
-#         spectrograms = spectrograms.float().to(device)
-#         labels = labels.float().to(device)
+model.eval()
+with torch.no_grad():
+    for spectrograms, labels in test_loader:
+        spectrograms = spectrograms.float().to(device)
+        labels = labels.float().to(device)
 
-#         outputs = model(spectrograms)
-#         test_loss = criterion(outputs, labels)
-#         test_losses.append(test_loss.item())
+        outputs = model(spectrograms)
+        test_loss = criterion(outputs, labels)
+        test_losses.append(test_loss.item())
 
-#     avg_test_loss = np.mean(test_losses)
-#     logger.info(f"Test Loss: {avg_test_loss:.10f}")
+    avg_test_loss = np.mean(test_losses)
+    logger.info(f"Test Loss: {avg_test_loss:.10f}")
 
-#     if len(test_data) > 0:
-#         test_sample = random.choice(test_data)
-#         spectrogram, label = test_sample
-#         spectrogram = spectrogram.float().unsqueeze(0).to(device)
-#         label = label.float().cpu().numpy().flatten()
-#         label = label_unscaler(label)
+    if len(test_data) > 0:
+        test_sample = random.choice(test_data)
+        spectrogram, label = test_sample
+        spectrogram = spectrogram.float().unsqueeze(0).to(device)
+        label = label.float().cpu().numpy().flatten()
+        label = label_unscaler(label)
 
-#         prediction = model(spectrogram).cpu().numpy().flatten()
-#         prediction = label_unscaler(prediction)
-#         original_label = label.cpu().numpy().flatten()
-#         vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
+        prediction = model(spectrogram).cpu().numpy().flatten()
+        prediction = label_unscaler(prediction)
+        original_label = label.cpu().numpy().flatten()
+        vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
 
-# logger.info("Test Step finished!")
+logger.info("Test Step finished!")
 
 for handler in logger.handlers:
     handler.flush()
