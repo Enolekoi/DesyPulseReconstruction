@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
+import torch.optim.lr_scheduler
 from torch.utils.data import Dataset, DataLoader, random_split, Subset
 import matplotlib
 matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering
