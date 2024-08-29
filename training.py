@@ -124,7 +124,7 @@ logger.info(f"Starting training...")
 criterion = nn.MSELoss()
 # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, verbose=True)
+scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 loss_values = []
 
 # num_total_steps = len(train_loader)
