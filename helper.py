@@ -291,6 +291,19 @@ class ReadLabelFromEs(object):
         label = torch.from_numpy(label).float()
         return label
 
+class RemoveAbsolutePhaseShift(object):
+    def __init__(self):
+        pass
+    def __call__(self,label):
+        length_label = len(label)
+        half_size = int(length_label //2)
+        intensity = label[:half_size]  # First half -> intensity
+        phase = label[half_size:]      # Second half -> phase
+        phase_corrected_range = np.mod(phase, 2*np.pi)
+        new_label = torch.cat((intensity, phase_corrected_range), dim=0)
+        return new_label
+
+
 '''
 ScaleLabel()
 Scales Labels to range [-1,1]
