@@ -23,10 +23,15 @@ logger = logging.getLogger(__name__)
 # Implement own MSE loss function that considers ambiguities in phase retrieval (Trebino, p. 63)
 
 '''
-Custom DenseNet Class
+CustomDenseNet()
+Custom DenseNet class
 '''
 class CustomDenseNet(nn.Module):
     def __init__(self, num_outputs=512):
+        '''
+        Inputs:
+            num_outputs     -> Number of outputs of the DenseNet
+        '''
         super(CustomDenseNet, self).__init__()
         # Load pretrained DenseNet
         self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
@@ -36,19 +41,35 @@ class CustomDenseNet(nn.Module):
         self.densenet.classifier = nn.Linear(num_features, num_outputs)
         self.num_outputs = num_outputs
 
-    def forward(self, x):
+    def forward(self, spectrogram):
+        '''
+        Forward pass through the DenseNet
+        Input:
+            spectrogram     -> input spectrogram
+        Output:
+            x   -> predicted output
+        '''
         # get the output of the densenet
-        x = self.densenet(x)
+        x = self.densenet(spectrogram)
         # use tanh activation function to scale the output to [-1, 1] and then scale it
         x = torch.tanh(x)
 
         return x
 
 '''
-Time Domain Data Class
+TimeDomain()
+Class containing information of the time domain signal
 '''
 class TimeDomain:
     def __init__(self, time_axis, intensity, phase, real, imag):
+        '''
+        Inputs:
+            time_axis   -> Time axis
+            intensity   -> Intensity (squared amplitude) of time domain signal
+            phase       -> Phase of time domain signal
+            real        -> Real part of time domain signal
+            imag        -> Imaginary part of time domain signal
+        '''
         self.time_axis = time_axis
         self.intensity = intensity
         self.phase = phase
@@ -56,10 +77,19 @@ class TimeDomain:
         self.imag = imag
 
 '''
+SimulatedDataset()
 Custom Dataloader Class
 '''
 class SimulatedDataset(Dataset):
     def __init__(self, path, label_filename, spec_filename, transform=None, target_transform=None):
+        '''
+        Inputs:
+            path                -> root directory containing all data subdirectories
+            label_filename      -> file name in which labels are stored
+            spec_filename       -> file name in which spectrograms are stored
+            transform           -> transform used on spectrograms
+            target_transform    -> transforms used on labels
+        '''
         self.path = path    # root directory containing all data subdirectories
         self.label_filename = label_filename      # file name in which labels are stored
         self.spec_filename = spec_filename        # file name in which spectrograms are stored
@@ -69,9 +99,20 @@ class SimulatedDataset(Dataset):
         self.data_dirs = os.listdir(self.path)  # list all subdirectories in the root directory
         
     def __len__(self):
+        '''
+        Returns the number of data subdirectories (number of spectrograms)
+        '''
         return len(self.data_dirs)              # return the number of data subdirectories
 
     def __getitem__(self, index):
+        '''
+        Returns spectrogram and label of given index
+        Inputs:
+            index   -> Index of spectrogram/label to be returned
+        Outputs:
+            output_spec     -> Spectrogram of given index
+            label           -> Label of given index
+        '''
         data_dir = self.data_dirs[index]    # get the subdirectory for the given index
         label_path = os.path.join(self.path, data_dir, self.label_filename) # construct the full path to the label file
         spec_path = os.path.join(self.path, data_dir, self.spec_filename)   # construct the full path to the spectrogram file
@@ -105,6 +146,14 @@ Transform Class that resamples spectrograms to use the same axis and size
 class ResampleSpectrogram(object):
 
     def __init__(self, num_delays_out, timestep_out, num_wavelength_out, start_wavelength_out, end_wavelength_out):
+        '''
+        Inputs:
+            num_delays_out          -> Number of delay values the resampled spectrogram will have
+            timestep_out            -> Length of time between delays [fs]
+            num_wavelength_out      -> Number of wavelength values the resampled spectrogram will have
+            start_wavelength_out    -> Lowest wavelength value of the resampled spectrogram [nm]
+            end_wavelength_out      -> Highest wavelength value of the resampled spectrogram [nm]
+        '''
         output_number_rows = num_delays_out
         output_time_step = timestep_out
         output_number_cols = num_wavelength_out
@@ -121,6 +170,18 @@ class ResampleSpectrogram(object):
  
 
     def __call__(self, path):
+        '''
+        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
+        Inputs:
+            path    -> Path to spectrogram
+        Outputs:
+            spectrogram             -> Original (not resampled) spectrogram
+            input_time              -> Original (not resampled) time axis
+            input_wavelength        -> Original (not resampled) wavelength axis
+            output_spectrogram      -> Resampled spectrogram
+            self.output_time        -> Resampled time axis
+            self.output_wavelength  -> Resampled wavelenght axis
+        '''
         # Constants 
         NUM_HEADER_ELEMENTS = 5
 
@@ -193,7 +254,8 @@ class ResampleSpectrogram(object):
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
  
 '''
-READ Labels (intensity and Phase) from Es.dat
+ReadLabelFromEs()
+Read labels (intensity and phase) from Es.dat
 '''
 class ReadLabelFromEs(object):
     def __init__(self):
@@ -226,6 +288,10 @@ class ReadLabelFromEs(object):
         label = torch.from_numpy(label).float()
         return label
 
+'''
+ScaleLabel()
+Scales Labels to range [-1,1]
+'''
 class ScaleLabel(object):
     def __init__(self, max_intensity, max_phase):
         '''
@@ -257,6 +323,10 @@ class ScaleLabel(object):
 
         return scaled_label
 
+'''
+UnscaleLabel()
+Restores original scale of labels
+'''
 class UnscaleLabel(object):
     def __init__(self, max_intensity, max_phase):
         '''
