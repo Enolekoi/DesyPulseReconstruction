@@ -131,6 +131,7 @@ for lr in lrs:
     model = helper.CustomDenseNet(num_outputs=2*config.OUTPUT_SIZE)
     model.float()
     model.to(device)
+    model.eval()
     
     logger.info(f"Starting training for learning rate {lr}...")
     ########################
