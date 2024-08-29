@@ -128,7 +128,7 @@ for lr in lrs:
     Training 
     '''
     logger.info("Reinitialize the model")
-    model = helper.CustomDenseNet(num_outputs=config.OUTPUT_SIZE)
+    model = helper.CustomDenseNet(num_outputs=4*config.OUTPUT_SIZE)
     model.float()
     model.to(device)
     model.eval()
