@@ -67,11 +67,11 @@ def compareTimeDomain(filepath, label, prediction):
 
     # Plot Intensity difference
     intensity_diff = orig_intensity - pred_intensity
-    axs[3].plot(intensity_diff, color="blue")
-    axs[3].set_title("Intensity difference of the original and predicted pulse")
-    axs[3].set_ylabel("Intensity difference of the original and predicted pulse")
-    axs[3].set_xlabel("Time in fs")
-    axs[3].grid(True)
+    axs[2].plot(intensity_diff, color="blue")
+    axs[2].set_title("Intensity difference of the original and predicted pulse")
+    axs[2].set_ylabel("Intensity difference of the original and predicted pulse")
+    axs[2].set_xlabel("Time in fs")
+    axs[2].grid(True)
 
     # Adjust the spacing between plots
     fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
