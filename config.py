@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 import os
 
 OUTPUT_SIZE = 256
