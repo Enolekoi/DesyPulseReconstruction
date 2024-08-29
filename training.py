@@ -116,7 +116,7 @@ logger.info("Finished loading data!")
 '''
 Training 
 '''
-logger.info(f"Starting training for learning rate {lr}...")
+logger.info(f"Starting training...")
 ########################
 ## loss and optimizer ##
 ########################
