@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 logger.info(f"Size of Output Tensor: {2*config.OUTPUT_SIZE} Elements")
 logger.info(f"Batch Size: {config.BATCH_SIZE} Elements")
 logger.info(f"Number of Epochs: {config.NUM_EPOCHS}")
-logger.info(f"Learning Rate: {config.LEARNING_RATE}")
+# logger.info(f"Learning Rate: {config.LEARNING_RATE}")
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
@@ -112,13 +112,18 @@ validation_loader = DataLoader(validation_data, batch_size = config.BATCH_SIZE, 
 logger.info("Finished loading data!")
 
 # different learning rates
-lrs = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+lrs = [
+        0.005, 0.001,
+        0.0005, 0.0001,
+        0.00005, 0.00001,
+        0.000005, 0.000001,
+        0.0000005, 0.0000001,
+        0.00000005, 0.0000001
+       ]
 best_loss = float('inf')
 best_lr = None
 
 for lr in lrs:
-    logger.info(f"Starting training for Learning Rate {lr}")
-    # for fold, (train_idx, validation_idx) in enumerate(k_folds.split(train_validation_data)):
     '''
     Training 
     '''
@@ -186,42 +191,42 @@ for lr in lrs:
 logger.info(f"Training for all Learning Rates finished! Best learning rate: {best_lr}, Best average validation loss: {best_loss}")
 
 # Write state_dict of model to file
-torch.save(model.state_dict(), config.model_filepath)
-logger.info("Saved Model")
+# torch.save(model.state_dict(), config.model_filepath)
+# logger.info("Saved Model")
 
-'''
-Testing
-'''
-logger.info("Starting Test Step...")
-test_loader = DataLoader(test_data, batch_size=config.BATCH_SIZE, shuffle=False)
-test_losses = []
+# '''
+# Testing
+# '''
+# logger.info("Starting Test Step...")
+# test_loader = DataLoader(test_data, batch_size=config.BATCH_SIZE, shuffle=False)
+# test_losses = []
 
-model.eval()
-with torch.no_grad():
-    for spectrograms, labels in test_loader:
-        spectrograms = spectrograms.float().to(device)
-        labels = labels.float().to(device)
+# model.eval()
+# with torch.no_grad():
+#     for spectrograms, labels in test_loader:
+#         spectrograms = spectrograms.float().to(device)
+#         labels = labels.float().to(device)
 
-        outputs = model(spectrograms)
-        test_loss = criterion(outputs, labels)
-        test_losses.append(test_loss.item())
+#         outputs = model(spectrograms)
+#         test_loss = criterion(outputs, labels)
+#         test_losses.append(test_loss.item())
 
-    avg_test_loss = np.mean(test_losses)
-    logger.info(f"Test Loss: {avg_test_loss:.10f}")
+#     avg_test_loss = np.mean(test_losses)
+#     logger.info(f"Test Loss: {avg_test_loss:.10f}")
 
-    if len(test_data) > 0:
-        test_sample = random.choice(test_data)
-        spectrogram, label = test_sample
-        spectrogram = spectrogram.float().unsqueeze(0).to(device)
-        label = label.float().cpu().numpy().flatten()
-        label = label_unscaler(label)
+#     if len(test_data) > 0:
+#         test_sample = random.choice(test_data)
+#         spectrogram, label = test_sample
+#         spectrogram = spectrogram.float().unsqueeze(0).to(device)
+#         label = label.float().cpu().numpy().flatten()
+#         label = label_unscaler(label)
 
-        prediction = model(spectrogram).cpu().numpy().flatten()
-        prediction = label_unscaler(prediction)
-        original_label = label.cpu().numpy().flatten()
-        vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
+#         prediction = model(spectrogram).cpu().numpy().flatten()
+#         prediction = label_unscaler(prediction)
+#         original_label = label.cpu().numpy().flatten()
+#         vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
 
-logger.info("Test Step finished!")
+# logger.info("Test Step finished!")
 
 for handler in logger.handlers:
     handler.flush()
