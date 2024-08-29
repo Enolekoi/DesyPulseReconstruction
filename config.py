@@ -33,7 +33,6 @@ logger = logging.getLogger(__name__)
 
 '''
 getFilepathIndex()
-
 Search the model and log directories for the highest index and determine the next filenames
 Input:
     model_directory         -> directory that contains the trained models
