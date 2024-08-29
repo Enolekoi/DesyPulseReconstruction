@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 '''
 save_plot_training_loss()
 Plot the training loss ( Currently UNUSED )
+Inputs:
+    loss_values     -> Array containing training loss values
+    filepath        -> File to write plot to
 '''
 def save_plot_training_loss(loss_values, filepath):
 
@@ -24,14 +27,11 @@ def save_plot_training_loss(loss_values, filepath):
 
 '''
 compareTimeDomain()
-
 Compate Time Domains of label and prediction
 Inputs:
     filepath    -> path to where the plot is saved
     label       -> label of data
     prediction  -> predicted data
-Outputs:
-    NULL
 '''
 def compareTimeDomain(filepath, label, prediction):
     
