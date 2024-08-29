@@ -34,11 +34,16 @@ Inputs:
     prediction  -> predicted data
 '''
 def compareTimeDomain(filepath, label, prediction):
-    
-    orig_intensity = label[:256].numpy()
-    orig_phase = label[256:].numpy()
-    pred_intensity = prediction[:256].numpy()
-    pred_phase = prediction[256:].numpy()
+    # ensure correct datatype
+    if not isinstance(label, np.ndarray):
+        label = label.numpy()
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.numpy()
+
+    orig_intensity = label[:256]
+    orig_phase = label[256:]
+    pred_intensity = prediction[:256]
+    pred_phase = prediction[256:]
     
     fig, axs = plt.subplots(3,1, figsize=(8,14))
 

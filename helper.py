@@ -132,11 +132,14 @@ class SimulatedDataset(Dataset):
         # create a spectrogram with 3 identical channels
         output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
         output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
-        # output_spec = output_spec.permute(1,2,0)# change the order of dimensions (h,w,3)
 
-        # print(output_spec.shape)
-        # print(label.shape)
-        # print(f"Spectrogram type: {type(torch.tensor(output_spec))}, Label type: {type(torch.tensor(label))}")
+        # ensure correct output data type
+        if not isinstance(output_spec, torch.Tensor):
+            output_spec = torch.tensor(output_spec)
+
+        if not isinstance(label, torch.Tensor):
+            label = torch.tensor(label)
+
         return output_spec, label
 
 '''
@@ -250,7 +253,7 @@ class ResampleSpectrogram(object):
         ######################## 
         interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
         output_spectrogram = interpolate_time(self.output_time)
-        
+
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
  
 '''
