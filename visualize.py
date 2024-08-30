@@ -104,7 +104,7 @@ def compareTimeDomainComplex(filepath, label, prediction):
     orig_phase = np.mod(np.arctan2(orig_imag, orig_real), 2*np.pi)
     pred_phase = np.mod(np.arctan2(pred_imag, pred_real), 2*np.pi)
     
-    fig, axs = plt.subplots(3,1, figsize=(8,14))
+    fig, axs = plt.subplots(4,1, figsize=(10,16))
 
     # Plotting the Intensity
     axs[0].plot(orig_real, label="original pulse", color="green")
@@ -135,7 +135,7 @@ def compareTimeDomainComplex(filepath, label, prediction):
     ax_intensity.plot(orig_intensity, label="original intensity", color="red")
     ax_intensity.plot(pred_intensity, label="predicted intensity", color="orange")
     ax_intensity.set_ylabel("Intensity")
-    ax_intensity.legend(loc='upper right')
+    ax_intensity.legend(loc='')
 
     # Plot Intensity difference
     intensity_diff = orig_intensity - pred_intensity
