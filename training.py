@@ -39,6 +39,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Log some information
+logger.info(f"Writing into log file: {config.log_filepath}")
+logger.info(f"Dataset used: {config.Path}")
+logger.info(f"Noise level used: {config.SpecFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
 logger.info(f"Batch size: {config.BATCH_SIZE} elements")
 logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
@@ -91,18 +94,16 @@ length_dataset = len(data)  # get length of data
 logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios
-test_size = int(0.1 * length_dataset)     # amount of test data (10%)
-train_validation_size = length_dataset - test_size # amount of training and validation data (90%)
+test_size = int(0.1 * length_dataset)                   # amount of test data (10%)
+validation_size = int (0.1 * length_dataset)            # amount of validation data (10%) 
+train_size = length_dataset - test_size      # amount of training and validation data (80%)
 
-logger.info(f"Size of training and validation data: {train_validation_size}")
-logger.info(f"Size of test data: {test_size}")
+logger.info(f"Size of training data:   {train_size}")
+logger.info(f"Size of validation data: {validation_size}")
+logger.info(f"Size of test data:       {test_size}")
 
 # split 
-train_validation_data, test_data = random_split(data, [train_validation_size, test_size])   # split data
-validation_size = int(0.2* train_validation_size)
-train_size = train_validation_size - validation_size
-
-train_data, validation_data = random_split(train_validation_data, [train_size, validation_size])
+train_data, validation_data, test_data = random_split(data, [train_size, validation_size, test_size])   # split data
 
 # Data Loaders
 train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)
