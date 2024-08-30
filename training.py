@@ -209,7 +209,8 @@ with torch.no_grad():
         prediction = model(spectrogram).cpu().numpy().flatten()
         prediction = label_unscaler(prediction)
         original_label = label.cpu().numpy().flatten()
-        vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
+        # vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
+        vis.compareTimeDomainComplex("./random_test_prediction.png", original_label, prediction)
 
 logger.info("Test Step finished!")
 
