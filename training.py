@@ -151,7 +151,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Write loss into array
         loss_values.append(loss.item())
     scheduler.step()
-    new_lr = scheduler.get_lr()
+    new_lr = scheduler.get_last_lr()
     logger.info(f"New learning rate: {new_lr}")
 
 # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
