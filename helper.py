@@ -49,10 +49,13 @@ class CustomDenseNet(nn.Module):
         Output:
             x   -> predicted output
         '''
+        half_size = int(self.num_outputs //2)
         # get the output of the densenet
         x = self.densenet(spectrogram)
-        # use tanh activation function to scale the output to [-1, 1] and then scale it
-        x = torch.tanh(x)
+        # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
+        x = torch.tanh(x[:half_size])
+        # use sigmoid activation function to scale the output to [0, 1] and then scale it
+        x = torch.sigmoid(x[half_size:])
 
         return x
 
