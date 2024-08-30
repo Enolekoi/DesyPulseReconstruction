@@ -261,8 +261,12 @@ ReadLabelFromEs()
 Read labels (intensity and phase) from Es.dat
 '''
 class ReadLabelFromEs(object):
-    def __init__(self):
-        pass
+    def __init__(self, number_elements):
+        '''
+        Inputs:
+            number_elements     -> Number of elements in the intensity and phase array each
+        '''
+        self.number_elements = number_elements
 
     def __call__(self, path):    
         '''
@@ -287,6 +291,11 @@ class ReadLabelFromEs(object):
                                       phase = dataframe[2].to_numpy(), 
                                       real = dataframe[3].to_numpy(),
                                       imag = dataframe[4].to_numpy())
+
+        # Resample to fit correct number of elements
+        TimeDomainSignal.intensity = TimeDomainSignal.intensity.reshape(self.number_elements,2).mean(axis=1)
+        TimeDomainSignal.phase = TimeDomainSignal.phase.reshape(self.number_elements,2).mean(axis=1)
+
         label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
         label = torch.from_numpy(label).float()
         return label

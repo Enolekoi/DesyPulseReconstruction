@@ -39,10 +39,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Log some information
-logger.info(f"Size of Output Tensor: {2*config.OUTPUT_SIZE} Elements")
-logger.info(f"Batch Size: {config.BATCH_SIZE} Elements")
-logger.info(f"Number of Epochs: {config.NUM_EPOCHS}")
-# logger.info(f"Learning Rate: {config.LEARNING_RATE}")
+logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
+logger.info(f"Batch size: {config.BATCH_SIZE} elements")
+logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
+logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
@@ -55,7 +55,6 @@ label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_pha
 
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# print(f'Using {device} as device!')
 logger.info(f"Device used (cuda/cpu): {device}")
 if device == 'cuda':
     torch.cuda.empty_cache()
@@ -74,7 +73,6 @@ model.to(device)
 model.eval()
 
 logger.info("Loading Model finished!")
-# print('Loading Model finished!')
 
 '''
 Load Data
@@ -90,7 +88,6 @@ data = helper.SimulatedDataset(path=config.Path,
 ## Split Data ##
 ################
 length_dataset = len(data)  # get length of data
-# print(f'Size of Dataset: {length_dataset}')
 logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios
@@ -153,6 +150,8 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Write loss into array
         loss_values.append(loss.item())
     scheduler.step()
+    new_lr = scheduler.get_lr()
+    logger.info(f"New learning rate: {new_lr}")
 
 # vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
 # logger.info(f"Saved plot of training loss for {fold+1}!")
