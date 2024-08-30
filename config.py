@@ -2,10 +2,10 @@ import logging
 import numpy as np
 import os
 
-OUTPUT_SIZE = 512
+OUTPUT_SIZE = 256
 BATCH_SIZE = 10
 NUM_EPOCHS = 10
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.00001
 # NUMBER_FOLDS = 5
 NUMBER_FOLDS = 2
 
