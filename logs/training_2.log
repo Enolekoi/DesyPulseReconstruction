@@ -1,0 +1,12 @@
+29-08-2024 20:28:23 - __main__ - <module> - INFO: Size of Output Tensor: 1024 Elements
+29-08-2024 20:28:23 - __main__ - <module> - INFO: Batch Size: 10 Elements
+29-08-2024 20:28:23 - __main__ - <module> - INFO: Number of Epochs: 10
+29-08-2024 20:28:23 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+29-08-2024 20:28:23 - __main__ - <module> - INFO: Loading Model...
+29-08-2024 20:28:24 - __main__ - <module> - INFO: Loading Model finished!
+29-08-2024 20:28:24 - __main__ - <module> - INFO: Loading Data...
+29-08-2024 20:28:24 - __main__ - <module> - INFO: Size of dataset: 5000
+29-08-2024 20:28:24 - __main__ - <module> - INFO: Size of training and validation data: 4500
+29-08-2024 20:28:24 - __main__ - <module> - INFO: Size of test data: 500
+29-08-2024 20:28:24 - __main__ - <module> - INFO: Finished loading data!
+29-08-2024 20:28:24 - __main__ - <module> - INFO: Starting training...
