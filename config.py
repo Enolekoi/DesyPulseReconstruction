@@ -26,7 +26,7 @@ LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
 Path = "/mnt/data/desy/frog_simulated/grid_512_v2/"
-SpecFilename = "as_gn01.dat"
+SpecFilename = "as_gn00.dat"
 LabelFilename = "Es.dat"
 
 
