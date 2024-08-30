@@ -53,11 +53,13 @@ class CustomDenseNet(nn.Module):
         # get the output of the densenet
         x = self.densenet(spectrogram)
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
-        intensity = torch.tanh(x[:half_size])
+        x = torch.tanh(x)
+        # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
+        # intensity = torch.tanh(x[:half_size])
         # use sigmoid activation function to scale the output to [0, 1] and then scale it
-        phase = torch.sigmoid(x[half_size:])
+        # phase = torch.sigmoid(x[half_size:])
 
-        x = torch.cat((intensity, phase), dim=0)
+        # x = torch.cat((intensity, phase), dim=0)
 
         return x
 
@@ -298,10 +300,14 @@ class ReadLabelFromEs(object):
                                       imag = dataframe[4].to_numpy())
 
         # Resample to fit correct number of elements
-        TimeDomainSignal.intensity = TimeDomainSignal.intensity.reshape(self.number_elements,2).mean(axis=1)
-        TimeDomainSignal.phase = TimeDomainSignal.phase.reshape(self.number_elements,2).mean(axis=1)
+        # TimeDomainSignal.intensity = TimeDomainSignal.intensity.reshape(self.number_elements,2).mean(axis=1)
+        # TimeDomainSignal.phase = TimeDomainSignal.phase.reshape(self.number_elements,2).mean(axis=1)
 
-        label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
+        TimeDomainSignal.real = TimeDomainSignal.real.reshape(self.number_elements,2).mean(axis=1)
+        TimeDomainSignal.imag = TimeDomainSignal.imag.reshape(self.number_elements,2).mean(axis=1)
+
+        # label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
+        label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
         label = torch.from_numpy(label).float()
         return label
 
