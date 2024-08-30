@@ -52,7 +52,8 @@ spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUT
 label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
 label_phase_correction = helper.RemoveAbsolutePhaseShift()
 label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
-label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
+# label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
+label_transform = transforms.Compose([label_reader, label_scaler])
 
 label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 
