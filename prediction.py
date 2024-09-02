@@ -45,7 +45,7 @@ model.eval()
 ################
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
 
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
+label_reader = helper.ReadLabelFromEs(2*config.OUTPUT_SIZE)
 label_phase_correction = helper.RemoveAbsolutePhaseShift()
 label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 # label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
@@ -71,7 +71,8 @@ spec = torch.unsqueeze(spec, dim=0)  # Add batch dimension [1, 1, 512, 512]
 spec = spec.repeat(1, 3, 1, 1)  # Repeat the channel 3 times, changing [1, 1, 512, 512] to [1, 3, 512, 512] 
 spec = spec.to(torch.float)
 
-label = label_transform(label_path)
+label = label_reader(label_path)
+label = label_transform(label)
 prediction = predict(spec)
 
 prediction_length = len(prediction)
