@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 OUTPUT_SIZE = 256
-BATCH_SIZE = 10
+BATCH_SIZE = 5
 NUM_EPOCHS = 2
 LEARNING_RATE = 0.0001
 # NUMBER_FOLDS = 5
