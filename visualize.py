@@ -135,7 +135,7 @@ def compareTimeDomainComplex(filepath, label, prediction):
     ax_intensity.plot(orig_intensity, label="original intensity", color="red")
     ax_intensity.plot(pred_intensity, label="predicted intensity", color="orange")
     ax_intensity.set_ylabel("Intensity")
-    ax_intensity.legend(loc='')
+    ax_intensity.legend(loc='best')
 
     # Plot Intensity difference
     intensity_diff = orig_intensity - pred_intensity
