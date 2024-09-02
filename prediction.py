@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 ###########
 # Define Model
 model = helper.CustomDenseNet(
-    num_outputs=config.OUTPUT_SIZE
+    num_outputs=2*config.OUTPUT_SIZE
     )
 # Load the saved model state
 model.load_state_dict(torch.load(config.ModelPath, weights_only=True))
@@ -45,7 +45,7 @@ model.eval()
 ################
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
 
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
+label_reader = helper.ReadLabelFromEs(2*config.OUTPUT_SIZE)
 label_phase_correction = helper.RemoveAbsolutePhaseShift()
 label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 # label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
