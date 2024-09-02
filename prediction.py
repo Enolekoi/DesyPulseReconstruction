@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import logging
 
 
-spectrogram_path = "/mnt/data/desy/frog_simulated/grid_512_v2/tr1000/as_gn00.dat"
+spectrogram_path = "/mnt/data/desy/frog_simulatedgrid_512_v2/tr1000/as_gn00.dat"
 label_path = "/mnt/data/desy/frog_simulated/grid_512_v2/tr1000/Es.dat"
 filepath = "./pred.png"
 
@@ -35,7 +35,7 @@ model = helper.CustomDenseNet(
     num_outputs=2*config.OUTPUT_SIZE
     )
 # Load the saved model state
-model.load_state_dict(torch.load(config.ModelPath))
+model.load_state_dict(torch.load(config.ModelPath, weights_only=True))
 logger.info(f"Model state loaded from {config.ModelPath}")
 # Set to evaluation mode
 model.eval()
@@ -63,8 +63,9 @@ def predict(spectrogram):
     return output
 
 # load spectrogram
-logger.info("Loading spectrogram from {spectrogram_path}")
+logger.info(f"Loading spectrogram from {spectrogram_path}")
 spec = spec_transform(spectrogram_path)
+spec = torch.from_numpy(spec).float()
 label = label_transform(label_path)
 prediction = predict(spec)
 
