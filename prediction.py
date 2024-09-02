@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import logging
 
 
-spectrogram_path = "/mnt/data/desy/frog_simulatedgrid_512_v2/tr1000/as_gn00.dat"
+spectrogram_path = "/mnt/data/desy/frog_simulated/grid_512_v2/tr1000/as_gn00.dat"
 label_path = "/mnt/data/desy/frog_simulated/grid_512_v2/tr1000/Es.dat"
 filepath = "./pred.png"
 
