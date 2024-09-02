@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import os
 
-OUTPUT_SIZE = 256
+OUTPUT_SIZE = 128
 BATCH_SIZE = 10
 NUM_EPOCHS = 2
 LEARNING_RATE = 0.00001
