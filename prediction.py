@@ -65,7 +65,7 @@ def predict(spectrogram):
 # load spectrogram
 logger.info(f"Loading spectrogram from {spectrogram_path}")
 orig_spec, orig_time, orig_wave, spec, out_time, out_wave = spec_transform(spectrogram_path)
-spec = torch.tensor(spec, dtype=torch.float64)
+spec = torch.tensor(spec, dtype=torch.double)
 spec = torch.unsqueeze(spec, dim=0)  # Add batch dimension [1, 512, 512]
 spec = torch.unsqueeze(spec, dim=0)  # Add batch dimension [1, 1, 512, 512]
 spec = spec.repeat(1, 3, 1, 1)  # Repeat the channel 3 times, changing [1, 1, 512, 512] to [1, 3, 512, 512] 
