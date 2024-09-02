@@ -71,8 +71,7 @@ spec = torch.unsqueeze(spec, dim=0)  # Add batch dimension [1, 1, 512, 512]
 spec = spec.repeat(1, 3, 1, 1)  # Repeat the channel 3 times, changing [1, 1, 512, 512] to [1, 3, 512, 512] 
 spec = spec.to(torch.float)
 
-label = label_reader(label_path)
-label = label_transform(label)
+label = label_transform(label_path)
 prediction = predict(spec)
 
 prediction_length = len(prediction)
