@@ -65,7 +65,7 @@ def predict(spectrogram):
 # load spectrogram
 logger.info(f"Loading spectrogram from {spectrogram_path}")
 spec = spec_transform(spectrogram_path)
-spec = torch.from_numpy(spec).float()
+# spec = torch.from_numpy(spec).float()
 label = label_transform(label_path)
 prediction = predict(spec)
 
