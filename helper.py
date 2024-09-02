@@ -260,6 +260,7 @@ class ResampleSpectrogram(object):
         ######################## 
         interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
         output_spectrogram = interpolate_time(self.output_time)
+        output_spectrogram = torch.tensor(output_spectrogram).float()
 
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
  
