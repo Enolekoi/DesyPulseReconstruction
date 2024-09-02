@@ -23,7 +23,7 @@ OUTPUT_END_WAVELENGTH = 550     # [nm]
 ModelDirectory = "./models/"
 LogDirectory = "./logs/"
 ModelName = "trained_model_"
-ModelPath = "trained_model_"
+ModelPath = "./models/trained_model_1.pth"
 LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
