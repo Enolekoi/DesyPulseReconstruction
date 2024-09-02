@@ -59,7 +59,7 @@ label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_pha
 def predict(spectrogram):
     with torch.no_grad():
         output_unscaled = model(spectrogram)
-        output = label_unscaler(output_unscaled)
+        output = label_unscaler(output_unscaled.detach().cpu.numpy())
     return output
 
 # load spectrogram
