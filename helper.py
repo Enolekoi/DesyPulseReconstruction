@@ -235,7 +235,7 @@ class ResampleSpectrogram(object):
         ######################
         spectrogram_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None, engine='python')
         spectrogram = spectrogram_df.to_numpy()     # convert to numpy array 
-        
+
         #######################
         ## Define input axis ##
         #######################
@@ -260,7 +260,6 @@ class ResampleSpectrogram(object):
         ######################## 
         interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
         output_spectrogram = interpolate_time(self.output_time)
-        output_spectrogram = torch.from_numpy(output_spectrogram).float()
 
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
  
