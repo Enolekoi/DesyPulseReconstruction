@@ -64,7 +64,9 @@ def predict(spectrogram):
 
 # load spectrogram
 logger.info(f"Loading spectrogram from {spectrogram_path}")
-spec = spec_transform(spectrogram_path)
+orig_spec, orig_time, orig_wave, spec, out_time, out_wave = spec_transform(spectrogram_path)
+output_spec = torch.tensor(output_spec, dtype=torch.float64)
+
 label = label_transform(label_path)
 prediction = predict(spec)
 
