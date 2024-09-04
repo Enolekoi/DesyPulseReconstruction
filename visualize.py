@@ -26,6 +26,53 @@ def save_plot_training_loss(loss_values, filepath):
     logger.info(f"Plot writen to {filepath}")
 
 '''
+compareIntensity()
+Compate Time Domains of label and prediction
+Inputs:
+    filepath    -> path to where the plot is saved
+    label       -> label of data
+    prediction  -> predicted data
+'''
+def compareIntensity(filepath, label, prediction):
+    # ensure correct datatype
+    if not isinstance(label, np.ndarray):
+        label = label.numpy()
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.numpy()
+    label = np.squeeze(label)
+    prediction = np.squeeze(prediction)
+    
+    length_label = len(label)
+    if not (length_label == len(prediction)):
+        logger.error("Label and prediction don't have the same size")
+        return
+
+    fig, axs = plt.subplots(2,1, figsize=(8,14))
+
+    # Plotting the Phase
+    axs[0].plot(label, label="original pulse", color="green")
+    axs[0].plot(prediction, label="predicted pulse", color="red")
+    axs[0].set_title("Comparison of the Intensity of the E-Field")
+    axs[0].set_ylabel("Intensity of E-Field")
+    axs[0].set_xlabel("Time in fs")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Plot Intensity difference
+    intensity_diff = label - prediction
+    axs[1].plot(intensity_diff, color="blue")
+    axs[1].set_title("Intensity difference of the original and predicted pulse")
+    axs[1].set_ylabel("Intensity difference of the original and predicted pulse")
+    axs[1].set_xlabel("Time in fs")
+    axs[1].grid(True)
+
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
+    plt.savefig(filepath)
+    plt.close()
+    logger.info(f"Saved comparison of random prediction and label to {filepath}")
+
+'''
 comparePhase()
 Compate Time Domains of label and prediction
 Inputs:
