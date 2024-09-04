@@ -30,7 +30,7 @@ class CustomDenseNet(nn.Module):
     def __init__(self, num_outputs=512):
         '''
         Inputs:
-            num_outputs     -> Number of outputs of the DenseNet
+            num_outputs     -> Number of outputs of the DenseNet [int]
         '''
         super(CustomDenseNet, self).__init__()
         # Load pretrained DenseNet
@@ -45,9 +45,9 @@ class CustomDenseNet(nn.Module):
         '''
         Forward pass through the DenseNet
         Input:
-            spectrogram     -> input spectrogram
+            spectrogram     -> input spectrogram [tensor]
         Output:
-            x   -> predicted output
+            x   -> predicted output [tensor]
         '''
         half_size = int(self.num_outputs //2)
         # get the output of the densenet
@@ -58,7 +58,7 @@ class CustomDenseNet(nn.Module):
         # intensity = torch.tanh(x[:half_size])
         # use sigmoid activation function to scale the output to [0, 1] and then scale it
         # phase = torch.sigmoid(x[half_size:])
-
+        logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
         # x = torch.cat((intensity, phase), dim=0)
 
         return x
@@ -91,10 +91,10 @@ class SimulatedDataset(Dataset):
     def __init__(self, path, label_filename, spec_filename, transform=None, target_transform=None):
         '''
         Inputs:
-            path                -> root directory containing all data subdirectories
-            label_filename      -> file name in which labels are stored
-            spec_filename       -> file name in which spectrograms are stored
-            transform           -> transform used on spectrograms
+            path                -> root directory containing all data subdirectories [string]
+            label_filename      -> file name in which labels are stored [string]
+            spec_filename       -> file name in which spectrograms are stored [string]
+            transform           -> transform used on spectrograms 
             target_transform    -> transforms used on labels
         '''
         self.path = path    # root directory containing all data subdirectories
@@ -107,7 +107,7 @@ class SimulatedDataset(Dataset):
         
     def __len__(self):
         '''
-        Returns the number of data subdirectories (number of spectrograms)
+        Returns the number of data subdirectories (number of spectrograms) [int]
         '''
         return len(self.data_dirs)              # return the number of data subdirectories
 
@@ -115,10 +115,10 @@ class SimulatedDataset(Dataset):
         '''
         Returns spectrogram and label of given index
         Inputs:
-            index   -> Index of spectrogram/label to be returned
+            index   -> Index of spectrogram/label to be returned [int]
         Outputs:
-            output_spec     -> Spectrogram of given index
-            label           -> Label of given index
+            output_spec     -> Spectrogram of given index [tensor]
+            label           -> Label of given index [tensor]
         '''
         data_dir = self.data_dirs[index]    # get the subdirectory for the given index
         label_path = os.path.join(self.path, data_dir, self.label_filename) # construct the full path to the label file
@@ -158,11 +158,11 @@ class ResampleSpectrogram(object):
     def __init__(self, num_delays_out, timestep_out, num_wavelength_out, start_wavelength_out, end_wavelength_out):
         '''
         Inputs:
-            num_delays_out          -> Number of delay values the resampled spectrogram will have
-            timestep_out            -> Length of time between delays [fs]
-            num_wavelength_out      -> Number of wavelength values the resampled spectrogram will have
-            start_wavelength_out    -> Lowest wavelength value of the resampled spectrogram [nm]
-            end_wavelength_out      -> Highest wavelength value of the resampled spectrogram [nm]
+            num_delays_out          -> Number of delay values the resampled spectrogram will have [int]
+            timestep_out            -> Length of time between delays [fs] [int]
+            num_wavelength_out      -> Number of wavelength values the resampled spectrogram will have [int]
+            start_wavelength_out    -> Lowest wavelength value of the resampled spectrogram [nm] [int]
+            end_wavelength_out      -> Highest wavelength value of the resampled spectrogram [nm] [int]
         '''
         output_number_rows = num_delays_out
         output_time_step = timestep_out
@@ -183,14 +183,14 @@ class ResampleSpectrogram(object):
         '''
         Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
         Inputs:
-            path    -> Path to spectrogram
+            path    -> Path to spectrogram [string]
         Outputs:
-            spectrogram             -> Original (not resampled) spectrogram
-            input_time              -> Original (not resampled) time axis
-            input_wavelength        -> Original (not resampled) wavelength axis
-            output_spectrogram      -> Resampled spectrogram
-            self.output_time        -> Resampled time axis
-            self.output_wavelength  -> Resampled wavelenght axis
+            spectrogram             -> Original (not resampled) spectrogram [tensor]
+            input_time              -> Original (not resampled) time axis [numpy array]
+            input_wavelength        -> Original (not resampled) wavelength axis [numpy array]
+            output_spectrogram      -> Resampled spectrogram [tensor]
+            self.output_time        -> Resampled time axis [numpy array]
+            self.output_wavelength  -> Resampled wavelenght axis [numpy array]
         '''
         # Constants 
         NUM_HEADER_ELEMENTS = 5
@@ -235,6 +235,7 @@ class ResampleSpectrogram(object):
         ######################
         spectrogram_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None, engine='python')
         spectrogram = spectrogram_df.to_numpy()     # convert to numpy array 
+        spectrogram = torch.from_numpy(spectrogram).float()     # convert to tensor
 
         #######################
         ## Define input axis ##
@@ -260,6 +261,7 @@ class ResampleSpectrogram(object):
         ######################## 
         interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
         output_spectrogram = interpolate_time(self.output_time)
+        output_spectrogram = torch.from_numpy(output_spectrogram).float()   # convert to tensor
 
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
  
@@ -271,7 +273,7 @@ class ReadLabelFromEs(object):
     def __init__(self, number_elements):
         '''
         Inputs:
-            number_elements     -> Number of elements in the intensity and phase array each
+            number_elements     -> Number of elements in the intensity and phase array each [int]
         '''
         self.number_elements = number_elements
 
@@ -279,15 +281,15 @@ class ReadLabelFromEs(object):
         '''
         Read Ek.dat file and place columns in arrays
         Inputs:
-            Path -> Path to Ek.dat 
+            Path -> Path to Ek.dat [string]
         Outputs:
-            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
             [
-                time_axis   -> Array containing time axis of time signal
-                intensity   -> Array containing intensity of time signal (squared amplitude)
-                phase       -> Array containing phase of time signal
-                real_part   -> Array containing real part of time signal
-                imag_part   -> Array containing imaginary part of time signal
+                time_axis   -> Array containing time axis of time signal [numpy array]
+                intensity   -> Array containing intensity of time signal (squared amplitude) [numpy array]
+                phase       -> Array containing phase of time signal [numpy array]
+                real_part   -> Array containing real part of time signal [numpy array]
+                imag_part   -> Array containing imaginary part of time signal [numpy array]
             ]
         '''
         # read the dataframe
@@ -315,10 +317,19 @@ class RemoveAbsolutePhaseShift(object):
     def __init__(self):
         pass
     def __call__(self,label):
+        '''
+        Removes the absolute phase shift from phase part of label and wraps it in [0, 2*pi]
+        Inputs:
+            label   -> label containing intensity information in the first and phase information in the second half [tensor]
+        Outputs:
+            new_label   -> label containing corrected phase [tensor]
+    '''
+
         length_label = len(label)
         half_size = int(length_label //2)
         intensity = label[:half_size]  # First half -> intensity
         phase = label[half_size:]      # Second half -> phase
+        phase = phase - torch.mean(phase)
         phase_corrected_range = np.mod(phase, 2*np.pi)
         new_label = torch.cat((intensity, phase_corrected_range), dim=0)
         return new_label
@@ -332,8 +343,8 @@ class ScaleLabel(object):
     def __init__(self, max_intensity, max_phase):
         '''
         Inputs:
-            max_intensity   -> >= maximum intesity in dataset
-            max_phase       -> >= maximum phase in dataset
+            max_intensity   -> >= maximum intesity in dataset [float]
+            max_phase       -> >= maximum phase in dataset [float]
         '''
         self.max_intensity = max_intensity
         self.max_phase = max_phase
@@ -342,10 +353,10 @@ class ScaleLabel(object):
         '''
         Scale the values of intensity and phase to [-1,1]
         Inputs:
-            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
         Outputs:
             scaled_label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
-                scaled to [-1,1]
+                scaled to [-1,1] [tensor]
         '''
         length_label = len(label)
         half_size = int(length_label //2)
@@ -367,8 +378,8 @@ class UnscaleLabel(object):
     def __init__(self, max_intensity, max_phase):
         '''
         Inputs:
-            max_intensity   -> >= maximum intesity in dataset (needs to be the same as in ScaleLabel)
-            max_phase       -> >= maximum phase in dataset (needst to be the same as in ScaleLabel)
+            max_intensity   -> >= maximum intesity in dataset (needs to be the same as in ScaleLabel) [float]
+            max_phase       -> >= maximum phase in dataset (needst to be the same as in ScaleLabel) [float]
         '''
         self.max_intensity = max_intensity
         self.max_phase = max_phase
@@ -378,9 +389,9 @@ class UnscaleLabel(object):
         Scale the values of intensity and phase to [-1,1]
         Inputs:
             scaled_label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
-                scaled to [-1,1]
+                scaled to [-1,1] [tensor]
         Outputs:
-            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
+            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
         '''
         length_label = len(scaled_label)
         half_size = int(length_label //2)
