@@ -305,8 +305,8 @@ class ReadLabelFromEs(object):
         new_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=self.number_elements)
         interpolation_func_inten = interp1d(original_indicies, TimeDomainSignal.intensity, kind='linear')
         interpolation_func_phase = interp1d(original_indicies, TimeDomainSignal.phase, kind='linear')
-        TimeDomainSignal.intensity = interpolation_func_real(new_indicies)
-        TimeDomainSignal.phase = interpolation_func_imag(new_indicies)
+        TimeDomainSignal.intensity = interpolation_func_inten(new_indicies)
+        TimeDomainSignal.phase = interpolation_func_phase(new_indicies)
         # correct phase
         phase_normalized = TimeDomainSignal.phase - np.mean(TimeDomainSignal.phase)
         phase_wrapped = np.mod(phase_normalized, 2 * np.pi)
