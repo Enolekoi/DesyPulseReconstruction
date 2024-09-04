@@ -70,7 +70,7 @@ Load Model
 logger.info("Loading Model...")
 # Load custom DenseNet
 modelPhase = helper.CustomDenseNet(
-    num_outputs=2*config.OUTPUT_SIZE
+    num_outputs=config.OUTPUT_SIZE
     )
 
 modelPhase.float()
