@@ -93,11 +93,17 @@ def compareTimeDomainComplex(filepath, label, prediction):
         label = label.numpy()
     if not isinstance(prediction, np.ndarray):
         prediction = prediction.numpy()
-
-    orig_real = label[:256]
-    orig_imag = label[256:]
-    pred_real = prediction[:256]
-    pred_imag = prediction[256:]
+    
+    
+    length_label = len(label)
+    if not (length_label == len(prediction)):
+        logger.error("Label and prediction don't have the same size")
+        return
+    half_size = int(length_label //2)
+    orig_real = label[:half_size]
+    orig_imag = label[half_size:]
+    pred_real = prediction[:half_size]
+    pred_imag = prediction[half_size:]
 
     orig_intensity = orig_real*orig_real + orig_imag*orig_imag
     pred_intensity = pred_real*pred_real + pred_imag*pred_imag
