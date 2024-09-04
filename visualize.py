@@ -93,9 +93,8 @@ def compareTimeDomainComplex(filepath, label, prediction):
         label = label.numpy()
     if not isinstance(prediction, np.ndarray):
         prediction = prediction.numpy()
-    print(f"Shape Label:        {label.shape}")
-    print(f"Shape prediction:   {prediction.shape}")
-    
+    label = np.squeeze(label)
+    prediction = np.squeeze(prediction)
     
     length_label = len(label)
     if not (length_label == len(prediction)):
