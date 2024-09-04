@@ -36,9 +36,9 @@ Inputs:
 def compareIntensity(filepath, label, prediction):
     # ensure correct datatype
     if not isinstance(label, np.ndarray):
-        label = label.numpy()
+        label = label.cpu().numpy()
     if not isinstance(prediction, np.ndarray):
-        prediction = prediction.numpy()
+        prediction = prediction.cpu().numpy()
     label = np.squeeze(label)
     prediction = np.squeeze(prediction)
     
