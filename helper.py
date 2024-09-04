@@ -266,6 +266,52 @@ class ResampleSpectrogram(object):
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
 
 '''
+ReadIntensityFromEs()
+Read labels (phase) from Es.dat
+'''
+class ReadIntensityFromEs(object):
+    def __init__(self, number_elements):
+        '''
+        Inputs:
+            number_elements     -> Number of elements in the intensity and phase array each [int]
+        '''
+        self.number_elements = number_elements
+
+    def __call__(self, path):    
+        '''
+        Read Ek.dat file and place columns in arrays
+        Inputs:
+            Path -> Path to Ek.dat [string]
+        Outputs:
+            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
+            [
+                time_axis   -> Array containing time axis of time signal [numpy array]
+                intensity   -> Array containing intensity of time signal (squared amplitude) [numpy array]
+                phase       -> Array containing phase of time signal [numpy array]
+                real_part   -> Array containing real part of time signal [numpy array]
+                imag_part   -> Array containing imaginary part of time signal [numpy array]
+            ]
+        '''
+        # read the dataframe
+        dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
+        
+        TimeDomainSignal = TimeDomain(time_axis = dataframe[0].to_numpy(),
+                                      intensity = dataframe[1].to_numpy(),
+                                      phase = dataframe[2].to_numpy(), 
+                                      real = dataframe[3].to_numpy(),
+                                      imag = dataframe[4].to_numpy())
+
+        # Resample to fit correct number of elements
+        original_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=len(TimeDomainSignal.intensity))
+        new_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=self.number_elements)
+        interpolation_func_phase = interp1d(original_indicies, TimeDomainSignal.phase, kind='linear')
+        TimeDomainSignal.intensity = interpolation_func_phase(new_indicies)
+
+        label = TimeDomainSignal.intensity
+        label = torch.from_numpy(label).float()
+        return label
+
+'''
 ReadPhaseFromEs()
 Read labels (phase) from Es.dat
 '''
