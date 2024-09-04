@@ -119,34 +119,35 @@ logger.info(f"Starting training...")
 ########################
 ## loss and optimizer ##
 ########################
-# criterion = nn.CrossEntropyLoss() 
+# loss function
 criterion = nn.MSELoss()
-# optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+# optimizer used
 optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+# scheduler for changing learning rate after each epoch
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+# list containing all loss values
 loss_values = []
 
-# num_total_steps = len(train_loader)
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     model.train()       
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
-        # make spectrograms float for compatability with the model
-        spectrograms = spectrograms.float()
+            # make spectrograms float for compatability with the model
+            # spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
-        spectrograms = spectrograms.to(device)
-        labels = labels.float().to(device)
+        spectrograms = spectrograms.to(device)  # [tensor]
+        labels = labels.float().to(device)      # [tensor]
         
         # Forward pass
-        outputs = model(spectrograms)
-        loss = criterion(outputs, labels)
+        outputs = model(spectrograms)   # [tensor]
+        loss = criterion(outputs, labels)   # [float]
 
         # Backward pass
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        # Print information (every 100 steps)
-        if (i+1) % 10 == 0:
+        # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
+        if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
             logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
         # Write loss into array
@@ -155,25 +156,25 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     new_lr = scheduler.get_last_lr()
     logger.info(f"New learning rate: {new_lr}")
 
-# vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
-# logger.info(f"Saved plot of training loss for {fold+1}!")
-logger.info("Training finished!")
+    logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
+    model.eval()    # put model into evaluation mode
+    with torch.no_grad():   # disable gradient computation for evaluation
+        val_losses = []     # list containing all validation losses (resets after each epoch)
+        for spectrograms, labels in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
+            spectrograms = spectrograms.float().to(device)  # send spectrogram to device
+            labels = labels.float().to(device)  # send label to device
 
-model.eval()
+            outputs = model(spectrograms)   # calculate prediction
+            val_loss = criterion(outputs, labels)   # calcultate validation loss
+            val_losses.append(val_loss.item())  # plave validation loss into list
 
-logger.info("Starting Validation")
-with torch.no_grad():
-    val_losses = []
-    for spectrograms, labels in validation_loader:
-        spectrograms = spectrograms.float().to(device)
-        labels = labels.float().to(device)
-
-        outputs = model(spectrograms)
-        val_loss = criterion(outputs, labels)
-        val_losses.append(val_loss.item())
-
-    avg_val_loss = np.mean(val_losses)
+        avg_val_loss = np.mean(val_losses)  # calculate validation loss for this epoch
     logger.info(f"Validation Loss: {avg_val_loss:.10f}")
+
+# plot training loss
+vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
+logger.info(f"Saved plot of training loss! to {config.loss_plot_filepath}!")
+logger.info("Training finished!")
 
 # Write state_dict of model to file
 torch.save(model.state_dict(), config.model_filepath)
@@ -202,15 +203,14 @@ with torch.no_grad():
     if len(test_data) > 0:
         test_sample = random.choice(test_data)
         spectrogram, label = test_sample
-        spectrogram = spectrogram.float().unsqueeze(0).to(device)
-        label = label.float().cpu().numpy().flatten()
+        spectrogram = spectrogram.float().to(device)
+        label = label.float().to(device)
         label = label_unscaler(label)
 
-        prediction = model(spectrogram).cpu().numpy().flatten()
+        prediction = model(spectrogram) 
         prediction = label_unscaler(prediction)
-        original_label = label.cpu().numpy().flatten()
         # vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
-        vis.compareTimeDomainComplex("./random_test_prediction.png", original_label, prediction)
+        vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
 
 logger.info("Test Step finished!")
 
