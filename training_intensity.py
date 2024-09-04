@@ -57,8 +57,6 @@ label_scaler = helper.Scaler(config.MAX_INTENSITY, config.MAX_PHASE)
 # label_transform = transforms.Compose([label_reader, label_scaler.scalePhase])
 label_transform = transforms.Compose([label_reader])
 
-label_unscaler = label_scaler.scalePhase
-
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 logger.info(f"Device used (cuda/cpu): {device}")
@@ -208,10 +206,10 @@ with torch.no_grad():
         spectrogram, label = test_sample
         # adding an extra dimension to spectrogram and label to simulate a batch size of 1
         spectrogram = spectrogram.unsqueeze(0)
-        label = label.unsqueeze(0)
+        label = label.unsqueeze(0).cpu()
         # send spectrogram to device and make prediction
         spectrogram = spectrogram.float().to(device)
-        prediction = modelIntensity(spectrogram) 
+        prediction = modelIntensity(spectrogram).cpu()
         # send label and prediction to cpu, so that it can be plotted
         # label = label_unscaler(label).cpu()
         # prediction = label_unscaler(prediction).cpu()
