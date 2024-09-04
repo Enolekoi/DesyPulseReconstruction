@@ -126,7 +126,7 @@ class SimulatedDataset(Dataset):
 
         if self.transform:
             spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
-            output_spec = torch.tensor(output_spec, dtype=torch.float64)
+            # output_spec = torch.tensor(output_spec, dtype=torch.float64)
         else:
             output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values, dtype=torch.float64).unsqueeze(0)
 
