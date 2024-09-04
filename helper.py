@@ -34,7 +34,8 @@ class CustomDenseNet(nn.Module):
         '''
         super(CustomDenseNet, self).__init__()
         # Load pretrained DenseNet
-        self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
+        # self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
+        self.densenet = models.densenet161(weights=models.DenseNet161_Weights.DEFAULT)
         # Get the number of features before the last layer
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
