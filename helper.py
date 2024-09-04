@@ -313,8 +313,10 @@ class ReadLabelFromEs(object):
         phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
         TimeDomainSignal.phase = phase_wrapped
 
+        print(f"Number of elements in intensity = {TimeDomainSignal.intensity.shape}")
+        print(f"Number of elements in phase = {TimeDomainSignal.phase.shape}")
         label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
-        print(f"Number of elemnts in label = {label.shape}")
+        print(f"Number of elements in label = {label.shape}")
         label = torch.from_numpy(label).float()
         return label
 
