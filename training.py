@@ -124,7 +124,7 @@ criterion = nn.MSELoss()
 # optimizer used
 optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 # scheduler for changing learning rate after each epoch
-scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
 # list containing all loss values
 loss_values = []
 
