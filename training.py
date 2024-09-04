@@ -207,7 +207,7 @@ with torch.no_grad():
         spectrogram = spectrogram.float().to(device)
         label = label.float().to(device)
         prediction = model(spectrogram) 
-        print(len(prediction))
+        print(prediction)
         print(len(label))
 
         label = label_unscaler(label).cpu()
