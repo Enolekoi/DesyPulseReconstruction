@@ -39,11 +39,19 @@ def compareTimeDomain(filepath, label, prediction):
         label = label.numpy()
     if not isinstance(prediction, np.ndarray):
         prediction = prediction.numpy()
+    label = np.squeeze(label)
+    prediction = np.squeeze(prediction)
+    
+    length_label = len(label)
+    if not (length_label == len(prediction)):
+        logger.error("Label and prediction don't have the same size")
+        return
+    half_size = int(length_label //2)
 
-    orig_intensity = label[:256]
-    orig_phase = label[256:]
-    pred_intensity = prediction[:256]
-    pred_phase = prediction[256:]
+    orig_intensity = label[:half_size]
+    orig_phase = label[half_size:]
+    pred_intensity = prediction[:half_size]
+    pred_phase = prediction[half_size:]
     
     orig_phase = np.unwrap(orig_phase)
     pred_phase = np.unwrap(pred_phase)

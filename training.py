@@ -213,8 +213,8 @@ with torch.no_grad():
         # send label and prediction to cpu, so that it can be plotted
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
-        # vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
-        vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
+        vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
+        # vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
 
 logger.info("Test Step finished!")
 
