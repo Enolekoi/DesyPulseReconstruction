@@ -22,47 +22,6 @@ logger = logging.getLogger(__name__)
 # TODO:
 # Implement own MSE loss function that considers ambiguities in phase retrieval (Trebino, p. 63)
 '''
-CustomDenseNetPhase()
-Custom DenseNet class
-'''
-class CustomDenseNetPhase(nn.Module):
-    def __init__(self, num_outputs=512):
-        '''
-        Inputs:
-            num_outputs     -> Number of outputs of the DenseNet [int]
-        '''
-        super(CustomDenseNet, self).__init__()
-        # Load pretrained DenseNet
-        # self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
-        self.densenet = models.densenet161(weights=models.DenseNet161_Weights.DEFAULT)
-        # Get the number of features before the last layer
-        num_features = self.densenet.classifier.in_features
-        # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
-        self.densenet.classifier = nn.Linear(num_features, num_outputs)
-        self.num_outputs = num_outputs
-
-    def forward(self, spectrogram):
-        '''
-        Forward pass through the DenseNet
-        Input:
-            spectrogram     -> input spectrogram [tensor]
-        Output:
-            x   -> predicted output [tensor]
-        '''
-        half_size = int(self.num_outputs //2)
-        # get the output of the densenet
-        x = self.densenet(spectrogram)
-        # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
-        x = torch.tanh(x)
-        # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
-        # intensity = torch.tanh(x[:half_size])
-        # use sigmoid activation function to scale the output to [0, 1] and then scale it
-        # phase = torch.sigmoid(x[half_size:])
-        # logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
-        # x = torch.cat((intensity, phase), dim=0)
-
-        return x
-'''
 CustomDenseNet()
 Custom DenseNet class
 '''
@@ -74,8 +33,8 @@ class CustomDenseNet(nn.Module):
         '''
         super(CustomDenseNet, self).__init__()
         # Load pretrained DenseNet
-        # self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
-        self.densenet = models.densenet161(weights=models.DenseNet161_Weights.DEFAULT)
+        self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
+        # self.densenet = models.densenet161(weights=models.DenseNet161_Weights.DEFAULT)
         # Get the number of features before the last layer
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
@@ -349,6 +308,9 @@ class ReadPhaseFromEs(object):
         TimeDomainSignal.phase = interpolation_func_phase(new_indicies)
         # correct phase
         phase_normalized = TimeDomainSignal.phase - np.mean(TimeDomainSignal.phase)
+        if np.mean(phase_normalized) <= 0:
+            phase_normalized = -phase_normalized
+
         phase_wrapped = np.mod(phase_normalized, 2 * np.pi)
         # phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
         TimeDomainSignal.phase = phase_wrapped
