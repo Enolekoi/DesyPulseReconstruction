@@ -201,15 +201,16 @@ with torch.no_grad():
     logger.info(f"Test Loss: {avg_test_loss:.10f}")
 
     if len(test_data) > 0:
+        # get a random sample
         test_sample = random.choice(test_data)
         spectrogram, label = test_sample
+        # adding an extra dimension to spectrogram and label to simulate a batch size of 1
         spectrogram = spectrogram.unsqueeze(0)
+        label = label.unsqueeze(0)
+        # send spectrogram to device and make prediction
         spectrogram = spectrogram.float().to(device)
-        label = label.float().to(device)
         prediction = model(spectrogram) 
-        print(prediction)
-        print(len(label))
-
+        # send label and prediction to cpu, so that it can be plotted
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
         # vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
