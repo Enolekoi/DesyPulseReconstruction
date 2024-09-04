@@ -203,6 +203,7 @@ with torch.no_grad():
     if len(test_data) > 0:
         test_sample = random.choice(test_data)
         spectrogram, label = test_sample
+        spectrogram = spectrogram.unsqueeze(0)
         spectrogram = spectrogram.float().to(device)
         label = label.float().to(device)
         prediction = model(spectrogram) 
