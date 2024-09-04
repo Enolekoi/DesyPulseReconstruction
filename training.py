@@ -205,9 +205,9 @@ with torch.no_grad():
         spectrogram, label = test_sample
         spectrogram = spectrogram.float().to(device)
         label = label.float().to(device)
-        label = label_unscaler(label)
-
         prediction = model(spectrogram) 
+
+        label = label_unscaler(label)
         prediction = label_unscaler(prediction)
         # vis.compareTimeDomain("./random_test_prediction.png", original_label, prediction)
         vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
