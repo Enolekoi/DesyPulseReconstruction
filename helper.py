@@ -314,6 +314,7 @@ class ReadLabelFromEs(object):
         TimeDomainSignal.phase = phase_wrapped
 
         label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
+        print(f"Number of elemnts in label = {label.shape}")
         label = torch.from_numpy(label).float()
         return label
 
