@@ -45,6 +45,9 @@ def compareTimeDomain(filepath, label, prediction):
     pred_intensity = prediction[:256]
     pred_phase = prediction[256:]
     
+    orig_phase = np.unwrap(orig_phase)
+    pred_phase = np.unwrap(pred_phase)
+
     fig, axs = plt.subplots(3,1, figsize=(8,14))
 
     # Plotting the Intensity
@@ -110,7 +113,10 @@ def compareTimeDomainComplex(filepath, label, prediction):
     pred_intensity = pred_real*pred_real + pred_imag*pred_imag
     orig_phase = np.mod(np.arctan2(orig_imag, orig_real), 2*np.pi)
     pred_phase = np.mod(np.arctan2(pred_imag, pred_real), 2*np.pi)
-    
+
+    orig_phase = np.unwrap(orig_phase)
+    pred_phase = np.unwrap(pred_phase)
+
     fig, axs = plt.subplots(4,1, figsize=(10,16))
 
     # Plotting the Intensity
