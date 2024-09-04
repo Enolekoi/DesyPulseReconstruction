@@ -304,8 +304,8 @@ class ReadIntensityFromEs(object):
         # Resample to fit correct number of elements
         original_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=len(TimeDomainSignal.intensity))
         new_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=self.number_elements)
-        interpolation_func_phase = interp1d(original_indicies, TimeDomainSignal.phase, kind='linear')
-        TimeDomainSignal.intensity = interpolation_func_phase(new_indicies)
+        interpolation_func_intensity = interp1d(original_indicies, TimeDomainSignal.intensity, kind='linear')
+        TimeDomainSignal.intensity = interpolation_func_intensity(new_indicies)
 
         label = TimeDomainSignal.intensity
         label = torch.from_numpy(label).float()
