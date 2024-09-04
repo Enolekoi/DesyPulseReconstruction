@@ -306,8 +306,10 @@ class ReadLabelFromEs(object):
         # TimeDomainSignal.phase = TimeDomainSignal.phase.reshape(self.number_elements,2).mean(axis=1)
         original_indicies = np.linspace(0, len(TimeDomainSignal.real) - 1, num=len(TimeDomainSignal.real))
         new_indicies = np.linspace(0, len(TimeDomainSignal.real) - 1, num=self.number_elements)
-        TimeDomainSignal.real = np.interp(original_indicies, new_indicies, TimeDomainSignal.real)
-        TimeDomainSignal.imag = np.interp(original_indicies, new_indicies, TimeDomainSignal.imag)
+        interpolation_func_real = interp1d(original_indicies, TimeDomainSignal.real, kind='linear')
+        interpolation_func_imag = interp1d(original_indicies, TimeDomainSignal.imag, kind='linear')
+        TimeDomainSignal.real = interpolation_func_real(new_indicies)
+        TimeDomainSignal.imag = interpolation_func_imag(new_indicies)
         # TimeDomainSignal.real = TimeDomainSignal.real.reshape(self.number_elements,2).mean(axis=1)
         # TimeDomainSignal.imag = TimeDomainSignal.imag.reshape(self.number_elements,2).mean(axis=1)
 
