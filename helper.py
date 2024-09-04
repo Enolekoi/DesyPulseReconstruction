@@ -99,7 +99,7 @@ class CustomDenseNet(nn.Module):
         # intensity = torch.tanh(x[:half_size])
         # use sigmoid activation function to scale the output to [0, 1] and then scale it
         # phase = torch.sigmoid(x[half_size:])
-        logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
+        # logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
         # x = torch.cat((intensity, phase), dim=0)
 
         return x
@@ -350,7 +350,7 @@ class ReadPhaseFromEs(object):
         # correct phase
         phase_normalized = TimeDomainSignal.phase - np.mean(TimeDomainSignal.phase)
         phase_wrapped = np.mod(phase_normalized, 2 * np.pi)
-        phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
+        # phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
         TimeDomainSignal.phase = phase_wrapped
         label = TimeDomainSignal.phase
         label = torch.from_numpy(label).float()
