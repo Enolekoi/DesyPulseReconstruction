@@ -627,7 +627,7 @@ class PulseRetrievalLossFunction(nn.Module):
 
     def forward(self, predictions, labels):
         print(f"prediction size = {predictions.shape}")
-        print(f"label size = {label.shape}")
+        print(f"label size = {labels.shape}")
 
         # Calculate the squared error
         squared_error = (predictions - labels)**2
