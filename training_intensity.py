@@ -214,7 +214,7 @@ with torch.no_grad():
         # label = label_unscaler(label).cpu()
         # prediction = label_unscaler(prediction).cpu()
         # vis.comparePhase("./random_test_phase_prediction.png", label, prediction)
-        vis.compareIntensity("./random_test_phase_prediction.png", label, prediction)
+        vis.compareIntensity("./random_test_intensity_prediction.png", label, prediction)
         # vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
 
 logger.info("Test Step finished!")
