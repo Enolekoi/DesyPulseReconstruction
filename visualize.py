@@ -269,3 +269,9 @@ def compareTimeDomainComplex(filepath, label, prediction):
     plt.savefig(filepath)
     plt.close()
     logger.info(f"Saved comparison of random prediction and label to {filepath}")
+
+'''
+plotSpectrogram()
+plotting Spectrogram
+'''
+def plotSpectrogram()
