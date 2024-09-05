@@ -128,7 +128,7 @@ class SimulatedDataset(Dataset):
             spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
             # output_spec = torch.tensor(output_spec, dtype=torch.float64)
         else:
-            output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values, dtype=torch.float64).unsqueeze(0)
+            output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values, dtype=torch.half).unsqueeze(0)
 
         if self.target_transform:
             label = self.target_transform(label_path)
@@ -235,7 +235,7 @@ class ResampleSpectrogram(object):
         ######################
         spectrogram_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None, engine='python')
         spectrogram = spectrogram_df.to_numpy()     # convert to numpy array 
-        spectrogram = torch.from_numpy(spectrogram).float()     # convert to tensor
+        spectrogram = torch.from_numpy(spectrogram).half()     # convert to tensor
 
         #######################
         ## Define input axis ##
@@ -261,7 +261,7 @@ class ResampleSpectrogram(object):
         ######################## 
         interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
         output_spectrogram = interpolate_time(self.output_time)
-        output_spectrogram = torch.from_numpy(output_spectrogram).float()   # convert to tensor
+        output_spectrogram = torch.from_numpy(output_spectrogram).half()   # convert to tensor
 
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
 
@@ -308,7 +308,7 @@ class ReadIntensityFromEs(object):
         TimeDomainSignal.intensity = interpolation_func_intensity(new_indicies)
 
         label = TimeDomainSignal.intensity
-        label = torch.from_numpy(label).float()
+        label = torch.from_numpy(label).half()
         return label
 
 '''
@@ -361,7 +361,7 @@ class ReadPhaseFromEs(object):
         # phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
         TimeDomainSignal.phase = phase_wrapped
         label = TimeDomainSignal.phase
-        label = torch.from_numpy(label).float()
+        label = torch.from_numpy(label).half()
         return label
 '''
 ReadLabelFromEs()
@@ -413,7 +413,7 @@ class ReadLabelFromEs(object):
         TimeDomainSignal.phase = phase_wrapped
 
         label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
-        label = torch.from_numpy(label).float()
+        label = torch.from_numpy(label).half()
         return label
 
 '''
@@ -466,7 +466,7 @@ class ReadLabelFromEsComplex(object):
 
         # label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
         label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
-        label = torch.from_numpy(label).float()
+        label = torch.from_numpy(label).half()
         return label
 
 class Scaler(object):
