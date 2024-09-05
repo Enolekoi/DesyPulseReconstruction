@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 
 import random
 import logging
+import gc
 
 from sklearn.model_selection import KFold
 # Classes, methods and functions from different files
@@ -62,6 +63,7 @@ label_unscaler = label_scaler.scalePhase
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 logger.info(f"Device used (cuda/cpu): {device}")
 if device == 'cuda':
+    gc.collect()
     torch.cuda.empty_cache()
 
 '''
