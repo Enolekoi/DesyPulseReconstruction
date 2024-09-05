@@ -61,7 +61,7 @@ class CustomDenseNet(nn.Module):
         # logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
         # x = torch.cat((intensity, phase), dim=0)
 
-        return x
+        return x.half()
 
 '''
 TimeDomain()
@@ -261,8 +261,8 @@ class ResampleSpectrogram(object):
         ######################## 
         interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
         output_spectrogram = interpolate_time(self.output_time)
-        output_spectrogram = torch.from_numpy(output_spectrogram).half()   # convert to tensor
-        spectrogram = spectrogram.half()
+        output_spectrogram = torch.from_numpy(output_spectrogram)  # convert to tensor
+        spectrogram = spectrogram
 
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
 
@@ -467,7 +467,7 @@ class ReadLabelFromEsComplex(object):
 
         # label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
         label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
-        label = torch.from_numpy(label).half()
+        label = torch.from_numpy(label).half
         return label
 
 class Scaler(object):
@@ -633,7 +633,7 @@ class PulseRetrievalLossFunction(nn.Module):
         squared_error = (predictions - labels)**2
         print(f"squared_error = {squared_error}")
         # Create a mask where the labels are higher than the threshold
-        high_value_mask = (labels > self.threshold).half()
+        high_value_mask = (labels > self.threshold)
         # Weigh higher values more
         weights = 1 + high_value_mask * (self.weight_factor -1)
         # Weighthed squared error
