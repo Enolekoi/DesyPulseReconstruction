@@ -152,7 +152,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         
         # Forward pass
         outputs = modelIntensity(spectrograms)   # [tensor]
-        outputs = outputs.to(torch.float16)
+        outputs = outputs
         loss = criterion(outputs, labels)   # [float]
 
         # Backward pass
@@ -179,7 +179,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             labels = labels.to(device)  # send label to device
     
             outputs = modelIntensity(spectrograms)   # calculate prediction
-            outputs = outputs.to(torch.float16)
+            outputs = outputs
             val_loss = criterion(outputs, labels)   # calcultate validation loss
             val_losses.append(val_loss.item())  # plave validation loss into list
 
@@ -209,7 +209,7 @@ with torch.no_grad():
         labels = labels.to(device)
 
         outputs = modelIntensity(spectrograms)
-        outputs = outputs.to(torch.float16)
+        outputs = outputs
         test_loss = criterion(outputs, labels)
         test_losses.append(test_loss.item())
 
