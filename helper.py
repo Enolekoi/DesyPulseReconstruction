@@ -54,6 +54,8 @@ class CustomDenseNet(nn.Module):
         x = self.densenet(spectrogram)
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
         x = torch.tanh(x)
+        x = torch.round(x * 512)
+        x = x / 512
 
         return x
 
@@ -304,6 +306,9 @@ class ReadIntensityFromEs(object):
 
         label = TimeDomainSignal.intensity
         label = torch.from_numpy(label)
+        
+        label = torch.round(label * 512)
+        label = label / 512
         return label
 
 '''
