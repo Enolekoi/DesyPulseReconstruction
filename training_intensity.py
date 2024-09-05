@@ -73,6 +73,7 @@ modelIntensity = helper.CustomDenseNet(
     )
 
 # modelIntensity.float()
+modelIntensity.half()
 modelIntensity.to(device)
 modelIntensity.eval()
 
@@ -145,8 +146,8 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             # make spectrograms float for compatability with the model
             # spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
-        spectrograms = spectrograms.half().to(device)  # [tensor]
-        labels = labels.half().to(device)      # [tensor]
+        spectrograms = spectrograms.to(device)  # [tensor]
+        labels = labels.to(device)      # [tensor]
         
         # Forward pass
         outputs = modelIntensity(spectrograms)   # [tensor]
@@ -172,8 +173,8 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     with torch.no_grad():   # disable gradient computation for evaluation
         val_losses = []     # list containing all validation losses (resets after each epoch)
         for spectrograms, labels in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
-            spectrograms = spectrograms.half().to(device)  # send spectrogram to device
-            labels = labels.half().to(device)  # send label to device
+            spectrograms = spectrograms.to(device)  # send spectrogram to device
+            labels = labels.to(device)  # send label to device
 
             outputs = modelIntensity(spectrograms)   # calculate prediction
             val_loss = criterion(outputs, labels)   # calcultate validation loss
@@ -201,8 +202,8 @@ test_losses = []
 modelIntensity.eval()
 with torch.no_grad():
     for spectrograms, labels in test_loader:
-        spectrograms = spectrograms.half().to(device)
-        labels = labels.half().to(device)
+        spectrograms = spectrograms.to(device)
+        labels = labels.to(device)
 
         outputs = modelIntensity(spectrograms)
         test_loss = criterion(outputs, labels)
@@ -219,7 +220,7 @@ with torch.no_grad():
         spectrogram = spectrogram.unsqueeze(0)
         label = label.unsqueeze(0).cpu()
         # send spectrogram to device and make prediction
-        spectrogram = spectrogram.half().to(device)
+        spectrogram = spectrogram.to(device)
         prediction = modelIntensity(spectrogram).cpu()
         # send label and prediction to cpu, so that it can be plotted
         # label = label_unscaler(label).cpu()
