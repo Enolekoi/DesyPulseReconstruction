@@ -626,8 +626,8 @@ class PulseRetrievalLossFunction(nn.Module):
         self.threshold = threshold
 
     def forward(self, predictions, labels):
-        print(f"prediction size = {predictions.shape}")
-        print(f"label size = {labels.shape}")
+        print(f"prediction size = {predictions}")
+        print(f"label size = {labels}")
 
         # Calculate the squared error
         squared_error = (predictions - labels)**2
