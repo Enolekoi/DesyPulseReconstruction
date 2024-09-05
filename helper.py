@@ -626,15 +626,19 @@ class PulseRetrievalLossFunction(nn.Module):
         self.threshold = threshold
 
     def forward(self, predictions, labels):
+        print(f"prediction size = {predictions.shape}")
+        print(f"label size = {label.shape}")
 
         # Calculate the squared error
         squared_error = (predictions - labels)**2
+        print(f"squared_error = {squared_error}")
         # Create a mask where the labels are higher than the threshold
         high_value_mask = (labels > self.threshold).half()
         # Weigh higher values more
         weights = 1 + high_value_mask * (self.weight_factor -1)
         # Weighthed squared error
         weighted_squared_error = squared_error * weights
+        print(f"weighted squared_error = {weighted_squared_error}")
         # get weighted MSE
         loss = torch.mean(weighted_squared_error)
 
