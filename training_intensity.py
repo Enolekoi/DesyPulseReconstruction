@@ -137,7 +137,6 @@ loss_values = []
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     modelIntensity.train()       
-    weight = weight - ( 1/(config.NUM_EPOCHS-1) )*weight
     criterion = helper.PulseRetrievalLossFunction(
         weight_factor=weight/(epoch+1),
         threshold=0.01
@@ -168,6 +167,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     scheduler.step()
     new_lr = scheduler.get_last_lr()
     logger.info(f"New learning rate: {new_lr}")
+    weight = weight - ( 1/(config.NUM_EPOCHS-1) )*weight
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     modelIntensity.eval()    # put model into evaluation mode
