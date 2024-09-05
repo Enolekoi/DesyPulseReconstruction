@@ -61,7 +61,7 @@ class CustomDenseNet(nn.Module):
         # logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
         # x = torch.cat((intensity, phase), dim=0)
 
-        return x.half()
+        return x.to(torch.float16)
 
 '''
 TimeDomain()
@@ -309,7 +309,7 @@ class ReadIntensityFromEs(object):
         TimeDomainSignal.intensity = interpolation_func_intensity(new_indicies)
 
         label = TimeDomainSignal.intensity
-        label = torch.from_numpy(label).half()
+        label = torch.from_numpy(label).to(torch.float16)
         return label
 
 '''
@@ -362,7 +362,7 @@ class ReadPhaseFromEs(object):
         # phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
         TimeDomainSignal.phase = phase_wrapped
         label = TimeDomainSignal.phase
-        label = torch.from_numpy(label).half()
+        label = torch.from_numpy(label).to(torch.float16)
         return label
 '''
 ReadLabelFromEs()
@@ -414,7 +414,7 @@ class ReadLabelFromEs(object):
         TimeDomainSignal.phase = phase_wrapped
 
         label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
-        label = torch.from_numpy(label).half()
+        label = torch.from_numpy(label).to(torch.float16)
         return label
 
 '''
