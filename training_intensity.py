@@ -73,7 +73,6 @@ modelIntensity = helper.CustomDenseNet(
     )
 
 # modelIntensity.float()
-modelIntensity.half()
 modelIntensity.to(device)
 modelIntensity.eval()
 
