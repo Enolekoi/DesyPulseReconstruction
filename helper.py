@@ -61,7 +61,7 @@ class CustomDenseNet(nn.Module):
         # logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
         # x = torch.cat((intensity, phase), dim=0)
 
-        return x.to(torch.float16)
+        return x
 
 '''
 TimeDomain()
