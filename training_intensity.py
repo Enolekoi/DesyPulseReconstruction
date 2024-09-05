@@ -120,7 +120,11 @@ logger.info(f"Starting training...")
 ## loss and optimizer ##
 ########################
 # loss function
-criterion = nn.MSELoss()
+# criterion = nn.MSELoss()
+criterion = helper.PulseRetrievalLossFunction(
+    weight_factor=10.0,
+    threshold=0.01
+        )
 # optimizer used
 optimizer = torch.optim.Adam(modelIntensity.parameters(), lr=config.LEARNING_RATE)
 # scheduler for changing learning rate after each epoch
