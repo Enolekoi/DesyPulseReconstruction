@@ -147,7 +147,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             # make spectrograms float for compatability with the model
             # spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
-        spectrograms = spectrograms.to(device)  # [tensor]
+        spectrograms = spectrograms.to(device).float()  # [tensor]
         labels = labels.to(device)      # [tensor]
         
         # Forward pass
@@ -175,9 +175,9 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     with torch.no_grad():   # disable gradient computation for evaluation
         val_losses = []     # list containing all validation losses (resets after each epoch)
         for spectrograms, labels in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
-            spectrograms = spectrograms.to(device)  # send spectrogram to device
+            spectrograms = spectrograms.to(device).float()  # send spectrogram to device
             labels = labels.to(device)  # send label to device
-
+    
             outputs = modelIntensity(spectrograms)   # calculate prediction
             outputs = outputs.to(torch.float16)
             val_loss = criterion(outputs, labels)   # calcultate validation loss
@@ -205,7 +205,7 @@ test_losses = []
 modelIntensity.eval()
 with torch.no_grad():
     for spectrograms, labels in test_loader:
-        spectrograms = spectrograms.to(device)
+        spectrograms = spectrograms.to(device).float()
         labels = labels.to(device)
 
         outputs = modelIntensity(spectrograms)
