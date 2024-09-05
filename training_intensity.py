@@ -72,7 +72,7 @@ modelIntensity = helper.CustomDenseNet(
     num_outputs=config.OUTPUT_SIZE
     )
 
-modelIntensity.float()
+modelIntensity.float16()
 modelIntensity.to(device)
 modelIntensity.eval()
 
@@ -121,8 +121,9 @@ logger.info(f"Starting training...")
 ########################
 # loss function
 # criterion = nn.MSELoss()
+weight = 10.0
 criterion = helper.PulseRetrievalLossFunction(
-    weight_factor=10.0,
+    weight_factor=weight,
     threshold=0.01
         )
 # optimizer used
@@ -134,12 +135,18 @@ loss_values = []
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     modelIntensity.train()       
+
+    criterion = helper.PulseRetrievalLossFunction(
+        weight_factor=weight/(epoch+1),
+        threshold=0.01
+            )
+    logger.info(f"Current weight for values over threshold: {weight/(epoch+1)}")
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
             # make spectrograms float for compatability with the model
             # spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
         spectrograms = spectrograms.to(device)  # [tensor]
-        labels = labels.float().to(device)      # [tensor]
+        labels = labels.float16().to(device)      # [tensor]
         
         # Forward pass
         outputs = modelIntensity(spectrograms)   # [tensor]
@@ -165,8 +172,8 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     with torch.no_grad():   # disable gradient computation for evaluation
         val_losses = []     # list containing all validation losses (resets after each epoch)
         for spectrograms, labels in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
-            spectrograms = spectrograms.float().to(device)  # send spectrogram to device
-            labels = labels.float().to(device)  # send label to device
+            spectrograms = spectrograms.float16().to(device)  # send spectrogram to device
+            labels = labels.float16().to(device)  # send label to device
 
             outputs = modelIntensity(spectrograms)   # calculate prediction
             val_loss = criterion(outputs, labels)   # calcultate validation loss
@@ -194,8 +201,8 @@ test_losses = []
 modelIntensity.eval()
 with torch.no_grad():
     for spectrograms, labels in test_loader:
-        spectrograms = spectrograms.float().to(device)
-        labels = labels.float().to(device)
+        spectrograms = spectrograms.float16().to(device)
+        labels = labels.float16().to(device)
 
         outputs = modelIntensity(spectrograms)
         test_loss = criterion(outputs, labels)
@@ -212,7 +219,7 @@ with torch.no_grad():
         spectrogram = spectrogram.unsqueeze(0)
         label = label.unsqueeze(0).cpu()
         # send spectrogram to device and make prediction
-        spectrogram = spectrogram.float().to(device)
+        spectrogram = spectrogram.float16().to(device)
         prediction = modelIntensity(spectrogram).cpu()
         # send label and prediction to cpu, so that it can be plotted
         # label = label_unscaler(label).cpu()
