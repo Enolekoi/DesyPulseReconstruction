@@ -607,3 +607,34 @@ class UnscaleLabel(object):
         label = torch.cat((intensity, phase), dim=0)
 
         return label
+
+'''
+Loss function for pulse retrieval
+'''
+class PulseRetrievalLossFunction(nn.Module):
+    def __init__(self, weight_factor=10.0, threshold=0.01):
+        '''
+        Initialization
+        Inputs:
+            weight_factor   -> Factor by which the loss is multiplied, when the label is greater than the threshold [float]
+            threshold       -> Label value over which the higher weights get multiplied with the loss [float]
+        '''
+        super(PulseRetrievalLossFunction, self).__init__()
+
+        self.weight_factor = weight_factor
+        self.threshold = threshold
+
+    def forward(self, predictions, labels):
+
+        # Calculate the squared error
+        squared_error = (predictions - labels)**2
+        # Create a mask where the labels are higher than the threshold
+        high_value_mask = (labels > torch.threshold).float()
+        # Weigh higher values more
+        weights = 1 + high_value_mask * (self.weight_factor -1)
+        # Weighthed squared error
+        weighted_squared_error = squared_error * weights
+        # get weighted MSE
+        loss = torch.mean(weighted_squared_error)
+
+        return loss
