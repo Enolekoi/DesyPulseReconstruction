@@ -274,4 +274,5 @@ def compareTimeDomainComplex(filepath, label, prediction):
 plotSpectrogram()
 plotting Spectrogram
 '''
-def plotSpectrogram()
+def plotSpectrogram(spectrogram):
+    return
