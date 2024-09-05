@@ -1,0 +1,68 @@
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Writing into log file: ./logs/training_5.log
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_512_v2/
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Noise level used: as_gn00.dat
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Batch size: 10 elements
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Number of epochs: 3
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Initial learning rate: 0.0001
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Loading Model...
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Loading Model finished!
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Loading Data...
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Size of dataset: 5000
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Size of training data:   4000
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Size of validation data: 500
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Size of test data:       500
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Finished loading data!
+05-09-2024 09:04:38 - __main__ - <module> - INFO: Starting training...
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Writing into log file: ./logs/training_5.log
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_512_v2/
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Noise level used: as_gn00.dat
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Batch size: 2 elements
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Number of epochs: 3
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Initial learning rate: 0.0001
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Loading Model...
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Loading Model finished!
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Loading Data...
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Size of dataset: 5000
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Size of training data:   4000
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Size of validation data: 500
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Size of test data:       500
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Finished loading data!
+05-09-2024 09:05:03 - __main__ - <module> - INFO: Starting training...
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Writing into log file: ./logs/training_5.log
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_512_v2/
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Noise level used: as_gn00.dat
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Batch size: 1 elements
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Number of epochs: 3
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Initial learning rate: 0.0001
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Loading Model...
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Loading Model finished!
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Loading Data...
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Size of dataset: 5000
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Size of training data:   4000
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Size of validation data: 500
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Size of test data:       500
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Finished loading data!
+05-09-2024 09:15:27 - __main__ - <module> - INFO: Starting training...
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Writing into log file: ./logs/training_5.log
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_512_v2/
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Noise level used: as_gn00.dat
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Batch size: 1 elements
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Number of epochs: 3
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Initial learning rate: 0.0001
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Loading Model...
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Loading Model finished!
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Loading Data...
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Size of dataset: 5000
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Size of training data:   4000
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Size of validation data: 500
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Size of test data:       500
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Finished loading data!
+05-09-2024 09:15:36 - __main__ - <module> - INFO: Starting training...
