@@ -137,12 +137,12 @@ loss_values = []
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     modelIntensity.train()       
-
+    weight = weight - (1/config.NUM_EPOCHS)*weight
     criterion = helper.PulseRetrievalLossFunction(
         weight_factor=weight/(epoch+1),
         threshold=0.01
             )
-    logger.info(f"Current weight for values over threshold: {weight/(epoch+1)}")
+    logger.info(f"Current weight for values over threshold: {weight}")
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
             # make spectrograms float for compatability with the model
             # spectrograms = spectrograms.float()
@@ -152,7 +152,6 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         
         # Forward pass
         outputs = modelIntensity(spectrograms)   # [tensor]
-        outputs = outputs
         loss = criterion(outputs, labels)   # [float]
 
         # Backward pass
@@ -179,7 +178,6 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             labels = labels.to(device)  # send label to device
     
             outputs = modelIntensity(spectrograms)   # calculate prediction
-            outputs = outputs
             val_loss = criterion(outputs, labels)   # calcultate validation loss
             val_losses.append(val_loss.item())  # plave validation loss into list
 
@@ -209,7 +207,6 @@ with torch.no_grad():
         labels = labels.to(device)
 
         outputs = modelIntensity(spectrograms)
-        outputs = outputs
         test_loss = criterion(outputs, labels)
         test_losses.append(test_loss.item())
 
@@ -224,7 +221,7 @@ with torch.no_grad():
         spectrogram = spectrogram.unsqueeze(0)
         label = label.unsqueeze(0).cpu()
         # send spectrogram to device and make prediction
-        spectrogram = spectrogram.to(device).float()
+        spectrogram = spectrogram.to(device).float
         prediction = modelIntensity(spectrogram).cpu()
         # send label and prediction to cpu, so that it can be plotted
         # label = label_unscaler(label).cpu()
