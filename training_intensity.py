@@ -137,7 +137,7 @@ loss_values = []
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     modelIntensity.train()       
-    weight = weight - (1/config.NUM_EPOCHS)*weight
+    weight = weight - ( 1/(config.NUM_EPOCHS-1) )*weight
     criterion = helper.PulseRetrievalLossFunction(
         weight_factor=weight/(epoch+1),
         threshold=0.01
