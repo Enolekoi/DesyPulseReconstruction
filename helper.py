@@ -54,12 +54,6 @@ class CustomDenseNet(nn.Module):
         x = self.densenet(spectrogram)
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
         x = torch.tanh(x)
-        # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
-        # intensity = torch.tanh(x[:half_size])
-        # use sigmoid activation function to scale the output to [0, 1] and then scale it
-        # phase = torch.sigmoid(x[half_size:])
-        # logger.debug(f"Datatype: {type(x)}, Shape: {x.shape}")
-        # x = torch.cat((intensity, phase), dim=0)
 
         return x
 
@@ -626,19 +620,19 @@ class PulseRetrievalLossFunction(nn.Module):
         self.threshold = threshold
 
     def forward(self, predictions, labels):
-        print(f"prediction size = {predictions}")
-        print(f"label size = {labels}")
+        # print(f"prediction size = {predictions}")
+        # print(f"label size = {labels}")
 
         # Calculate the squared error
         squared_error = (predictions - labels)**2
-        print(f"squared_error = {squared_error}")
+        # print(f"squared_error = {squared_error}")
         # Create a mask where the labels are higher than the threshold
         high_value_mask = (labels > self.threshold)
         # Weigh higher values more
         weights = 1 + high_value_mask * (self.weight_factor -1)
         # Weighthed squared error
         weighted_squared_error = squared_error * weights
-        print(f"weighted squared_error = {weighted_squared_error}")
+        # print(f"weighted squared_error = {weighted_squared_error}")
         # get weighted MSE
         loss = torch.mean(weighted_squared_error)
 
