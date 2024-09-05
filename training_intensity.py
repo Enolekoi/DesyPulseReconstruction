@@ -221,7 +221,7 @@ with torch.no_grad():
         spectrogram = spectrogram.unsqueeze(0)
         label = label.unsqueeze(0).cpu()
         # send spectrogram to device and make prediction
-        spectrogram = spectrogram.to(device).float
+        spectrogram = spectrogram.to(device).float()
         prediction = modelIntensity(spectrogram).cpu()
         # send label and prediction to cpu, so that it can be plotted
         # label = label_unscaler(label).cpu()
