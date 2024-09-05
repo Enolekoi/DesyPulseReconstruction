@@ -629,7 +629,7 @@ class PulseRetrievalLossFunction(nn.Module):
         # Calculate the squared error
         squared_error = (predictions - labels)**2
         # Create a mask where the labels are higher than the threshold
-        high_value_mask = (labels > self.threshold).float()
+        high_value_mask = (labels > self.threshold).half()
         # Weigh higher values more
         weights = 1 + high_value_mask * (self.weight_factor -1)
         # Weighthed squared error
