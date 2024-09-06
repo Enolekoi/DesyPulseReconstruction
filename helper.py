@@ -58,8 +58,12 @@ class CustomDenseNet(nn.Module):
         x = self.fc1(x)
         x = x.view(-1, self.num_outputs, 256)
         quantisierung = nn.functional.softmax(x, dim=2)
-        quantisierte_klassen = torch.argmax(quantisierung, dim=2)
-        quantisierte_werte = quantisierte_klassen.float() / (256 -1)
+        # Erzeuge einen gewichteten Mittelwert der Quantisierungsstufen basierend auf den Wahrscheinlichkeiten
+        quantisierungsstufen = torch.linspace(0, 1, 256).to(x.device)
+        
+        # Multipliziere die Wahrscheinlichkeiten mit den Quantisierungsstufen und summiere auf
+        quantisierte_werte = torch.sum(quantisierung * quantisierungsstufen, dim=2)
+        # quantisierte_werte = quantisierte_klassen.float() / (256 -1)
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
         # x = torch.tanh(x)
         return quantisierte_werte
