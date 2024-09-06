@@ -57,7 +57,7 @@ class CustomDenseNet(nn.Module):
         x = torch.relu(x)
         x = self.fc1(x)
         x = x.view(-1, self.num_outputs, 256)
-        quantisierung = F.softmax(x, dim=2)
+        quantisierung = nn.functional.softmax(x, dim=2)
         quantisierte_klassen = torch.argmax(quantisierung, dim=2)
         quantisierte_werte = quantisierte_klassen.float() / (256 -1)
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
