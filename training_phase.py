@@ -137,7 +137,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             # make spectrograms float for compatability with the model
             # spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
-        spectrograms = spectrograms.to(device)  # [tensor]
+        spectrograms = spectrograms.float().to(device)  # [tensor]
         labels = labels.float().to(device)      # [tensor]
         
         # Forward pass
