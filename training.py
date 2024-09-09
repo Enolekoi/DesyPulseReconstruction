@@ -49,8 +49,8 @@ logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
-label_phase_correction = helper.RemoveAbsolutePhaseShift()
+label_reader = helper.ReadLabelFromEsComplex(config.OUTPUT_SIZE)
+# label_phase_correction = helper.RemoveAbsolutePhaseShift()
 label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 # label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
 label_transform = transforms.Compose([label_reader, label_scaler])
@@ -213,8 +213,8 @@ with torch.no_grad():
         # send label and prediction to cpu, so that it can be plotted
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
-        vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
-        # vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
+        # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
+        vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
 
 logger.info("Test Step finished!")
 
