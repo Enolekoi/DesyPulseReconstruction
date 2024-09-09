@@ -476,7 +476,7 @@ class ReadLabelFromEsComplex(object):
 
         # label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
         label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
-        label = torch.from_numpy(label).half
+        label = torch.from_numpy(label)
         return label
 
 class Scaler(object):
@@ -536,7 +536,8 @@ class ScaleLabel(object):
             scaled_label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
                 scaled to [-1,1] [tensor]
         '''
-        length_label = label.size()
+        print(type(label))
+        length_label = label
         half_size = int(length_label //2)
         intensity = label[:half_size]  # First half -> intensity
         phase = label[half_size:]      # Second half -> phase
