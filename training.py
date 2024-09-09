@@ -173,7 +173,6 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
 
 # plot training loss
 vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
-logger.info(f"Saved plot of training loss! to {config.loss_plot_filepath}!")
 logger.info("Training finished!")
 
 # Write state_dict of model to file
