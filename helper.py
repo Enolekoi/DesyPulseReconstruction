@@ -39,7 +39,7 @@ class CustomDenseNet(nn.Module):
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
         self.densenet.classifier = nn.Linear(num_features, 1024)
-        self.fc1 = nn.Linear(1024, num_outputs*256)
+        self.fc1 = nn.Linear(1024, num_outputs)
         # self.densenet.classifier = nn.Linear(num_features, num_outputs)
         self.num_outputs = num_outputs
 
@@ -56,18 +56,10 @@ class CustomDenseNet(nn.Module):
         x = self.densenet(spectrogram)
         x = torch.relu(x)
         x = self.fc1(x)
-        x = x.view(-1, self.num_outputs, 256)
-        quantisierung = nn.functional.softmax(x, dim=2)
-        # Erzeuge einen gewichteten Mittelwert der Quantisierungsstufen basierend auf den Wahrscheinlichkeiten
-        quantisierungsstufen = torch.linspace(0, 1, 256).to(x.device)
         
-        # Multipliziere die Wahrscheinlichkeiten mit den Quantisierungsstufen und summiere auf
-        quantisierte_werte = torch.sum(quantisierung * quantisierungsstufen, dim=2)
-        # quantisierte_werte = quantisierte_klassen.float() / (256 -1)
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
-        # x = torch.tanh(x)
-        return quantisierte_werte
-        # return x
+        x = torch.tanh(x)
+        return x
 
 '''
 TimeDomain()
