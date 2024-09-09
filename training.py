@@ -70,7 +70,6 @@ logger.info("Loading Model...")
 model = helper.CustomDenseNet(
     num_outputs=2*config.OUTPUT_SIZE
     )
-
 model.float()
 model.to(device)
 model.eval()
@@ -121,13 +120,13 @@ logger.info(f"Starting training...")
 # loss function
 # criterion = nn.MSELoss()
 criterion = helper.PulseRetrievalLossFunction(
-        penalty_factor=2.0,
+        penalty_factor=3.0,
         threshold=0.01
         )
 
 # optimizer used
-optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
-# optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+# optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 # optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
 
 # scheduler for changing learning rate after each epoch
@@ -160,9 +159,9 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10f}")
         # Write loss into array
         loss_values.append(loss.item())
-    # scheduler.step()
-    # new_lr = scheduler.get_last_lr()
-    # logger.info(f"New learning rate: {new_lr}")
+    scheduler.step()
+    new_lr = scheduler.get_last_lr()
+    logger.info(f"New learning rate: {new_lr}")
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
