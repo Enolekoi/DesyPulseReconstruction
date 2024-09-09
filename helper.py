@@ -536,9 +536,7 @@ class ScaleLabel(object):
             scaled_label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase
                 scaled to [-1,1] [tensor]
         '''
-        print(type(label))
         length_label = len(label)
-        print(length_label)
         half_size = int(length_label //2)
         intensity = label[:half_size]  # First half -> intensity
         phase = label[half_size:]      # Second half -> phase
