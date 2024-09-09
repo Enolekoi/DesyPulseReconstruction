@@ -1,0 +1,153 @@
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Writing into log file: ./logs/training_9.log
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_512_v2/
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Noise level used: as_gn00.dat
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Batch size: 10 elements
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Number of epochs: 3
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Initial learning rate: 0.001
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+09-09-2024 18:40:02 - __main__ - <module> - INFO: Loading Model...
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Loading Model finished!
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Loading Data...
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Size of dataset: 5000
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Size of training data:   4000
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Size of validation data: 500
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Size of test data:       500
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Finished loading data!
+09-09-2024 18:40:03 - __main__ - <module> - INFO: Starting training...
+09-09-2024 18:40:25 - __main__ - <module> - INFO: Epoch 1 / 3, Step 10 / 400, Loss = 0.0303683188
+09-09-2024 18:40:47 - __main__ - <module> - INFO: Epoch 1 / 3, Step 20 / 400, Loss = 0.0167128909
+09-09-2024 18:41:09 - __main__ - <module> - INFO: Epoch 1 / 3, Step 30 / 400, Loss = 0.0197321679
+09-09-2024 18:41:32 - __main__ - <module> - INFO: Epoch 1 / 3, Step 40 / 400, Loss = 0.0193801578
+09-09-2024 18:41:54 - __main__ - <module> - INFO: Epoch 1 / 3, Step 50 / 400, Loss = 0.0158256982
+09-09-2024 18:42:16 - __main__ - <module> - INFO: Epoch 1 / 3, Step 60 / 400, Loss = 0.0197220091
+09-09-2024 18:42:38 - __main__ - <module> - INFO: Epoch 1 / 3, Step 70 / 400, Loss = 0.0373945273
+09-09-2024 18:43:01 - __main__ - <module> - INFO: Epoch 1 / 3, Step 80 / 400, Loss = 0.0130985053
+09-09-2024 18:43:23 - __main__ - <module> - INFO: Epoch 1 / 3, Step 90 / 400, Loss = 0.0173946973
+09-09-2024 18:43:45 - __main__ - <module> - INFO: Epoch 1 / 3, Step 100 / 400, Loss = 0.0221496429
+09-09-2024 18:44:08 - __main__ - <module> - INFO: Epoch 1 / 3, Step 110 / 400, Loss = 0.0156786814
+09-09-2024 18:44:30 - __main__ - <module> - INFO: Epoch 1 / 3, Step 120 / 400, Loss = 0.0195735656
+09-09-2024 18:44:53 - __main__ - <module> - INFO: Epoch 1 / 3, Step 130 / 400, Loss = 0.0196541920
+09-09-2024 18:45:15 - __main__ - <module> - INFO: Epoch 1 / 3, Step 140 / 400, Loss = 0.0350218378
+09-09-2024 18:45:37 - __main__ - <module> - INFO: Epoch 1 / 3, Step 150 / 400, Loss = 0.0228560977
+09-09-2024 18:46:00 - __main__ - <module> - INFO: Epoch 1 / 3, Step 160 / 400, Loss = 0.0243821125
+09-09-2024 18:46:22 - __main__ - <module> - INFO: Epoch 1 / 3, Step 170 / 400, Loss = 0.0315269604
+09-09-2024 18:46:44 - __main__ - <module> - INFO: Epoch 1 / 3, Step 180 / 400, Loss = 0.0184997525
+09-09-2024 18:47:07 - __main__ - <module> - INFO: Epoch 1 / 3, Step 190 / 400, Loss = 0.0125254663
+09-09-2024 18:47:29 - __main__ - <module> - INFO: Epoch 1 / 3, Step 200 / 400, Loss = 0.0143023496
+09-09-2024 18:47:52 - __main__ - <module> - INFO: Epoch 1 / 3, Step 210 / 400, Loss = 0.0182343908
+09-09-2024 18:48:14 - __main__ - <module> - INFO: Epoch 1 / 3, Step 220 / 400, Loss = 0.0228868220
+09-09-2024 18:48:36 - __main__ - <module> - INFO: Epoch 1 / 3, Step 230 / 400, Loss = 0.0189986881
+09-09-2024 18:48:59 - __main__ - <module> - INFO: Epoch 1 / 3, Step 240 / 400, Loss = 0.0196244698
+09-09-2024 18:49:21 - __main__ - <module> - INFO: Epoch 1 / 3, Step 250 / 400, Loss = 0.0167678054
+09-09-2024 18:49:43 - __main__ - <module> - INFO: Epoch 1 / 3, Step 260 / 400, Loss = 0.0154711222
+09-09-2024 18:50:06 - __main__ - <module> - INFO: Epoch 1 / 3, Step 270 / 400, Loss = 0.0208322052
+09-09-2024 18:50:28 - __main__ - <module> - INFO: Epoch 1 / 3, Step 280 / 400, Loss = 0.0288579967
+09-09-2024 18:50:50 - __main__ - <module> - INFO: Epoch 1 / 3, Step 290 / 400, Loss = 0.0202869233
+09-09-2024 18:51:13 - __main__ - <module> - INFO: Epoch 1 / 3, Step 300 / 400, Loss = 0.0161358751
+09-09-2024 18:51:35 - __main__ - <module> - INFO: Epoch 1 / 3, Step 310 / 400, Loss = 0.0222601127
+09-09-2024 18:51:57 - __main__ - <module> - INFO: Epoch 1 / 3, Step 320 / 400, Loss = 0.0317562111
+09-09-2024 18:52:20 - __main__ - <module> - INFO: Epoch 1 / 3, Step 330 / 400, Loss = 0.0223147273
+09-09-2024 18:52:42 - __main__ - <module> - INFO: Epoch 1 / 3, Step 340 / 400, Loss = 0.0176444016
+09-09-2024 18:53:04 - __main__ - <module> - INFO: Epoch 1 / 3, Step 350 / 400, Loss = 0.0278741568
+09-09-2024 18:53:27 - __main__ - <module> - INFO: Epoch 1 / 3, Step 360 / 400, Loss = 0.0296030045
+09-09-2024 18:53:49 - __main__ - <module> - INFO: Epoch 1 / 3, Step 370 / 400, Loss = 0.0205056667
+09-09-2024 18:54:11 - __main__ - <module> - INFO: Epoch 1 / 3, Step 380 / 400, Loss = 0.0332235470
+09-09-2024 18:54:34 - __main__ - <module> - INFO: Epoch 1 / 3, Step 390 / 400, Loss = 0.0315455012
+09-09-2024 18:54:56 - __main__ - <module> - INFO: Epoch 1 / 3, Step 400 / 400, Loss = 0.0303295646
+09-09-2024 18:54:56 - __main__ - <module> - INFO: New learning rate: [0.0001]
+09-09-2024 18:54:56 - __main__ - <module> - INFO: Starting Validation for epoch 1 / 3
+09-09-2024 18:56:37 - __main__ - <module> - INFO: Validation Loss: 0.0213070332
+09-09-2024 18:56:59 - __main__ - <module> - INFO: Epoch 2 / 3, Step 10 / 400, Loss = 0.0133250272
+09-09-2024 18:57:21 - __main__ - <module> - INFO: Epoch 2 / 3, Step 20 / 400, Loss = 0.0301565882
+09-09-2024 18:57:43 - __main__ - <module> - INFO: Epoch 2 / 3, Step 30 / 400, Loss = 0.0295869056
+09-09-2024 18:58:06 - __main__ - <module> - INFO: Epoch 2 / 3, Step 40 / 400, Loss = 0.0179371480
+09-09-2024 18:58:28 - __main__ - <module> - INFO: Epoch 2 / 3, Step 50 / 400, Loss = 0.0302934591
+09-09-2024 18:58:50 - __main__ - <module> - INFO: Epoch 2 / 3, Step 60 / 400, Loss = 0.0168885477
+09-09-2024 18:59:12 - __main__ - <module> - INFO: Epoch 2 / 3, Step 70 / 400, Loss = 0.0160493571
+09-09-2024 18:59:34 - __main__ - <module> - INFO: Epoch 2 / 3, Step 80 / 400, Loss = 0.0200164802
+09-09-2024 18:59:56 - __main__ - <module> - INFO: Epoch 2 / 3, Step 90 / 400, Loss = 0.0399811715
+09-09-2024 19:00:18 - __main__ - <module> - INFO: Epoch 2 / 3, Step 100 / 400, Loss = 0.0211743172
+09-09-2024 19:00:41 - __main__ - <module> - INFO: Epoch 2 / 3, Step 110 / 400, Loss = 0.0339027122
+09-09-2024 19:01:03 - __main__ - <module> - INFO: Epoch 2 / 3, Step 120 / 400, Loss = 0.0222958792
+09-09-2024 19:01:25 - __main__ - <module> - INFO: Epoch 2 / 3, Step 130 / 400, Loss = 0.0338067524
+09-09-2024 19:01:47 - __main__ - <module> - INFO: Epoch 2 / 3, Step 140 / 400, Loss = 0.0191453975
+09-09-2024 19:02:09 - __main__ - <module> - INFO: Epoch 2 / 3, Step 150 / 400, Loss = 0.0249988418
+09-09-2024 19:02:31 - __main__ - <module> - INFO: Epoch 2 / 3, Step 160 / 400, Loss = 0.0299837720
+09-09-2024 19:02:54 - __main__ - <module> - INFO: Epoch 2 / 3, Step 170 / 400, Loss = 0.0179813579
+09-09-2024 19:03:16 - __main__ - <module> - INFO: Epoch 2 / 3, Step 180 / 400, Loss = 0.0294548124
+09-09-2024 19:03:38 - __main__ - <module> - INFO: Epoch 2 / 3, Step 190 / 400, Loss = 0.0187349599
+09-09-2024 19:04:00 - __main__ - <module> - INFO: Epoch 2 / 3, Step 200 / 400, Loss = 0.0187963583
+09-09-2024 19:04:22 - __main__ - <module> - INFO: Epoch 2 / 3, Step 210 / 400, Loss = 0.0279269870
+09-09-2024 19:04:45 - __main__ - <module> - INFO: Epoch 2 / 3, Step 220 / 400, Loss = 0.0158846695
+09-09-2024 19:05:07 - __main__ - <module> - INFO: Epoch 2 / 3, Step 230 / 400, Loss = 0.0219478253
+09-09-2024 19:05:29 - __main__ - <module> - INFO: Epoch 2 / 3, Step 240 / 400, Loss = 0.0263002515
+09-09-2024 19:05:51 - __main__ - <module> - INFO: Epoch 2 / 3, Step 250 / 400, Loss = 0.0169736575
+09-09-2024 19:06:13 - __main__ - <module> - INFO: Epoch 2 / 3, Step 260 / 400, Loss = 0.0259055737
+09-09-2024 19:06:35 - __main__ - <module> - INFO: Epoch 2 / 3, Step 270 / 400, Loss = 0.0248484742
+09-09-2024 19:06:57 - __main__ - <module> - INFO: Epoch 2 / 3, Step 280 / 400, Loss = 0.0186162498
+09-09-2024 19:07:19 - __main__ - <module> - INFO: Epoch 2 / 3, Step 290 / 400, Loss = 0.0142115504
+09-09-2024 19:07:42 - __main__ - <module> - INFO: Epoch 2 / 3, Step 300 / 400, Loss = 0.0232793298
+09-09-2024 19:08:04 - __main__ - <module> - INFO: Epoch 2 / 3, Step 310 / 400, Loss = 0.0221420992
+09-09-2024 19:08:25 - __main__ - <module> - INFO: Epoch 2 / 3, Step 320 / 400, Loss = 0.0300023742
+09-09-2024 19:08:47 - __main__ - <module> - INFO: Epoch 2 / 3, Step 330 / 400, Loss = 0.0184886456
+09-09-2024 19:09:08 - __main__ - <module> - INFO: Epoch 2 / 3, Step 340 / 400, Loss = 0.0184975937
+09-09-2024 19:09:30 - __main__ - <module> - INFO: Epoch 2 / 3, Step 350 / 400, Loss = 0.0270964205
+09-09-2024 19:09:51 - __main__ - <module> - INFO: Epoch 2 / 3, Step 360 / 400, Loss = 0.0273498986
+09-09-2024 19:10:13 - __main__ - <module> - INFO: Epoch 2 / 3, Step 370 / 400, Loss = 0.0137086678
+09-09-2024 19:10:34 - __main__ - <module> - INFO: Epoch 2 / 3, Step 380 / 400, Loss = 0.0129599217
+09-09-2024 19:10:56 - __main__ - <module> - INFO: Epoch 2 / 3, Step 390 / 400, Loss = 0.0253866315
+09-09-2024 19:11:17 - __main__ - <module> - INFO: Epoch 2 / 3, Step 400 / 400, Loss = 0.0173338186
+09-09-2024 19:11:17 - __main__ - <module> - INFO: New learning rate: [1e-05]
+09-09-2024 19:11:17 - __main__ - <module> - INFO: Starting Validation for epoch 2 / 3
+09-09-2024 19:12:55 - __main__ - <module> - INFO: Validation Loss: 0.0212875446
+09-09-2024 19:13:16 - __main__ - <module> - INFO: Epoch 3 / 3, Step 10 / 400, Loss = 0.0156881660
+09-09-2024 19:13:38 - __main__ - <module> - INFO: Epoch 3 / 3, Step 20 / 400, Loss = 0.0352686308
+09-09-2024 19:13:59 - __main__ - <module> - INFO: Epoch 3 / 3, Step 30 / 400, Loss = 0.0182692744
+09-09-2024 19:14:21 - __main__ - <module> - INFO: Epoch 3 / 3, Step 40 / 400, Loss = 0.0141475750
+09-09-2024 19:14:42 - __main__ - <module> - INFO: Epoch 3 / 3, Step 50 / 400, Loss = 0.0263794605
+09-09-2024 19:15:04 - __main__ - <module> - INFO: Epoch 3 / 3, Step 60 / 400, Loss = 0.0366105996
+09-09-2024 19:15:25 - __main__ - <module> - INFO: Epoch 3 / 3, Step 70 / 400, Loss = 0.0240915101
+09-09-2024 19:15:47 - __main__ - <module> - INFO: Epoch 3 / 3, Step 80 / 400, Loss = 0.0150900204
+09-09-2024 19:16:08 - __main__ - <module> - INFO: Epoch 3 / 3, Step 90 / 400, Loss = 0.0152156567
+09-09-2024 19:16:30 - __main__ - <module> - INFO: Epoch 3 / 3, Step 100 / 400, Loss = 0.0313969143
+09-09-2024 19:16:52 - __main__ - <module> - INFO: Epoch 3 / 3, Step 110 / 400, Loss = 0.0276955254
+09-09-2024 19:17:14 - __main__ - <module> - INFO: Epoch 3 / 3, Step 120 / 400, Loss = 0.0254414920
+09-09-2024 19:17:36 - __main__ - <module> - INFO: Epoch 3 / 3, Step 130 / 400, Loss = 0.0141241541
+09-09-2024 19:17:58 - __main__ - <module> - INFO: Epoch 3 / 3, Step 140 / 400, Loss = 0.0294482168
+09-09-2024 19:18:20 - __main__ - <module> - INFO: Epoch 3 / 3, Step 150 / 400, Loss = 0.0176408291
+09-09-2024 19:18:42 - __main__ - <module> - INFO: Epoch 3 / 3, Step 160 / 400, Loss = 0.0139280055
+09-09-2024 19:19:04 - __main__ - <module> - INFO: Epoch 3 / 3, Step 170 / 400, Loss = 0.0264006108
+09-09-2024 19:19:26 - __main__ - <module> - INFO: Epoch 3 / 3, Step 180 / 400, Loss = 0.0204718541
+09-09-2024 19:19:48 - __main__ - <module> - INFO: Epoch 3 / 3, Step 190 / 400, Loss = 0.0146676050
+09-09-2024 19:20:10 - __main__ - <module> - INFO: Epoch 3 / 3, Step 200 / 400, Loss = 0.0181955863
+09-09-2024 19:20:32 - __main__ - <module> - INFO: Epoch 3 / 3, Step 210 / 400, Loss = 0.0173879135
+09-09-2024 19:20:54 - __main__ - <module> - INFO: Epoch 3 / 3, Step 220 / 400, Loss = 0.0148814693
+09-09-2024 19:21:16 - __main__ - <module> - INFO: Epoch 3 / 3, Step 230 / 400, Loss = 0.0235759523
+09-09-2024 19:21:38 - __main__ - <module> - INFO: Epoch 3 / 3, Step 240 / 400, Loss = 0.0405540280
+09-09-2024 19:22:00 - __main__ - <module> - INFO: Epoch 3 / 3, Step 250 / 400, Loss = 0.0189466774
+09-09-2024 19:22:22 - __main__ - <module> - INFO: Epoch 3 / 3, Step 260 / 400, Loss = 0.0211063921
+09-09-2024 19:22:44 - __main__ - <module> - INFO: Epoch 3 / 3, Step 270 / 400, Loss = 0.0285803713
+09-09-2024 19:23:06 - __main__ - <module> - INFO: Epoch 3 / 3, Step 280 / 400, Loss = 0.0198127721
+09-09-2024 19:23:28 - __main__ - <module> - INFO: Epoch 3 / 3, Step 290 / 400, Loss = 0.0296518058
+09-09-2024 19:23:50 - __main__ - <module> - INFO: Epoch 3 / 3, Step 300 / 400, Loss = 0.0117710410
+09-09-2024 19:24:12 - __main__ - <module> - INFO: Epoch 3 / 3, Step 310 / 400, Loss = 0.0197571833
+09-09-2024 19:24:34 - __main__ - <module> - INFO: Epoch 3 / 3, Step 320 / 400, Loss = 0.0132746650
+09-09-2024 19:24:56 - __main__ - <module> - INFO: Epoch 3 / 3, Step 330 / 400, Loss = 0.0273051262
+09-09-2024 19:25:18 - __main__ - <module> - INFO: Epoch 3 / 3, Step 340 / 400, Loss = 0.0253286008
+09-09-2024 19:25:40 - __main__ - <module> - INFO: Epoch 3 / 3, Step 350 / 400, Loss = 0.0177828427
+09-09-2024 19:26:02 - __main__ - <module> - INFO: Epoch 3 / 3, Step 360 / 400, Loss = 0.0323068090
+09-09-2024 19:26:24 - __main__ - <module> - INFO: Epoch 3 / 3, Step 370 / 400, Loss = 0.0137113351
+09-09-2024 19:26:46 - __main__ - <module> - INFO: Epoch 3 / 3, Step 380 / 400, Loss = 0.0106232110
+09-09-2024 19:27:08 - __main__ - <module> - INFO: Epoch 3 / 3, Step 390 / 400, Loss = 0.0396884792
+09-09-2024 19:27:30 - __main__ - <module> - INFO: Epoch 3 / 3, Step 400 / 400, Loss = 0.0222205967
+09-09-2024 19:27:30 - __main__ - <module> - INFO: New learning rate: [1.0000000000000002e-06]
+09-09-2024 19:27:30 - __main__ - <module> - INFO: Starting Validation for epoch 3 / 3
+09-09-2024 19:29:11 - __main__ - <module> - INFO: Validation Loss: 0.0212869534
+09-09-2024 19:29:11 - visualize - save_plot_training_loss - INFO: Plot writen to ./logs/training_loss_9.png
+09-09-2024 19:29:11 - __main__ - <module> - INFO: Training finished!
+09-09-2024 19:29:11 - __main__ - <module> - INFO: Saved Model
+09-09-2024 19:29:11 - __main__ - <module> - INFO: Starting Test Step...
+09-09-2024 19:30:52 - __main__ - <module> - INFO: Test Loss: 0.0229025313
+09-09-2024 19:30:52 - visualize - compareTimeDomainComplex - INFO: Saved comparison of random prediction and label to ./random_test_prediction.png
+09-09-2024 19:30:52 - __main__ - <module> - INFO: Test Step finished!
