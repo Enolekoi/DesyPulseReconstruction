@@ -120,7 +120,7 @@ logger.info(f"Starting training...")
 # loss function
 # criterion = nn.MSELoss()
 criterion = helper.PulseRetrievalLossFunction(
-        penalty_factor=3.0,
+        penalty_factor=0.3,
         threshold=0.01
         )
 
