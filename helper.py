@@ -538,7 +538,7 @@ class ScaleLabel(object):
         '''
         print(type(label))
         length_label = len(label)
-        print(lenght_label)
+        print(length_label)
         half_size = int(length_label //2)
         intensity = label[:half_size]  # First half -> intensity
         phase = label[half_size:]      # Second half -> phase
