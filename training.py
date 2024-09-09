@@ -122,8 +122,9 @@ logger.info(f"Starting training...")
 # loss function
 criterion = nn.MSELoss()
 # optimizer used
+optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
 # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
+# optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
 # scheduler for changing learning rate after each epoch
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
 # list containing all loss values
