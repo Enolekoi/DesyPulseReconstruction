@@ -631,7 +631,7 @@ class PulseRetrievalLossFunction(nn.Module):
         # print(f"label size = {labels}")
         
         # get the number of batches, as well as the shape of the labels
-        batch_size, num_elements = label.shape
+        batch_size, num_elements = labels.shape
         # get half of elements
         half_size = num_elements // 2
 
