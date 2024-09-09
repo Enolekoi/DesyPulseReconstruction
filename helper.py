@@ -636,11 +636,11 @@ class PulseRetrievalLossFunction(nn.Module):
         half_size = num_elements // 2
 
         # get real and imaginary parts of labels and predictions
-        labels_real = labels[:, half_size]
-        labels_imag = labels[half_size, :]
+        labels_real = labels[:, :half_size]
+        labels_imag = labels[:, half_size:]
 
-        predictions_real = predictions[:, half_size]
-        predictions_imag = predictions[half_size, :]
+        predictions_real = predictions[:, :half_size]
+        predictions_imag = predictions[:, half_size:]
         
         # initialize loss
         loss = 0.0
