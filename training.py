@@ -37,7 +37,6 @@ logging.basicConfig(
             ]
 )
 logger = logging.getLogger(__name__)
-
 # Log some information
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
@@ -120,13 +119,20 @@ logger.info(f"Starting training...")
 ## loss and optimizer ##
 ########################
 # loss function
-criterion = nn.MSELoss()
+# criterion = nn.MSELoss()
+criterion = helper.PulseRetrievalLossFunction(
+        penalty_factor=2.0,
+        threshold=0.01
+        )
+
 # optimizer used
 optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
 # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 # optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
+
 # scheduler for changing learning rate after each epoch
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
+
 # list containing all loss values
 loss_values = []
 
@@ -144,9 +150,9 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         loss = criterion(outputs, labels)   # [float]
 
         # Backward pass
-        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        optimizer.zero_grad()
 
         # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
         if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
