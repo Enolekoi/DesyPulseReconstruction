@@ -122,7 +122,8 @@ logger.info(f"Starting training...")
 # loss function
 criterion = nn.MSELoss()
 # optimizer used
-optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+# optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
 # scheduler for changing learning rate after each epoch
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
 # list containing all loss values
@@ -152,9 +153,9 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10f}")
         # Write loss into array
         loss_values.append(loss.item())
-    scheduler.step()
-    new_lr = scheduler.get_last_lr()
-    logger.info(f"New learning rate: {new_lr}")
+    # scheduler.step()
+    # new_lr = scheduler.get_last_lr()
+    # logger.info(f"New learning rate: {new_lr}")
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
