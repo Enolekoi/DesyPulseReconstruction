@@ -55,10 +55,10 @@ class CustomDenseNet(nn.Module):
         # half_size = int(self.num_outputs //2)
         # get the output of the densenet
         x = self.densenet(spectrogram)
-        x = torch.relu(x)
-        x = self.fc1(x)
-        x = torch.relu(x)
-        x = self.fc2(x)
+        # x = torch.relu(x)
+        # x = self.fc1(x)
+        # x = torch.relu(x)
+        # x = self.fc2(x)
         
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
         x = torch.tanh(x)
