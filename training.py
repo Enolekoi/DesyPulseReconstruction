@@ -133,7 +133,12 @@ optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.5)
 
 # list containing all loss values
-loss_values = []
+training_losses = []
+validation_losses = []
+learning_rates = []
+
+# save initial learning_rate
+learning_rates.append(config.LEARNING_RATE)
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     model.train()       
@@ -158,28 +163,38 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
             logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10f}")
         # Write loss into array
-        loss_values.append(loss.item())
+        training_losses.append(loss.item())
+    # get new learning_rate
     scheduler.step()
+    # write new learning rate in variable
     new_lr = scheduler.get_last_lr()
+    # save new learning_rate
+    learning_rates.append(new_lr)
     logger.info(f"New learning rate: {new_lr}")
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
     with torch.no_grad():   # disable gradient computation for evaluation
-        val_losses = []     # list containing all validation losses (resets after each epoch)
         for spectrograms, labels in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
             spectrograms = spectrograms.float().to(device)  # send spectrogram to device
             labels = labels.float().to(device)  # send label to device
 
             outputs = model(spectrograms)   # calculate prediction
-            val_loss = criterion(outputs, labels)   # calcultate validation loss
-            val_losses.append(val_loss.item())  # plave validation loss into list
+            validation_loss = criterion(outputs, labels)   # calcultate validation loss
+            validation_losses.append(validation_loss.item())  # plave validation loss into list
 
-        avg_val_loss = np.mean(val_losses)  # calculate validation loss for this epoch
+        avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
     logger.info(f"Validation Loss: {avg_val_loss:.10f}")
 
 # plot training loss
-vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
+vis.save_plot_training_loss(
+        training_loss = training_losses,
+        validation_loss = validation_losses,
+        learning_rates = learning_rates,
+        size_test_data = test_size,
+        num_epochs = config.NUM_EPOCHS,
+        filepath = f"{config.loss_plot_filepath}"
+        )
 logger.info("Training finished!")
 
 # Write state_dict of model to file
