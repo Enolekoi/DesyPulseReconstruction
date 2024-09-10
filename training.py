@@ -191,7 +191,7 @@ vis.save_plot_training_loss(
         training_loss = training_losses,
         validation_loss = validation_losses,
         learning_rates = learning_rates,
-        size_test_data = test_size,
+        num_steps = test_size // config.BATCH_SIZE,
         num_epochs = config.NUM_EPOCHS,
         filepath = f"{config.loss_plot_filepath}"
         )
