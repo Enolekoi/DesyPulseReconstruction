@@ -12,7 +12,8 @@ Inputs:
     loss_values     -> Array containing training loss values
     filepath        -> File to write plot to
 '''
-def save_plot_training_loss(training_loss, validation_loss, learning_rates, num_steps, num_epochs, filepath):
+def save_plot_training_loss(training_loss, validation_loss, learning_rates, test_size, num_epochs, filepath):
+    num_steps = test_size * num_epochs
     # create the x-Axis
     steps = np.arange(num_steps)
     # calculate how many steps are needed for each epoch
@@ -51,7 +52,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, num_
     # Plot learning rates
     ax1_learning_rate = ax1.twinx()
     ax1_learning_rate.plot(
-            np.arange(steps_per_epoch, size_test_data+1, steps_per_epoch), 
+            np.arange(steps_per_epoch, num_steps+1, steps_per_epoch), 
             learning_rates, 
             label='Learning Rate', 
             color='green', 
@@ -96,7 +97,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, num_
     # Plot learning rates
     ax2_learning_rate = ax1.twinx()
     ax2_learning_rate.plot(
-            np.arange(steps_per_epoch, size_test_data+1, steps_per_epoch), 
+            np.arange(steps_per_epoch, num_steps+1, steps_per_epoch), 
             learning_rates, 
             label='Learning Rate', 
             color='green', 
