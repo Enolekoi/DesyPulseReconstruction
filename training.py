@@ -164,13 +164,14 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10f}")
         # Write loss into array
         training_losses.append(loss.item())
-    # get new learning_rate
-    scheduler.step()
-    # write new learning rate in variable
-    new_lr = scheduler.get_last_lr()
-    # save new learning_rate
-    learning_rates.append(new_lr)
-    logger.info(f"New learning rate: {new_lr}")
+    if (epoch < config.NUM_EPOCHS):
+        # get new learning_rate
+        scheduler.step()
+        # write new learning rate in variable
+        new_lr = scheduler.get_last_lr()
+        # save new learning_rate 
+        learning_rates.append(new_lr)
+        logger.info(f"New learning rate: {new_lr}")
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
