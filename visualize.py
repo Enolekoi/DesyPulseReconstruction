@@ -41,7 +41,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     epoch_ticks = np.arange(steps_per_epoch, num_steps + 1, steps_per_epoch)
     epoch_labels = [f'Epoch {i+1}' for i in range(num_epochs)]
     ax1.set_xticks(epoch_ticks)
-    ax1.set_xticklabels(epoch_labels, rotaion=45)
+    ax1.set_xticklabels(epoch_labels, rotation=45)
     
     # print some information
     ax1.set_xlabel('Number of Steps')
