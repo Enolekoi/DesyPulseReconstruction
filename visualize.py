@@ -12,8 +12,8 @@ Inputs:
     loss_values     -> Array containing training loss values
     filepath        -> File to write plot to
 '''
-def save_plot_training_loss(training_loss, validation_loss, learning_rates, test_size, num_epochs, filepath):
-    num_steps = test_size * num_epochs
+def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
+    num_steps = train_size * num_epochs
     # create the x-Axis
     steps = np.arange(num_steps)
     # calculate how many steps are needed for each epoch
