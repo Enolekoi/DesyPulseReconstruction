@@ -12,14 +12,103 @@ Inputs:
     loss_values     -> Array containing training loss values
     filepath        -> File to write plot to
 '''
-def save_plot_training_loss(loss_values, filepath):
+def save_plot_training_loss(training_loss, validation_loss, learning_rates, size_test_data, num_epochs, filepath):
+    # create the x-Axis
+    steps = np.arange(size_test_data)
+    # calculate how many steps are needed for each epoch
+    steps_per_epoch = size_test_data // num_epochs
+
+    # Create a subplot
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10,10))
+
+    #############################
+    ## Linear Scale Plot (ax1) ##
+    #############################   
 
     # plot training loss over time
-    plt.plot(loss_values)
-    plt.xlabel('Number of Steps')
-    plt.ylabel('Loss (logarithmic)')
-    plt.yscale('log')
-    plt.title('Training loss over time')
+    ax1.plot(steps, training_loss, label='Training loss', color='blue')
+    # plot the validation_loss for each epoch
+    for epoch in range(num_epochs):
+        start = epoch * steps_per_epoch
+        end = (epoch +1) * steps_per_epoch
+        if epoch == 0:
+            ax1.hlines(validation_loss[epoch], start, end, label='validation loss', color='red', linestyle='dashed')
+        else:
+            ax1.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
+    
+    # Epoch ticks
+    epoch_ticks = np.arange(steps_per_epoch, size_test_data + 1, steps_per_epoch)
+    epoch_labels = [f'Epoch {i+1}' for i in range(num_epochs)]
+    ax1.set_xticks(epoch_ticks)
+    ax1.set_xticklabels(epoch_labels, rotaion=45)
+    
+    # print some information
+    ax1.set_xlabel('Number of Steps')
+    ax1.set_ylabel('Loss (linear)')
+    ax1.grid(True)
+    ax1.set_title('Training loss over time (linear)')
+    
+    # Plot learning rates
+    ax1_learning_rate = ax1.twinx()
+    ax1_learning_rate.plot(
+            np.arange(steps_per_epoch, size_test_data+1, steps_per_epoch), 
+            learning_rates, 
+            label='Learning Rate', 
+            color='green', 
+            marker='o'
+            )
+    ax1_learning_rate.set_ylabel('Learning Rate')
+
+    # Combine legends from both axes
+    lines_1, labels_1 = ax1.get_legend_handles_labels()
+    lines_2, labels_2 = ax1_learning_rate.get_legend_handles_labels()
+    ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
+
+    ##################################
+    ## Logarithmic Scale Plot (ax2) ##
+    ##################################
+
+    # plot training loss over time
+    ax2.plot(steps, training_loss, label='Training loss', color='blue')
+    
+    # Set y-axis to log scale
+    ax2.set_yscale('log')
+    
+    # plot the validation_loss for each epoch
+    for epoch in range(num_epochs):
+        start = epoch * steps_per_epoch
+        end = (epoch +1) * steps_per_epoch
+        if epoch == 0:
+            ax2.hlines(validation_loss[epoch], start, end, label='validation loss', color='red', linestyle='dashed')
+        else:
+            ax2.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
+    
+    # Epoch ticks
+    ax2.set_xticks(epoch_ticks)
+    ax2.set_xticklabels(epoch_labels, rotaion=45)
+    
+    # print some information
+    ax2.set_xlabel('Number of Steps')
+    ax2.set_ylabel('Loss (logarithmic)')
+    ax2.grid(True)
+    ax2.set_title('Training loss over time (logarithmic)')
+    
+    # Plot learning rates
+    ax2_learning_rate = ax1.twinx()
+    ax2_learning_rate.plot(
+            np.arange(steps_per_epoch, size_test_data+1, steps_per_epoch), 
+            learning_rates, 
+            label='Learning Rate', 
+            color='green', 
+            marker='o'
+            )
+    ax1_learning_rate.set_ylabel('Learning Rate')
+
+    # Combine legends from both axes
+    lines_1, labels_1 = ax2.get_legend_handles_labels()
+    lines_2, labels_2 = ax2_learning_rate.get_legend_handles_labels()
+    ax2.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
+
     plt.savefig(filepath)
     plt.close()
 
