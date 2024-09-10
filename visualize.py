@@ -12,11 +12,11 @@ Inputs:
     loss_values     -> Array containing training loss values
     filepath        -> File to write plot to
 '''
-def save_plot_training_loss(training_loss, validation_loss, learning_rates, size_test_data, num_epochs, filepath):
+def save_plot_training_loss(training_loss, validation_loss, learning_rates, num_steps, num_epochs, filepath):
     # create the x-Axis
-    steps = np.arange(size_test_data)
+    steps = np.arange(num_steps)
     # calculate how many steps are needed for each epoch
-    steps_per_epoch = size_test_data // num_epochs
+    steps_per_epoch = num_steps // num_epochs
 
     # Create a subplot
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10,10))
@@ -37,7 +37,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, size
             ax1.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
     
     # Epoch ticks
-    epoch_ticks = np.arange(steps_per_epoch, size_test_data + 1, steps_per_epoch)
+    epoch_ticks = np.arange(steps_per_epoch, num_steps + 1, steps_per_epoch)
     epoch_labels = [f'Epoch {i+1}' for i in range(num_epochs)]
     ax1.set_xticks(epoch_ticks)
     ax1.set_xticklabels(epoch_labels, rotaion=45)
