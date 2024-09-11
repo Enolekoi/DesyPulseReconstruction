@@ -167,7 +167,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # get new learning_rate
         scheduler.step()
         # write new learning rate in variable
-        new_lr = scheduler.get_last_lr()
+        new_lr = scheduler.get_last_lr()[0]
         # save new learning_rate 
         learning_rates.append(new_lr)
         logger.info(f"New learning rate: {new_lr}")
