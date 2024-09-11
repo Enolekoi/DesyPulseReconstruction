@@ -13,11 +13,6 @@ Inputs:
     filepath        -> File to write plot to
 '''
 def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
-    training_loss = np.array(training_loss)
-    validation_loss = np.array(validation_loss)
-    print(learning_rates)
-    # learning_rates = np.array(learning_rates)
-
     num_steps = train_size * num_epochs
     # create the x-Axis
     steps = np.arange(num_steps)
@@ -93,7 +88,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     
     # Epoch ticks
     ax2.set_xticks(epoch_ticks)
-    ax2.set_xticklabels(epoch_labels, rotaion=45)
+    ax2.set_xticklabels(epoch_labels, rotation=45)
     
     # print some information
     ax2.set_xlabel('Number of Steps')
