@@ -50,7 +50,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     ax1.set_title('Training loss over time (linear)')
     
     # Plot learning rates
-    print(learning_rates.shape)
+    print(np.shape(learning_rates))
     print(type(learning_rates))
     ax1_learning_rate = ax1.twinx()
     ax1_learning_rate.plot(
