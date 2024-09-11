@@ -8,7 +8,8 @@ import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader, random_split, Subset import matplotlib matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering import matplotlib.pyplot as plt
+from torch.utils.data import Dataset, DataLoader, random_split, Subset 
+import matplotlib matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering import matplotlib.pyplot as plt
 
 import random
 import logging
@@ -188,7 +189,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
 vis.save_plot_training_loss(
         training_loss = training_losses,
         validation_loss = validation_losses,
-        learning_rates = learning_rates.flatten(),
+        learning_rates = learning_rates,
         train_size = train_size // config.BATCH_SIZE,
         num_epochs = config.NUM_EPOCHS,
         filepath = f"{config.loss_plot_filepath}"
