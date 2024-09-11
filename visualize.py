@@ -20,7 +20,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     steps_per_epoch = num_steps // num_epochs
 
     # Create a subplot
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10,10))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14,14))
 
     #############################
     ## Linear Scale Plot (ax1) ##
