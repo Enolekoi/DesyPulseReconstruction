@@ -15,7 +15,8 @@ Inputs:
 def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
     training_loss = np.array(training_loss)
     validation_loss = np.array(validation_loss)
-    learning_rates = np.array(learning_rates)
+    print(learning_rates)
+    # learning_rates = np.array(learning_rates)
 
     num_steps = train_size * num_epochs
     # create the x-Axis
