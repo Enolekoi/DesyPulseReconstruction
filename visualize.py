@@ -51,7 +51,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     
     # Plot learning rates
     print(learning_rates.shape)
-    print(type(learning_rates)
+    print(type(learning_rates))
     ax1_learning_rate = ax1.twinx()
     ax1_learning_rate.plot(
             np.arange(steps_per_epoch, num_steps+1, steps_per_epoch), 
