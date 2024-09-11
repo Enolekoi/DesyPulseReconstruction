@@ -97,7 +97,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     ax2.set_title('Training loss over time (logarithmic)')
     
     # Plot learning rates
-    ax2_learning_rate = ax1.twinx()
+    ax2_learning_rate = ax2.twinx()
     ax2_learning_rate.plot(
             np.arange(steps_per_epoch, num_steps+1, steps_per_epoch), 
             learning_rates, 
@@ -105,7 +105,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
             color='green', 
             marker='o'
             )
-    ax1_learning_rate.set_ylabel('Learning Rate')
+    ax2_learning_rate.set_ylabel('Learning Rate')
 
     # Combine legends from both axes
     lines_1, labels_1 = ax2.get_legend_handles_labels()
