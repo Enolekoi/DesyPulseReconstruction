@@ -145,7 +145,7 @@ optimizer = torch.optim.Adam(
 # optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
 
 # scheduler for changing learning rate after each epoch
-scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.5)
+scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
 
 # list containing all loss values
 training_losses = []
@@ -196,7 +196,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             param.requires_grad = True
         
         # Update optimizer to include all parameters of the model
-        optimizer = optim.SGD(model.parameters(), lr=new_lr)
+        optimizer = optim.SGD(model.parameters(), lr=config.LEARNING_RATE)
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
