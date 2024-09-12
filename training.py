@@ -137,8 +137,8 @@ criterion = helper.PulseRetrievalLossFunction(
 # optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
 optimizer = torch.optim.Adam(
         [   
-         {'params': model.custom_layer1.parameters()},
-         {'params': model.custom_layer2.parameters()}
+         {'params': model.fc1.parameters()},
+         {'params': model.fc2.parameters()}
         ],
         lr=config.LEARNING_RATE)
 # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
