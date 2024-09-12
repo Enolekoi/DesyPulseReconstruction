@@ -72,7 +72,17 @@ model = helper.CustomDenseNet(
 model.float()
 model.to(device)
 model.eval()
+# Freeze the layers before self.densenet
+for param in model.densenet.parameters():
+    param.requires_grad = False
 
+# Only allow gradients on the layers after densenet
+for param in model.fc1.parameters():
+    param.requires_grad = True
+
+for param in model.fc2.parameters():
+    param.requires_grad = True
+logger.info("Freezing early layers!")
 logger.info("Loading Model finished!")
 
 '''
@@ -125,7 +135,13 @@ criterion = helper.PulseRetrievalLossFunction(
 
 # optimizer used
 # optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
-optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+optimizer = torch.optim.Adam(
+        [   
+         {'params': model.custom_layer1.parameters()},
+         {'params': model.custom_layer2.parameters()}
+        ],
+        lr=config.LEARNING_RATE)
+# optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 # optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
 
 # scheduler for changing learning rate after each epoch
@@ -171,6 +187,16 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # save new learning_rate 
         learning_rates.append(new_lr)
         logger.info(f"New learning rate: {new_lr}")
+        # After the unfreeze_epoch, unfreeze the earlier layers and update the optimizer    
+    if (epoch == config.UNFREEZE_EPOCH - 1):
+        logger.info("Unfreezing earlier layers")
+        
+        # Unfreeze all layers
+        for param in model.densenet.parameters():
+            param.requires_grad = True
+        
+        # Update optimizer to include all parameters of the model
+        optimizer = optim.SGD(model.parameters(), lr=new_lr)
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode

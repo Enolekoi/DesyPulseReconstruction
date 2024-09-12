@@ -38,8 +38,8 @@ class CustomDenseNet(nn.Module):
         # Get the number of features before the last layer
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
-        self.densenet.classifier = nn.Linear(num_features, 1024)
-        # self.fc1 = nn.Linear(2048, 1024)
+        self.densenet.classifier = nn.Linear(num_features, 2048)
+        self.fc1 = nn.Linear(2048, 1024)
         self.fc2 = nn.Linear(1024, num_outputs)
         # self.densenet.classifier = nn.Linear(num_features, num_outputs)
         self.num_outputs = num_outputs
@@ -56,10 +56,10 @@ class CustomDenseNet(nn.Module):
         # get the output of the densenet
         x = self.densenet(spectrogram)
         x = torch.relu(x)
-        # x = self.fc1(x)
-        # x = torch.relu(x)
-        x = self.fc2(x)
+        x = self.fc1(x)
         x = torch.relu(x)
+        x = self.fc2(x)
+        # x = torch.relu(x)
         
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
         x = torch.tanh(x)
