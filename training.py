@@ -39,11 +39,12 @@ logger = logging.getLogger(__name__)
 # Log some information
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
-logger.info(f"Noise level used: {config.SpecFilename}")
+logger.info(f"Spectrograms used: {config.SpecFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
 logger.info(f"Batch size: {config.BATCH_SIZE} elements")
 logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
 logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
+logger.info(f"Only ")
 
 # Transforms
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
@@ -148,7 +149,7 @@ optimizer = torch.optim.Adam(
 # optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
 
 # scheduler for changing learning rate after each epoch
-scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
+scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
 
 # list containing all loss values
 training_losses = []
@@ -200,6 +201,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         
         # Update optimizer to include all parameters of the model
         optimizer = optim.SGD(model.parameters(), lr=config.LEARNING_RATE)
+        scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
