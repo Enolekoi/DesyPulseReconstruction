@@ -50,8 +50,9 @@ def process_files(root_directory):
                         max_timestep = timestep
                     
                     # Calculate wavelength related values
-                    wavelength_plus = (number_wavelength // 2) * wavelength_step + center_wavelenght
-                    wavelength_minus = (number_wavelength // 2) * wavelength_step - center_wavelenght
+                    wavelength_range = (number_wavelength // 2) * wavelength_step
+                    wavelength_plus = center_wavelenght + wavelength_range
+                    wavelength_minus = center_wavelenght - wavelength_range
                     
                     # Update maximum and minimum wavelengths
                     if wavelength_plus > max_wavelength:
