@@ -23,8 +23,8 @@ MAX_PHASE = 1
 OUTPUT_NUM_DELAYS = 512 
 OUTPUT_NUM_WAVELENGTH = 512 
 OUTPUT_TIMESTEP = 2.2    # [fs]
-OUTPUT_START_WAVELENGTH = 450   # [nm]
-OUTPUT_END_WAVELENGTH = 600     # [nm]
+OUTPUT_START_WAVELENGTH = 300   # [nm]
+OUTPUT_END_WAVELENGTH = 550     # [nm]
 
 ModelDirectory = "./models/"
 LogDirectory = "./logs/"
