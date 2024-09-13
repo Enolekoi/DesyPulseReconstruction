@@ -36,7 +36,7 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
             # Check if 'SimulatedPulseData.txt' exists
             if os.path.exists(file_path):
                 # initialize rmsT and rmsW 
-                rmsT, rmsWv = None, None
+                rmsT, rmsW = None, None
 
                 # open and read 'SimulatedPulseData.txt'
                 with open(file_path, 'r') as file:
