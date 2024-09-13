@@ -4,8 +4,8 @@ import os
 
 OUTPUT_SIZE = 128
 BATCH_SIZE = 10
-NUM_EPOCHS = 25
-UNFREEZE_EPOCH = 20
+NUM_EPOCHS = 10
+UNFREEZE_EPOCH = 8
 LEARNING_RATE = 0.01
 TRAINING_LOG_STEP_SIZE = BATCH_SIZE
 # NUMBER_FOLDS = 5
@@ -13,8 +13,8 @@ TRAINING_LOG_STEP_SIZE = BATCH_SIZE
 
 PENALTY_FACTOR = 1
 PENALTY_THRESHOLD = 1
-MAX_INTENSITY = 50
-MAX_PHASE = 50
+MAX_INTENSITY = 1
+MAX_PHASE = 1
 # MAX_INTENSITY = 1
 # MAX_PHASE = 1
 
@@ -31,10 +31,10 @@ ModelPath = "./models/trained_model_1.pth"
 LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
-Path = "/mnt/data/desy/frog_simulated/grid_512_v2/"
-# Path = "/mnt/data/desy/frog_simulated/grid_256/"
-SpecFilename = "as_gn00.dat"
-# SpecFilename = "as.dat"
+# Path = "/mnt/data/desy/frog_simulated/grid_512_v2/"
+Path = "/mnt/data/desy/frog_simulated/grid_256/"
+# SpecFilename = "as_gn00.dat"
+SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
 
 
