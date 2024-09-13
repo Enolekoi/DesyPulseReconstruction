@@ -114,9 +114,21 @@ class SimulatedDataset(Dataset):
         # Load the TBDrms file
         tbdrms_data = pd.read_csv(tbdrms_file)
         
-        # Filter subdirectories based on TBDrms threshold
-        self.data_dirs = [row[0] for _, row in tbdrms_data.iterrows() if row[3] <= tbdrms_threshold]
-        # row[0] is the subdirectory name, row[3] is the TBDrms value
+        # Initialize an empty list for storing valid directories
+        valid_data_dirs = []
+
+        # Loop through each row of the tbdrms_data DataFrame
+        for _, row in tbdrms_data.iterrows():
+            # Get the subdirectory name (assumed to be in the first column) and the TBDrms value (fourth column)
+            subdirectory = row[0]  # First column
+            tbdrms_value = row[3]  # Fourth column (TBDrms value)
+
+            # Only add subdirectory to list if TBDrms value is within the threshold
+            if tbdrms_value <= tbdrms_threshold: 
+                valid_data_dirs.append(subdirectory)
+
+        # Store the valid subdirectories
+        self.data_dirs = valid_data_dirs
         
     def __len__(self):
         '''
