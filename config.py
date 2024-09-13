@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 OUTPUT_SIZE = 128
-BATCH_SIZE = 10
+BATCH_SIZE = 40
 NUM_EPOCHS = 10
 UNFREEZE_EPOCH = 8
 LEARNING_RATE = 0.001
