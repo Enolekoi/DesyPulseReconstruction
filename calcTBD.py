@@ -65,9 +65,9 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
 Calling the function
 '''
 ROOT_DIRECTORY = "./"
-DATA_DIRECTORY = "/mnt/data/desy/frog_simulated/grid256_v3/"
-FILENAME = "TBDrms_list_grid256_v3.csv"
-FILENAME_SORTED = "TBDrms_list_grid256_v3_sorted.csv"
+DATA_DIRECTORY = "/mnt/data/desy/frog_simulated/grid_256_v3/"
+FILENAME = "TBDrms_list_grid_256_v3.csv"
+FILENAME_SORTED = "TBDrms_list_grid_256_v3_sorted.csv"
 
 GetTBDrmsValues(
         data_directory = DATA_DIRECTORY,
