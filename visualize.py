@@ -14,6 +14,8 @@ Inputs:
 '''
 def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
     num_steps = train_size * num_epochs
+    if num_steps != len(training_loss):
+        num_steps = len(training_loss)
     # create the x-Axis
     steps = np.arange(num_steps)
     # calculate how many steps are needed for each epoch
