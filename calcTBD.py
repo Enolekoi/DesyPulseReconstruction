@@ -43,18 +43,18 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
                     lines = file.readlines()
                     for line in lines:
                         # Extract rmsT value
-                        if line.startswith('rmsT'):
+                        if line.startswith('rmsT;'):
                             rmsT = float(line.split(';')[1].strip())
                         # Extract rmsW value
-                        if line.startswith('rmsWv'):
-                            rmsWv = float(line.split(';')[1].strip())
+                        if line.startswith('rmsW;'):
+                            rmsW = float(line.split(';')[1].strip())
 
                 # Check if rmsT and rmsW have values
-                if (rmsT is not None) and (rmsWv is not None):
-                    TBDrms = rmsT*rmsWv
+                if (rmsT is not None) and (rmsW is not None):
+                    TBDrms = rmsT*rmsW
                     
                     # Store values as a tuple (subdirectory, rmsT, rmsW, TBDrms)
-                    data.append([subdirectory, rmsT, rmsWv, TBDrms])
+                    data.append([subdirectory, rmsT, rmsW, TBDrms])
     logger.info('Got all data from subdirectories')
     #####################
     ## WRITE CSV FILES ##
@@ -64,7 +64,7 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
     with open(csv_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         # write header
-        writer.writerow(['Directory', 'rmsT', 'rmsWv', 'TBDrms'])
+        writer.writerow(['Directory', 'rmsT', 'rmsW', 'TBDrms'])
         # write data 
         writer.writerows(data)
 
@@ -75,7 +75,7 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
     with open(sorted_csv_file, 'w', newline='') as sorted_csvfile:
         writer = csv.writer(sorted_csvfile)
         # write header
-        writer.writerow(['Directory', 'rmsT', 'rmsWv', 'TBDrms'])
+        writer.writerow(['Directory', 'rmsT', 'rmsW', 'TBDrms'])
         # write data 
         writer.writerows(data)
 
