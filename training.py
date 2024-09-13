@@ -94,6 +94,8 @@ logger.info("Loading Data...")
 data = helper.SimulatedDataset(path=config.Path,
                                label_filename=config.LabelFilename,
                                spec_filename=config.SpecFilename,
+                               tbdrms_file=config.TBDrmsFilename,  # Path to the file containing TBDrms values
+                               tbdrms_threshold=config.TBDRMS_THRESHOLD,  # TBDrms threshold for filtering    
                                transform=spec_transform,
                                target_transform=label_transform)
 ################
