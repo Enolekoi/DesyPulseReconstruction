@@ -1,12 +1,27 @@
 import os
 import csv
+import logging
+
+'''
+Initialize logger
+'''
+logging.basicConfig(
+        level=logging.INFO,
+        style="{",
+        format="{asctime} - {name} - {funcName} - {levelname}: {message}",
+        datefmt='%d-%m-%Y %H:%M:%S',
+        handlers=[
+            logging.StreamHandler()
+            ]
+)
 
 '''
 GetTBDrmsValues
 '''
 def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_output_filename):
     data = []
-
+    
+    logger.info('Stepping through all subdirectories')
     # step through all directories
     for subdirectory in os.listdir(data_directory):
         # get the subdirectory path 
@@ -36,13 +51,14 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
                 # Check if rmsT and rmsW have values
                 if (rmsT is not None) and (rmsW is not None):
                     TBDrms = rmsT*rmsW
-
+                    
                     # Store values as a tuple (subdirectory, rmsT, rmsW, TBDrms)
                     data.append([subdirectory, rmsT, rmsW, TBDrms])
-
+    logger.info('Got all data from subdirectories')
     #####################
     ## WRITE CSV FILES ##
     #####################
+    logger.info('Creating first CSV-file')
     csv_file = os.path.join(root_directory, output_filename)
     with open(csv_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -51,6 +67,7 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
         # write data 
         writer.writerows(data)
 
+    logger.info('Creating second CSV-file')
     sorted_data = sorted(data, key=lambda x: x[3])
 
     sorted_csv_file = os.path.join(root_directory, sorted_output_filename)
