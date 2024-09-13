@@ -69,6 +69,7 @@ logger.info("Loading Model...")
 model = helper.CustomDenseNet(
     num_outputs=2*config.OUTPUT_SIZE
     )
+model.load_state_dict(torch.load('./models/trained_model_3.pth'))
 model.float()
 model.to(device)
 model.eval()

@@ -32,9 +32,10 @@ LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
 # Path = "/mnt/data/desy/frog_simulated/grid_512_v2/"
-Path = "/mnt/data/desy/frog_simulated/grid_256/"
-# SpecFilename = "as_gn00.dat"
-SpecFilename = "as.dat"
+# Path = "/mnt/data/desy/frog_simulated/grid_256/"
+Path = "/mnt/data/desy/frog_simulated/grid_256_v3/"
+SpecFilename = "as_gn00.dat"
+# SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
 
 
