@@ -70,8 +70,8 @@ FILENAME = "TBDrms_list_grid256_v3.csv"
 FILENAME_SORTED = "TBDrms_list_grid256_v3_sorted.csv"
 
 GetTBDrmsValues(
-        data_directory,
-        root_directory,
-        output_filename,
-        sorted_output_filename
+        data_directory = DATA_DIRECTORY,
+        root_directory = ROOT_DIRECTORY,
+        output_filename = FILENAME,
+        sorted_output_filename = FILENAME_SORTED
         )
