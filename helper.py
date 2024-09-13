@@ -90,22 +90,33 @@ SimulatedDataset()
 Custom Dataloader Class
 '''
 class SimulatedDataset(Dataset):
-    def __init__(self, path, label_filename, spec_filename, transform=None, target_transform=None):
+    def __init__(self, path, label_filename, spec_filename, tbdrms_file, tbdrms_threshold, transform=None, target_transform=None):
         '''
         Inputs:
             path                -> root directory containing all data subdirectories [string]
             label_filename      -> file name in which labels are stored [string]
-            spec_filename       -> file name in which spectrograms are stored [string]
+            spec_filename       -> file name in which spectrograms are stored [string] 
+            tbdrms_file         -> path to the CSV file containing subdirectory names and TBDrms values [string]
+            tbdrms_threshold    -> maximum allowed TBDrms value [float]
             transform           -> transform used on spectrograms 
             target_transform    -> transforms used on labels
         '''
         self.path = path    # root directory containing all data subdirectories
         self.label_filename = label_filename      # file name in which labels are stored
         self.spec_filename = spec_filename        # file name in which spectrograms are stored
+        self.target_transform = target_transform    # transforms used on labels
+        self.tbdrms_threshold = tbdrms_threshold   # max allowed TBDrms value
         self.transform = transform              # transform used on spectrograms
         self.target_transform = target_transform    # transforms used on labels
 
         self.data_dirs = os.listdir(self.path)  # list all subdirectories in the root directory
+        
+        # Load the TBDrms file
+        tbdrms_data = pd.read_csv(tbdrms_file)
+        
+        # Filter subdirectories based on TBDrms threshold
+        self.data_dirs = [row[0] for _, row in tbdrms_data.iterrows() if row[3] <= tbdrms_threshold]
+        # row[0] is the subdirectory name, row[3] is the TBDrms value
         
     def __len__(self):
         '''

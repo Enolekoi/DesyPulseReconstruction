@@ -8,6 +8,7 @@ NUM_EPOCHS = 10
 UNFREEZE_EPOCH = 8
 LEARNING_RATE = 0.001
 TRAINING_LOG_STEP_SIZE = BATCH_SIZE
+TBDRMS_THRESHOLD = 1.0
 # NUMBER_FOLDS = 5
 # NUMBER_FOLDS = 2
 
@@ -34,6 +35,7 @@ TrainingLossPlotName = "training_loss_"
 # Path = "/mnt/data/desy/frog_simulated/grid_512_v2/"
 # Path = "/mnt/data/desy/frog_simulated/grid_256/"
 Path = "/mnt/data/desy/frog_simulated/grid_256_v3/"
+TBDrmsFilename = "./TBDrms_list_grid_256_v3_sorted.csv"
 SpecFilename = "as_gn00.dat"
 # SpecFilename = "as.dat"
 LabelFilename = "Es.dat"
