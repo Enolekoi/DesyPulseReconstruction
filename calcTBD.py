@@ -69,7 +69,7 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
         writer.writerows(data)
 
     logger.info('Creating second CSV-file')
-    sorted_data = sorted(data, key=lambda x: x[3])
+    sorted_data = sorted(data, key=lambda x: x[3], reverse=False)
 
     sorted_csv_file = os.path.join(root_directory, sorted_output_filename)
     with open(sorted_csv_file, 'w', newline='') as sorted_csvfile:
@@ -77,7 +77,7 @@ def GetTBDrmsValues(data_directory, root_directory, output_filename, sorted_outp
         # write header
         writer.writerow(['Directory', 'rmsT', 'rmsW', 'TBDrms'])
         # write data 
-        writer.writerows(data)
+        writer.writerows(sorted_data)
 
 '''
 Calling the function
