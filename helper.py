@@ -120,8 +120,8 @@ class SimulatedDataset(Dataset):
         # Loop through each row of the tbdrms_data DataFrame
         for _, row in tbdrms_data.iterrows():
             # Get the subdirectory name (assumed to be in the first column) and the TBDrms value (fourth column)
-            subdirectory = row[0]  # First column
-            tbdrms_value = row[3]  # Fourth column (TBDrms value)
+            subdirectory = row.iloc[0]  # First column
+            tbdrms_value = row.iloc[3]  # Fourth column (TBDrms value)
 
             # Only add subdirectory to list if TBDrms value is within the threshold
             if tbdrms_value <= tbdrms_threshold: 
