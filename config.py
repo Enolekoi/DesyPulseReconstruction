@@ -6,10 +6,10 @@ OUTPUT_SIZE = 128
 BATCH_SIZE = 10
 NUM_EPOCHS = 10
 UNFREEZE_EPOCH = 20
-LEARNING_RATE = 0.01
-GAMMA_SCHEDULER = 0.9
+LEARNING_RATE = 0.01	
+GAMMA_SCHEDULER = 0.5
 TRAINING_LOG_STEP_SIZE = BATCH_SIZE
-TBDRMS_THRESHOLD = 0.3
+TBDRMS_THRESHOLD = 0.5
 # NUMBER_FOLDS = 5
 # NUMBER_FOLDS = 2
 
@@ -29,7 +29,7 @@ OUTPUT_END_WAVELENGTH = 451     # [nm]
 ModelDirectory = "./models/"
 LogDirectory = "./logs/"
 ModelName = "trained_model_"
-ModelPath = "./models/trained_model_1.pth"
+ModelPath = "./models/trained_model_7.pth"
 LogName = "training_"
 TrainingLossPlotName = "training_loss_"
 
