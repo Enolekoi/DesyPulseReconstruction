@@ -1,0 +1,392 @@
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Writing into log file: ./logs/training_8.log
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v3/
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Spectrograms used: as_gn00.dat
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Batch size: 10 elements
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Number of epochs: 10
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Initial learning rate: 0.01
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 0.4 are used!
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Loading Model...
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Freezing early layers!
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Loading Model finished!
+14-09-2024 12:16:14 - __main__ - <module> - INFO: Loading Data...
+14-09-2024 12:16:15 - __main__ - <module> - INFO: Size of dataset: 2769
+14-09-2024 12:16:15 - __main__ - <module> - INFO: Size of training data:   2217
+14-09-2024 12:16:15 - __main__ - <module> - INFO: Size of validation data: 276
+14-09-2024 12:16:15 - __main__ - <module> - INFO: Size of test data:       276
+14-09-2024 12:16:15 - __main__ - <module> - INFO: Finished loading data!
+14-09-2024 12:16:15 - __main__ - <module> - INFO: Starting training...
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Writing into log file: ./logs/training_8.log
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v3/
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Spectrograms used: as_gn00.dat
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Batch size: 10 elements
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Number of epochs: 10
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Initial learning rate: 0.01
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 0.4 are used!
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Loading Model...
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Freezing early layers!
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Loading Model finished!
+14-09-2024 12:16:20 - __main__ - <module> - INFO: Loading Data...
+14-09-2024 12:16:21 - __main__ - <module> - INFO: Size of dataset: 2769
+14-09-2024 12:16:21 - __main__ - <module> - INFO: Size of training data:   2217
+14-09-2024 12:16:21 - __main__ - <module> - INFO: Size of validation data: 276
+14-09-2024 12:16:21 - __main__ - <module> - INFO: Size of test data:       276
+14-09-2024 12:16:21 - __main__ - <module> - INFO: Finished loading data!
+14-09-2024 12:16:21 - __main__ - <module> - INFO: Starting training...
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Writing into log file: ./logs/training_8.log
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v3/
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Spectrograms used: as_gn00.dat
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Batch size: 10 elements
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Number of epochs: 10
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Initial learning rate: 0.01
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 0.4 are used!
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Loading Model...
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Freezing early layers!
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Loading Model finished!
+14-09-2024 12:16:43 - __main__ - <module> - INFO: Loading Data...
+14-09-2024 12:16:44 - __main__ - <module> - INFO: Size of dataset: 2769
+14-09-2024 12:16:44 - __main__ - <module> - INFO: Size of training data:   2217
+14-09-2024 12:16:44 - __main__ - <module> - INFO: Size of validation data: 276
+14-09-2024 12:16:44 - __main__ - <module> - INFO: Size of test data:       276
+14-09-2024 12:16:44 - __main__ - <module> - INFO: Finished loading data!
+14-09-2024 12:16:44 - __main__ - <module> - INFO: Starting training...
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Writing into log file: ./logs/training_8.log
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v3/
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Spectrograms used: as_gn00.dat
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Batch size: 10 elements
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Number of epochs: 10
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Initial learning rate: 0.01
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 0.5 are used!
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+14-09-2024 12:17:11 - __main__ - <module> - INFO: Loading Model...
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Freezing early layers!
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Loading Model finished!
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Loading Data...
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Size of dataset: 3510
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Size of training data:   2808
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Size of validation data: 351
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Size of test data:       351
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Finished loading data!
+14-09-2024 12:17:12 - __main__ - <module> - INFO: Starting training...
+14-09-2024 12:17:19 - __main__ - <module> - INFO: Epoch 1 / 10, Step 10 / 280, Loss = 0.0265191831
+14-09-2024 12:17:25 - __main__ - <module> - INFO: Epoch 1 / 10, Step 20 / 280, Loss = 0.0178081393
+14-09-2024 12:17:32 - __main__ - <module> - INFO: Epoch 1 / 10, Step 30 / 280, Loss = 0.0118062412
+14-09-2024 12:17:38 - __main__ - <module> - INFO: Epoch 1 / 10, Step 40 / 280, Loss = 0.0127192205
+14-09-2024 12:17:44 - __main__ - <module> - INFO: Epoch 1 / 10, Step 50 / 280, Loss = 0.0125466483
+14-09-2024 12:17:51 - __main__ - <module> - INFO: Epoch 1 / 10, Step 60 / 280, Loss = 0.0111046825
+14-09-2024 12:17:57 - __main__ - <module> - INFO: Epoch 1 / 10, Step 70 / 280, Loss = 0.0189969577
+14-09-2024 12:18:03 - __main__ - <module> - INFO: Epoch 1 / 10, Step 80 / 280, Loss = 0.0122720888
+14-09-2024 12:18:10 - __main__ - <module> - INFO: Epoch 1 / 10, Step 90 / 280, Loss = 0.0117907440
+14-09-2024 12:18:16 - __main__ - <module> - INFO: Epoch 1 / 10, Step 100 / 280, Loss = 0.0154600935
+14-09-2024 12:18:23 - __main__ - <module> - INFO: Epoch 1 / 10, Step 110 / 280, Loss = 0.0172098111
+14-09-2024 12:18:29 - __main__ - <module> - INFO: Epoch 1 / 10, Step 120 / 280, Loss = 0.0115469536
+14-09-2024 12:18:35 - __main__ - <module> - INFO: Epoch 1 / 10, Step 130 / 280, Loss = 0.0071104527
+14-09-2024 12:18:42 - __main__ - <module> - INFO: Epoch 1 / 10, Step 140 / 280, Loss = 0.0084443940
+14-09-2024 12:18:48 - __main__ - <module> - INFO: Epoch 1 / 10, Step 150 / 280, Loss = 0.0099526290
+14-09-2024 12:18:54 - __main__ - <module> - INFO: Epoch 1 / 10, Step 160 / 280, Loss = 0.0091093834
+14-09-2024 12:19:01 - __main__ - <module> - INFO: Epoch 1 / 10, Step 170 / 280, Loss = 0.0090958141
+14-09-2024 12:19:07 - __main__ - <module> - INFO: Epoch 1 / 10, Step 180 / 280, Loss = 0.0088749062
+14-09-2024 12:19:14 - __main__ - <module> - INFO: Epoch 1 / 10, Step 190 / 280, Loss = 0.0152826412
+14-09-2024 12:19:20 - __main__ - <module> - INFO: Epoch 1 / 10, Step 200 / 280, Loss = 0.0123926699
+14-09-2024 12:19:26 - __main__ - <module> - INFO: Epoch 1 / 10, Step 210 / 280, Loss = 0.0168474168
+14-09-2024 12:19:33 - __main__ - <module> - INFO: Epoch 1 / 10, Step 220 / 280, Loss = 0.0079176528
+14-09-2024 12:19:39 - __main__ - <module> - INFO: Epoch 1 / 10, Step 230 / 280, Loss = 0.0088796020
+14-09-2024 12:19:46 - __main__ - <module> - INFO: Epoch 1 / 10, Step 240 / 280, Loss = 0.0086666858
+14-09-2024 12:19:52 - __main__ - <module> - INFO: Epoch 1 / 10, Step 250 / 280, Loss = 0.0104995770
+14-09-2024 12:19:58 - __main__ - <module> - INFO: Epoch 1 / 10, Step 260 / 280, Loss = 0.0123401321
+14-09-2024 12:20:04 - __main__ - <module> - INFO: Epoch 1 / 10, Step 270 / 280, Loss = 0.0132311899
+14-09-2024 12:20:11 - __main__ - <module> - INFO: Epoch 1 / 10, Step 280 / 280, Loss = 0.0092130704
+14-09-2024 12:20:11 - __main__ - <module> - INFO: New learning rate: 0.005
+14-09-2024 12:20:11 - __main__ - <module> - INFO: Starting Validation for epoch 1 / 10
+14-09-2024 12:20:33 - __main__ - <module> - INFO: Validation Loss: 0.0123535674
+14-09-2024 12:20:39 - __main__ - <module> - INFO: Epoch 2 / 10, Step 10 / 280, Loss = 0.0132891042
+14-09-2024 12:20:46 - __main__ - <module> - INFO: Epoch 2 / 10, Step 20 / 280, Loss = 0.0130504435
+14-09-2024 12:20:52 - __main__ - <module> - INFO: Epoch 2 / 10, Step 30 / 280, Loss = 0.0135867968
+14-09-2024 12:20:58 - __main__ - <module> - INFO: Epoch 2 / 10, Step 40 / 280, Loss = 0.0134172663
+14-09-2024 12:21:05 - __main__ - <module> - INFO: Epoch 2 / 10, Step 50 / 280, Loss = 0.0081649171
+14-09-2024 12:21:11 - __main__ - <module> - INFO: Epoch 2 / 10, Step 60 / 280, Loss = 0.0186988711
+14-09-2024 12:21:18 - __main__ - <module> - INFO: Epoch 2 / 10, Step 70 / 280, Loss = 0.0154491784
+14-09-2024 12:21:24 - __main__ - <module> - INFO: Epoch 2 / 10, Step 80 / 280, Loss = 0.0110760564
+14-09-2024 12:21:31 - __main__ - <module> - INFO: Epoch 2 / 10, Step 90 / 280, Loss = 0.0095280400
+14-09-2024 12:21:37 - __main__ - <module> - INFO: Epoch 2 / 10, Step 100 / 280, Loss = 0.0160913169
+14-09-2024 12:21:43 - __main__ - <module> - INFO: Epoch 2 / 10, Step 110 / 280, Loss = 0.0104958294
+14-09-2024 12:21:50 - __main__ - <module> - INFO: Epoch 2 / 10, Step 120 / 280, Loss = 0.0102999210
+14-09-2024 12:21:56 - __main__ - <module> - INFO: Epoch 2 / 10, Step 130 / 280, Loss = 0.0130050899
+14-09-2024 12:22:03 - __main__ - <module> - INFO: Epoch 2 / 10, Step 140 / 280, Loss = 0.0096732629
+14-09-2024 12:22:09 - __main__ - <module> - INFO: Epoch 2 / 10, Step 150 / 280, Loss = 0.0163666122
+14-09-2024 12:22:16 - __main__ - <module> - INFO: Epoch 2 / 10, Step 160 / 280, Loss = 0.0155249862
+14-09-2024 12:22:22 - __main__ - <module> - INFO: Epoch 2 / 10, Step 170 / 280, Loss = 0.0125756431
+14-09-2024 12:22:29 - __main__ - <module> - INFO: Epoch 2 / 10, Step 180 / 280, Loss = 0.0117740249
+14-09-2024 12:22:35 - __main__ - <module> - INFO: Epoch 2 / 10, Step 190 / 280, Loss = 0.0132381022
+14-09-2024 12:22:42 - __main__ - <module> - INFO: Epoch 2 / 10, Step 200 / 280, Loss = 0.0146239046
+14-09-2024 12:22:48 - __main__ - <module> - INFO: Epoch 2 / 10, Step 210 / 280, Loss = 0.0090303198
+14-09-2024 12:22:55 - __main__ - <module> - INFO: Epoch 2 / 10, Step 220 / 280, Loss = 0.0127104986
+14-09-2024 12:23:01 - __main__ - <module> - INFO: Epoch 2 / 10, Step 230 / 280, Loss = 0.0093739731
+14-09-2024 12:23:08 - __main__ - <module> - INFO: Epoch 2 / 10, Step 240 / 280, Loss = 0.0111653926
+14-09-2024 12:23:14 - __main__ - <module> - INFO: Epoch 2 / 10, Step 250 / 280, Loss = 0.0098144105
+14-09-2024 12:23:21 - __main__ - <module> - INFO: Epoch 2 / 10, Step 260 / 280, Loss = 0.0187658295
+14-09-2024 12:23:27 - __main__ - <module> - INFO: Epoch 2 / 10, Step 270 / 280, Loss = 0.0086536659
+14-09-2024 12:23:34 - __main__ - <module> - INFO: Epoch 2 / 10, Step 280 / 280, Loss = 0.0102522084
+14-09-2024 12:23:34 - __main__ - <module> - INFO: New learning rate: 0.0025
+14-09-2024 12:23:34 - __main__ - <module> - INFO: Starting Validation for epoch 2 / 10
+14-09-2024 12:23:56 - __main__ - <module> - INFO: Validation Loss: 0.0123341665
+14-09-2024 12:24:03 - __main__ - <module> - INFO: Epoch 3 / 10, Step 10 / 280, Loss = 0.0105646616
+14-09-2024 12:24:09 - __main__ - <module> - INFO: Epoch 3 / 10, Step 20 / 280, Loss = 0.0111050503
+14-09-2024 12:24:15 - __main__ - <module> - INFO: Epoch 3 / 10, Step 30 / 280, Loss = 0.0182981379
+14-09-2024 12:24:22 - __main__ - <module> - INFO: Epoch 3 / 10, Step 40 / 280, Loss = 0.0106905419
+14-09-2024 12:24:28 - __main__ - <module> - INFO: Epoch 3 / 10, Step 50 / 280, Loss = 0.0102322660
+14-09-2024 12:24:35 - __main__ - <module> - INFO: Epoch 3 / 10, Step 60 / 280, Loss = 0.0087639112
+14-09-2024 12:24:41 - __main__ - <module> - INFO: Epoch 3 / 10, Step 70 / 280, Loss = 0.0162058715
+14-09-2024 12:24:48 - __main__ - <module> - INFO: Epoch 3 / 10, Step 80 / 280, Loss = 0.0150169497
+14-09-2024 12:24:54 - __main__ - <module> - INFO: Epoch 3 / 10, Step 90 / 280, Loss = 0.0144519974
+14-09-2024 12:25:00 - __main__ - <module> - INFO: Epoch 3 / 10, Step 100 / 280, Loss = 0.0130543178
+14-09-2024 12:25:07 - __main__ - <module> - INFO: Epoch 3 / 10, Step 110 / 280, Loss = 0.0125061339
+14-09-2024 12:25:13 - __main__ - <module> - INFO: Epoch 3 / 10, Step 120 / 280, Loss = 0.0165482294
+14-09-2024 12:25:20 - __main__ - <module> - INFO: Epoch 3 / 10, Step 130 / 280, Loss = 0.0090614613
+14-09-2024 12:25:26 - __main__ - <module> - INFO: Epoch 3 / 10, Step 140 / 280, Loss = 0.0137262419
+14-09-2024 12:25:33 - __main__ - <module> - INFO: Epoch 3 / 10, Step 150 / 280, Loss = 0.0119376574
+14-09-2024 12:25:39 - __main__ - <module> - INFO: Epoch 3 / 10, Step 160 / 280, Loss = 0.0127670532
+14-09-2024 12:25:46 - __main__ - <module> - INFO: Epoch 3 / 10, Step 170 / 280, Loss = 0.0105954399
+14-09-2024 12:25:52 - __main__ - <module> - INFO: Epoch 3 / 10, Step 180 / 280, Loss = 0.0085815117
+14-09-2024 12:25:59 - __main__ - <module> - INFO: Epoch 3 / 10, Step 190 / 280, Loss = 0.0062774881
+14-09-2024 12:26:05 - __main__ - <module> - INFO: Epoch 3 / 10, Step 200 / 280, Loss = 0.0134938275
+14-09-2024 12:26:12 - __main__ - <module> - INFO: Epoch 3 / 10, Step 210 / 280, Loss = 0.0136101088
+14-09-2024 12:26:18 - __main__ - <module> - INFO: Epoch 3 / 10, Step 220 / 280, Loss = 0.0136240991
+14-09-2024 12:26:25 - __main__ - <module> - INFO: Epoch 3 / 10, Step 230 / 280, Loss = 0.0120725399
+14-09-2024 12:26:31 - __main__ - <module> - INFO: Epoch 3 / 10, Step 240 / 280, Loss = 0.0140328603
+14-09-2024 12:26:37 - __main__ - <module> - INFO: Epoch 3 / 10, Step 250 / 280, Loss = 0.0098685650
+14-09-2024 12:26:44 - __main__ - <module> - INFO: Epoch 3 / 10, Step 260 / 280, Loss = 0.0119642634
+14-09-2024 12:26:50 - __main__ - <module> - INFO: Epoch 3 / 10, Step 270 / 280, Loss = 0.0106440922
+14-09-2024 12:26:57 - __main__ - <module> - INFO: Epoch 3 / 10, Step 280 / 280, Loss = 0.0106300944
+14-09-2024 12:26:57 - __main__ - <module> - INFO: New learning rate: 0.00125
+14-09-2024 12:26:57 - __main__ - <module> - INFO: Starting Validation for epoch 3 / 10
+14-09-2024 12:27:19 - __main__ - <module> - INFO: Validation Loss: 0.0123003083
+14-09-2024 12:27:26 - __main__ - <module> - INFO: Epoch 4 / 10, Step 10 / 280, Loss = 0.0116110314
+14-09-2024 12:27:32 - __main__ - <module> - INFO: Epoch 4 / 10, Step 20 / 280, Loss = 0.0123982755
+14-09-2024 12:27:39 - __main__ - <module> - INFO: Epoch 4 / 10, Step 30 / 280, Loss = 0.0099366633
+14-09-2024 12:27:45 - __main__ - <module> - INFO: Epoch 4 / 10, Step 40 / 280, Loss = 0.0149464039
+14-09-2024 12:27:51 - __main__ - <module> - INFO: Epoch 4 / 10, Step 50 / 280, Loss = 0.0133117381
+14-09-2024 12:27:58 - __main__ - <module> - INFO: Epoch 4 / 10, Step 60 / 280, Loss = 0.0088012842
+14-09-2024 12:28:04 - __main__ - <module> - INFO: Epoch 4 / 10, Step 70 / 280, Loss = 0.0133085791
+14-09-2024 12:28:11 - __main__ - <module> - INFO: Epoch 4 / 10, Step 80 / 280, Loss = 0.0160068218
+14-09-2024 12:28:17 - __main__ - <module> - INFO: Epoch 4 / 10, Step 90 / 280, Loss = 0.0086630657
+14-09-2024 12:28:24 - __main__ - <module> - INFO: Epoch 4 / 10, Step 100 / 280, Loss = 0.0131216226
+14-09-2024 12:28:30 - __main__ - <module> - INFO: Epoch 4 / 10, Step 110 / 280, Loss = 0.0130085750
+14-09-2024 12:28:36 - __main__ - <module> - INFO: Epoch 4 / 10, Step 120 / 280, Loss = 0.0111292694
+14-09-2024 12:28:43 - __main__ - <module> - INFO: Epoch 4 / 10, Step 130 / 280, Loss = 0.0186753254
+14-09-2024 12:28:49 - __main__ - <module> - INFO: Epoch 4 / 10, Step 140 / 280, Loss = 0.0141021628
+14-09-2024 12:28:56 - __main__ - <module> - INFO: Epoch 4 / 10, Step 150 / 280, Loss = 0.0157872532
+14-09-2024 12:29:02 - __main__ - <module> - INFO: Epoch 4 / 10, Step 160 / 280, Loss = 0.0144633679
+14-09-2024 12:29:09 - __main__ - <module> - INFO: Epoch 4 / 10, Step 170 / 280, Loss = 0.0102905091
+14-09-2024 12:29:15 - __main__ - <module> - INFO: Epoch 4 / 10, Step 180 / 280, Loss = 0.0156046180
+14-09-2024 12:29:21 - __main__ - <module> - INFO: Epoch 4 / 10, Step 190 / 280, Loss = 0.0149011659
+14-09-2024 12:29:28 - __main__ - <module> - INFO: Epoch 4 / 10, Step 200 / 280, Loss = 0.0111895101
+14-09-2024 12:29:34 - __main__ - <module> - INFO: Epoch 4 / 10, Step 210 / 280, Loss = 0.0134974262
+14-09-2024 12:29:41 - __main__ - <module> - INFO: Epoch 4 / 10, Step 220 / 280, Loss = 0.0087297903
+14-09-2024 12:29:47 - __main__ - <module> - INFO: Epoch 4 / 10, Step 230 / 280, Loss = 0.0126628401
+14-09-2024 12:29:54 - __main__ - <module> - INFO: Epoch 4 / 10, Step 240 / 280, Loss = 0.0167733803
+14-09-2024 12:30:00 - __main__ - <module> - INFO: Epoch 4 / 10, Step 250 / 280, Loss = 0.0163043384
+14-09-2024 12:30:06 - __main__ - <module> - INFO: Epoch 4 / 10, Step 260 / 280, Loss = 0.0110633411
+14-09-2024 12:30:13 - __main__ - <module> - INFO: Epoch 4 / 10, Step 270 / 280, Loss = 0.0117845042
+14-09-2024 12:30:19 - __main__ - <module> - INFO: Epoch 4 / 10, Step 280 / 280, Loss = 0.0077027665
+14-09-2024 12:30:20 - __main__ - <module> - INFO: New learning rate: 0.000625
+14-09-2024 12:30:20 - __main__ - <module> - INFO: Starting Validation for epoch 4 / 10
+14-09-2024 12:30:42 - __main__ - <module> - INFO: Validation Loss: 0.0122757134
+14-09-2024 12:30:48 - __main__ - <module> - INFO: Epoch 5 / 10, Step 10 / 280, Loss = 0.0095621264
+14-09-2024 12:30:55 - __main__ - <module> - INFO: Epoch 5 / 10, Step 20 / 280, Loss = 0.0156960171
+14-09-2024 12:31:01 - __main__ - <module> - INFO: Epoch 5 / 10, Step 30 / 280, Loss = 0.0155056482
+14-09-2024 12:31:08 - __main__ - <module> - INFO: Epoch 5 / 10, Step 40 / 280, Loss = 0.0110876141
+14-09-2024 12:31:14 - __main__ - <module> - INFO: Epoch 5 / 10, Step 50 / 280, Loss = 0.0159085114
+14-09-2024 12:31:21 - __main__ - <module> - INFO: Epoch 5 / 10, Step 60 / 280, Loss = 0.0108085675
+14-09-2024 12:31:27 - __main__ - <module> - INFO: Epoch 5 / 10, Step 70 / 280, Loss = 0.0111296643
+14-09-2024 12:31:33 - __main__ - <module> - INFO: Epoch 5 / 10, Step 80 / 280, Loss = 0.0126883080
+14-09-2024 12:31:40 - __main__ - <module> - INFO: Epoch 5 / 10, Step 90 / 280, Loss = 0.0113959787
+14-09-2024 12:31:46 - __main__ - <module> - INFO: Epoch 5 / 10, Step 100 / 280, Loss = 0.0188955665
+14-09-2024 12:31:53 - __main__ - <module> - INFO: Epoch 5 / 10, Step 110 / 280, Loss = 0.0145134153
+14-09-2024 12:31:59 - __main__ - <module> - INFO: Epoch 5 / 10, Step 120 / 280, Loss = 0.0132851815
+14-09-2024 12:32:06 - __main__ - <module> - INFO: Epoch 5 / 10, Step 130 / 280, Loss = 0.0158855282
+14-09-2024 12:32:12 - __main__ - <module> - INFO: Epoch 5 / 10, Step 140 / 280, Loss = 0.0118257320
+14-09-2024 12:32:19 - __main__ - <module> - INFO: Epoch 5 / 10, Step 150 / 280, Loss = 0.0083328746
+14-09-2024 12:32:25 - __main__ - <module> - INFO: Epoch 5 / 10, Step 160 / 280, Loss = 0.0091534592
+14-09-2024 12:32:32 - __main__ - <module> - INFO: Epoch 5 / 10, Step 170 / 280, Loss = 0.0090007018
+14-09-2024 12:32:38 - __main__ - <module> - INFO: Epoch 5 / 10, Step 180 / 280, Loss = 0.0123419473
+14-09-2024 12:32:45 - __main__ - <module> - INFO: Epoch 5 / 10, Step 190 / 280, Loss = 0.0138451075
+14-09-2024 12:32:51 - __main__ - <module> - INFO: Epoch 5 / 10, Step 200 / 280, Loss = 0.0067346613
+14-09-2024 12:32:57 - __main__ - <module> - INFO: Epoch 5 / 10, Step 210 / 280, Loss = 0.0097854687
+14-09-2024 12:33:04 - __main__ - <module> - INFO: Epoch 5 / 10, Step 220 / 280, Loss = 0.0145372674
+14-09-2024 12:33:10 - __main__ - <module> - INFO: Epoch 5 / 10, Step 230 / 280, Loss = 0.0145330327
+14-09-2024 12:33:17 - __main__ - <module> - INFO: Epoch 5 / 10, Step 240 / 280, Loss = 0.0174364615
+14-09-2024 12:33:23 - __main__ - <module> - INFO: Epoch 5 / 10, Step 250 / 280, Loss = 0.0079553705
+14-09-2024 12:33:30 - __main__ - <module> - INFO: Epoch 5 / 10, Step 260 / 280, Loss = 0.0108791059
+14-09-2024 12:33:36 - __main__ - <module> - INFO: Epoch 5 / 10, Step 270 / 280, Loss = 0.0143809868
+14-09-2024 12:33:43 - __main__ - <module> - INFO: Epoch 5 / 10, Step 280 / 280, Loss = 0.0155710606
+14-09-2024 12:33:43 - __main__ - <module> - INFO: New learning rate: 0.0003125
+14-09-2024 12:33:43 - __main__ - <module> - INFO: Starting Validation for epoch 5 / 10
+14-09-2024 12:34:06 - __main__ - <module> - INFO: Validation Loss: 0.0122621013
+14-09-2024 12:34:12 - __main__ - <module> - INFO: Epoch 6 / 10, Step 10 / 280, Loss = 0.0092613120
+14-09-2024 12:34:19 - __main__ - <module> - INFO: Epoch 6 / 10, Step 20 / 280, Loss = 0.0130000664
+14-09-2024 12:34:26 - __main__ - <module> - INFO: Epoch 6 / 10, Step 30 / 280, Loss = 0.0113988547
+14-09-2024 12:34:32 - __main__ - <module> - INFO: Epoch 6 / 10, Step 40 / 280, Loss = 0.0096728215
+14-09-2024 12:34:39 - __main__ - <module> - INFO: Epoch 6 / 10, Step 50 / 280, Loss = 0.0139914518
+14-09-2024 12:34:45 - __main__ - <module> - INFO: Epoch 6 / 10, Step 60 / 280, Loss = 0.0127389459
+14-09-2024 12:34:52 - __main__ - <module> - INFO: Epoch 6 / 10, Step 70 / 280, Loss = 0.0093803480
+14-09-2024 12:34:59 - __main__ - <module> - INFO: Epoch 6 / 10, Step 80 / 280, Loss = 0.0149875749
+14-09-2024 12:35:05 - __main__ - <module> - INFO: Epoch 6 / 10, Step 90 / 280, Loss = 0.0149210459
+14-09-2024 12:35:12 - __main__ - <module> - INFO: Epoch 6 / 10, Step 100 / 280, Loss = 0.0154881021
+14-09-2024 12:35:18 - __main__ - <module> - INFO: Epoch 6 / 10, Step 110 / 280, Loss = 0.0142400442
+14-09-2024 12:35:25 - __main__ - <module> - INFO: Epoch 6 / 10, Step 120 / 280, Loss = 0.0155902905
+14-09-2024 12:35:31 - __main__ - <module> - INFO: Epoch 6 / 10, Step 130 / 280, Loss = 0.0130218556
+14-09-2024 12:35:38 - __main__ - <module> - INFO: Epoch 6 / 10, Step 140 / 280, Loss = 0.0113627510
+14-09-2024 12:35:45 - __main__ - <module> - INFO: Epoch 6 / 10, Step 150 / 280, Loss = 0.0139612677
+14-09-2024 12:35:51 - __main__ - <module> - INFO: Epoch 6 / 10, Step 160 / 280, Loss = 0.0117661199
+14-09-2024 12:35:58 - __main__ - <module> - INFO: Epoch 6 / 10, Step 170 / 280, Loss = 0.0128440112
+14-09-2024 12:36:05 - __main__ - <module> - INFO: Epoch 6 / 10, Step 180 / 280, Loss = 0.0111730658
+14-09-2024 12:36:11 - __main__ - <module> - INFO: Epoch 6 / 10, Step 190 / 280, Loss = 0.0104093775
+14-09-2024 12:36:18 - __main__ - <module> - INFO: Epoch 6 / 10, Step 200 / 280, Loss = 0.0105783967
+14-09-2024 12:36:24 - __main__ - <module> - INFO: Epoch 6 / 10, Step 210 / 280, Loss = 0.0123350648
+14-09-2024 12:36:31 - __main__ - <module> - INFO: Epoch 6 / 10, Step 220 / 280, Loss = 0.0106935157
+14-09-2024 12:36:38 - __main__ - <module> - INFO: Epoch 6 / 10, Step 230 / 280, Loss = 0.0093087656
+14-09-2024 12:36:44 - __main__ - <module> - INFO: Epoch 6 / 10, Step 240 / 280, Loss = 0.0085533764
+14-09-2024 12:36:51 - __main__ - <module> - INFO: Epoch 6 / 10, Step 250 / 280, Loss = 0.0140647022
+14-09-2024 12:36:58 - __main__ - <module> - INFO: Epoch 6 / 10, Step 260 / 280, Loss = 0.0077042701
+14-09-2024 12:37:04 - __main__ - <module> - INFO: Epoch 6 / 10, Step 270 / 280, Loss = 0.0108676059
+14-09-2024 12:37:11 - __main__ - <module> - INFO: Epoch 6 / 10, Step 280 / 280, Loss = 0.0144134881
+14-09-2024 12:37:11 - __main__ - <module> - INFO: New learning rate: 0.00015625
+14-09-2024 12:37:11 - __main__ - <module> - INFO: Starting Validation for epoch 6 / 10
+14-09-2024 12:37:34 - __main__ - <module> - INFO: Validation Loss: 0.0122515554
+14-09-2024 12:37:40 - __main__ - <module> - INFO: Epoch 7 / 10, Step 10 / 280, Loss = 0.0190432966
+14-09-2024 12:37:47 - __main__ - <module> - INFO: Epoch 7 / 10, Step 20 / 280, Loss = 0.0125172129
+14-09-2024 12:37:53 - __main__ - <module> - INFO: Epoch 7 / 10, Step 30 / 280, Loss = 0.0102858907
+14-09-2024 12:38:00 - __main__ - <module> - INFO: Epoch 7 / 10, Step 40 / 280, Loss = 0.0124804899
+14-09-2024 12:38:06 - __main__ - <module> - INFO: Epoch 7 / 10, Step 50 / 280, Loss = 0.0125140995
+14-09-2024 12:38:13 - __main__ - <module> - INFO: Epoch 7 / 10, Step 60 / 280, Loss = 0.0123712048
+14-09-2024 12:38:20 - __main__ - <module> - INFO: Epoch 7 / 10, Step 70 / 280, Loss = 0.0124638788
+14-09-2024 12:38:26 - __main__ - <module> - INFO: Epoch 7 / 10, Step 80 / 280, Loss = 0.0169641767
+14-09-2024 12:38:33 - __main__ - <module> - INFO: Epoch 7 / 10, Step 90 / 280, Loss = 0.0125598032
+14-09-2024 12:38:39 - __main__ - <module> - INFO: Epoch 7 / 10, Step 100 / 280, Loss = 0.0087769153
+14-09-2024 12:38:46 - __main__ - <module> - INFO: Epoch 7 / 10, Step 110 / 280, Loss = 0.0109962570
+14-09-2024 12:38:53 - __main__ - <module> - INFO: Epoch 7 / 10, Step 120 / 280, Loss = 0.0112490756
+14-09-2024 12:38:59 - __main__ - <module> - INFO: Epoch 7 / 10, Step 130 / 280, Loss = 0.0122695807
+14-09-2024 12:39:06 - __main__ - <module> - INFO: Epoch 7 / 10, Step 140 / 280, Loss = 0.0101763736
+14-09-2024 12:39:12 - __main__ - <module> - INFO: Epoch 7 / 10, Step 150 / 280, Loss = 0.0118314652
+14-09-2024 12:39:19 - __main__ - <module> - INFO: Epoch 7 / 10, Step 160 / 280, Loss = 0.0149186673
+14-09-2024 12:39:26 - __main__ - <module> - INFO: Epoch 7 / 10, Step 170 / 280, Loss = 0.0119997747
+14-09-2024 12:39:32 - __main__ - <module> - INFO: Epoch 7 / 10, Step 180 / 280, Loss = 0.0116021270
+14-09-2024 12:39:39 - __main__ - <module> - INFO: Epoch 7 / 10, Step 190 / 280, Loss = 0.0133561930
+14-09-2024 12:39:46 - __main__ - <module> - INFO: Epoch 7 / 10, Step 200 / 280, Loss = 0.0117797693
+14-09-2024 12:39:52 - __main__ - <module> - INFO: Epoch 7 / 10, Step 210 / 280, Loss = 0.0097235832
+14-09-2024 12:39:59 - __main__ - <module> - INFO: Epoch 7 / 10, Step 220 / 280, Loss = 0.0175509229
+14-09-2024 12:40:05 - __main__ - <module> - INFO: Epoch 7 / 10, Step 230 / 280, Loss = 0.0092864661
+14-09-2024 12:40:12 - __main__ - <module> - INFO: Epoch 7 / 10, Step 240 / 280, Loss = 0.0088818306
+14-09-2024 12:40:19 - __main__ - <module> - INFO: Epoch 7 / 10, Step 250 / 280, Loss = 0.0127305044
+14-09-2024 12:40:25 - __main__ - <module> - INFO: Epoch 7 / 10, Step 260 / 280, Loss = 0.0143145025
+14-09-2024 12:40:32 - __main__ - <module> - INFO: Epoch 7 / 10, Step 270 / 280, Loss = 0.0141083477
+14-09-2024 12:40:38 - __main__ - <module> - INFO: Epoch 7 / 10, Step 280 / 280, Loss = 0.0109742386
+14-09-2024 12:40:39 - __main__ - <module> - INFO: New learning rate: 7.8125e-05
+14-09-2024 12:40:39 - __main__ - <module> - INFO: Starting Validation for epoch 7 / 10
+14-09-2024 12:41:01 - __main__ - <module> - INFO: Validation Loss: 0.0122437513
+14-09-2024 12:41:07 - __main__ - <module> - INFO: Epoch 8 / 10, Step 10 / 280, Loss = 0.0125130787
+14-09-2024 12:41:14 - __main__ - <module> - INFO: Epoch 8 / 10, Step 20 / 280, Loss = 0.0116327992
+14-09-2024 12:41:20 - __main__ - <module> - INFO: Epoch 8 / 10, Step 30 / 280, Loss = 0.0130292093
+14-09-2024 12:41:27 - __main__ - <module> - INFO: Epoch 8 / 10, Step 40 / 280, Loss = 0.0076932497
+14-09-2024 12:41:33 - __main__ - <module> - INFO: Epoch 8 / 10, Step 50 / 280, Loss = 0.0123509616
+14-09-2024 12:41:39 - __main__ - <module> - INFO: Epoch 8 / 10, Step 60 / 280, Loss = 0.0082856072
+14-09-2024 12:41:46 - __main__ - <module> - INFO: Epoch 8 / 10, Step 70 / 280, Loss = 0.0117503284
+14-09-2024 12:41:52 - __main__ - <module> - INFO: Epoch 8 / 10, Step 80 / 280, Loss = 0.0155745624
+14-09-2024 12:41:59 - __main__ - <module> - INFO: Epoch 8 / 10, Step 90 / 280, Loss = 0.0119496463
+14-09-2024 12:42:05 - __main__ - <module> - INFO: Epoch 8 / 10, Step 100 / 280, Loss = 0.0115570705
+14-09-2024 12:42:12 - __main__ - <module> - INFO: Epoch 8 / 10, Step 110 / 280, Loss = 0.0081266928
+14-09-2024 12:42:18 - __main__ - <module> - INFO: Epoch 8 / 10, Step 120 / 280, Loss = 0.0099213673
+14-09-2024 12:42:25 - __main__ - <module> - INFO: Epoch 8 / 10, Step 130 / 280, Loss = 0.0140831862
+14-09-2024 12:42:31 - __main__ - <module> - INFO: Epoch 8 / 10, Step 140 / 280, Loss = 0.0083144866
+14-09-2024 12:42:38 - __main__ - <module> - INFO: Epoch 8 / 10, Step 150 / 280, Loss = 0.0099265929
+14-09-2024 12:42:44 - __main__ - <module> - INFO: Epoch 8 / 10, Step 160 / 280, Loss = 0.0126514928
+14-09-2024 12:42:51 - __main__ - <module> - INFO: Epoch 8 / 10, Step 170 / 280, Loss = 0.0141648222
+14-09-2024 12:42:57 - __main__ - <module> - INFO: Epoch 8 / 10, Step 180 / 280, Loss = 0.0105598215
+14-09-2024 12:43:04 - __main__ - <module> - INFO: Epoch 8 / 10, Step 190 / 280, Loss = 0.0144018503
+14-09-2024 12:43:10 - __main__ - <module> - INFO: Epoch 8 / 10, Step 200 / 280, Loss = 0.0125831207
+14-09-2024 12:43:17 - __main__ - <module> - INFO: Epoch 8 / 10, Step 210 / 280, Loss = 0.0066456506
+14-09-2024 12:43:23 - __main__ - <module> - INFO: Epoch 8 / 10, Step 220 / 280, Loss = 0.0123828789
+14-09-2024 12:43:29 - __main__ - <module> - INFO: Epoch 8 / 10, Step 230 / 280, Loss = 0.0182858650
+14-09-2024 12:43:36 - __main__ - <module> - INFO: Epoch 8 / 10, Step 240 / 280, Loss = 0.0134901581
+14-09-2024 12:43:42 - __main__ - <module> - INFO: Epoch 8 / 10, Step 250 / 280, Loss = 0.0103038242
+14-09-2024 12:43:49 - __main__ - <module> - INFO: Epoch 8 / 10, Step 260 / 280, Loss = 0.0132572195
+14-09-2024 12:43:55 - __main__ - <module> - INFO: Epoch 8 / 10, Step 270 / 280, Loss = 0.0124029620
+14-09-2024 12:44:02 - __main__ - <module> - INFO: Epoch 8 / 10, Step 280 / 280, Loss = 0.0159968119
+14-09-2024 12:44:02 - __main__ - <module> - INFO: New learning rate: 3.90625e-05
+14-09-2024 12:44:02 - __main__ - <module> - INFO: Starting Validation for epoch 8 / 10
+14-09-2024 12:44:24 - __main__ - <module> - INFO: Validation Loss: 0.0122377681
+14-09-2024 12:44:31 - __main__ - <module> - INFO: Epoch 9 / 10, Step 10 / 280, Loss = 0.0103217056
+14-09-2024 12:44:37 - __main__ - <module> - INFO: Epoch 9 / 10, Step 20 / 280, Loss = 0.0122849504
+14-09-2024 12:44:44 - __main__ - <module> - INFO: Epoch 9 / 10, Step 30 / 280, Loss = 0.0164541621
+14-09-2024 12:44:50 - __main__ - <module> - INFO: Epoch 9 / 10, Step 40 / 280, Loss = 0.0082101431
+14-09-2024 12:44:57 - __main__ - <module> - INFO: Epoch 9 / 10, Step 50 / 280, Loss = 0.0156311449
+14-09-2024 12:45:03 - __main__ - <module> - INFO: Epoch 9 / 10, Step 60 / 280, Loss = 0.0094740530
+14-09-2024 12:45:10 - __main__ - <module> - INFO: Epoch 9 / 10, Step 70 / 280, Loss = 0.0101836445
+14-09-2024 12:45:16 - __main__ - <module> - INFO: Epoch 9 / 10, Step 80 / 280, Loss = 0.0117725898
+14-09-2024 12:45:23 - __main__ - <module> - INFO: Epoch 9 / 10, Step 90 / 280, Loss = 0.0094684092
+14-09-2024 12:45:29 - __main__ - <module> - INFO: Epoch 9 / 10, Step 100 / 280, Loss = 0.0139896469
+14-09-2024 12:45:35 - __main__ - <module> - INFO: Epoch 9 / 10, Step 110 / 280, Loss = 0.0103023499
+14-09-2024 12:45:42 - __main__ - <module> - INFO: Epoch 9 / 10, Step 120 / 280, Loss = 0.0117576895
+14-09-2024 12:45:48 - __main__ - <module> - INFO: Epoch 9 / 10, Step 130 / 280, Loss = 0.0107823275
+14-09-2024 12:45:55 - __main__ - <module> - INFO: Epoch 9 / 10, Step 140 / 280, Loss = 0.0161169395
+14-09-2024 12:46:01 - __main__ - <module> - INFO: Epoch 9 / 10, Step 150 / 280, Loss = 0.0135742566
+14-09-2024 12:46:08 - __main__ - <module> - INFO: Epoch 9 / 10, Step 160 / 280, Loss = 0.0095985560
+14-09-2024 12:46:14 - __main__ - <module> - INFO: Epoch 9 / 10, Step 170 / 280, Loss = 0.0099372417
+14-09-2024 12:46:21 - __main__ - <module> - INFO: Epoch 9 / 10, Step 180 / 280, Loss = 0.0132475495
+14-09-2024 12:46:27 - __main__ - <module> - INFO: Epoch 9 / 10, Step 190 / 280, Loss = 0.0103596300
+14-09-2024 12:46:34 - __main__ - <module> - INFO: Epoch 9 / 10, Step 200 / 280, Loss = 0.0139648020
+14-09-2024 12:46:40 - __main__ - <module> - INFO: Epoch 9 / 10, Step 210 / 280, Loss = 0.0129578058
+14-09-2024 12:46:47 - __main__ - <module> - INFO: Epoch 9 / 10, Step 220 / 280, Loss = 0.0076816985
+14-09-2024 12:46:53 - __main__ - <module> - INFO: Epoch 9 / 10, Step 230 / 280, Loss = 0.0108487718
+14-09-2024 12:47:00 - __main__ - <module> - INFO: Epoch 9 / 10, Step 240 / 280, Loss = 0.0172385573
+14-09-2024 12:47:06 - __main__ - <module> - INFO: Epoch 9 / 10, Step 250 / 280, Loss = 0.0103748208
+14-09-2024 12:47:13 - __main__ - <module> - INFO: Epoch 9 / 10, Step 260 / 280, Loss = 0.0106445299
+14-09-2024 12:47:19 - __main__ - <module> - INFO: Epoch 9 / 10, Step 270 / 280, Loss = 0.0159936659
+14-09-2024 12:47:25 - __main__ - <module> - INFO: Epoch 9 / 10, Step 280 / 280, Loss = 0.0136356605
+14-09-2024 12:47:26 - __main__ - <module> - INFO: New learning rate: 1.953125e-05
+14-09-2024 12:47:26 - __main__ - <module> - INFO: Starting Validation for epoch 9 / 10
+14-09-2024 12:47:48 - __main__ - <module> - INFO: Validation Loss: 0.0122331661
+14-09-2024 12:47:54 - __main__ - <module> - INFO: Epoch 10 / 10, Step 10 / 280, Loss = 0.0135809323
+14-09-2024 12:48:01 - __main__ - <module> - INFO: Epoch 10 / 10, Step 20 / 280, Loss = 0.0086759133
+14-09-2024 12:48:07 - __main__ - <module> - INFO: Epoch 10 / 10, Step 30 / 280, Loss = 0.0152218407
+14-09-2024 12:48:13 - __main__ - <module> - INFO: Epoch 10 / 10, Step 40 / 280, Loss = 0.0172841791
+14-09-2024 12:48:20 - __main__ - <module> - INFO: Epoch 10 / 10, Step 50 / 280, Loss = 0.0116261207
+14-09-2024 12:48:26 - __main__ - <module> - INFO: Epoch 10 / 10, Step 60 / 280, Loss = 0.0134276245
+14-09-2024 12:48:33 - __main__ - <module> - INFO: Epoch 10 / 10, Step 70 / 280, Loss = 0.0114870677
+14-09-2024 12:48:39 - __main__ - <module> - INFO: Epoch 10 / 10, Step 80 / 280, Loss = 0.0131519157
+14-09-2024 12:48:46 - __main__ - <module> - INFO: Epoch 10 / 10, Step 90 / 280, Loss = 0.0102160545
+14-09-2024 12:48:53 - __main__ - <module> - INFO: Epoch 10 / 10, Step 100 / 280, Loss = 0.0169357341
+14-09-2024 12:48:59 - __main__ - <module> - INFO: Epoch 10 / 10, Step 110 / 280, Loss = 0.0123804435
+14-09-2024 12:49:06 - __main__ - <module> - INFO: Epoch 10 / 10, Step 120 / 280, Loss = 0.0084221736
+14-09-2024 12:49:12 - __main__ - <module> - INFO: Epoch 10 / 10, Step 130 / 280, Loss = 0.0150580406
+14-09-2024 12:49:19 - __main__ - <module> - INFO: Epoch 10 / 10, Step 140 / 280, Loss = 0.0081428904
+14-09-2024 12:49:26 - __main__ - <module> - INFO: Epoch 10 / 10, Step 150 / 280, Loss = 0.0157888122
+14-09-2024 12:49:32 - __main__ - <module> - INFO: Epoch 10 / 10, Step 160 / 280, Loss = 0.0098518683
+14-09-2024 12:49:39 - __main__ - <module> - INFO: Epoch 10 / 10, Step 170 / 280, Loss = 0.0108144004
+14-09-2024 12:49:45 - __main__ - <module> - INFO: Epoch 10 / 10, Step 180 / 280, Loss = 0.0146620516
+14-09-2024 12:49:52 - __main__ - <module> - INFO: Epoch 10 / 10, Step 190 / 280, Loss = 0.0133818733
+14-09-2024 12:49:59 - __main__ - <module> - INFO: Epoch 10 / 10, Step 200 / 280, Loss = 0.0133633213
+14-09-2024 12:50:05 - __main__ - <module> - INFO: Epoch 10 / 10, Step 210 / 280, Loss = 0.0155723123
+14-09-2024 12:50:12 - __main__ - <module> - INFO: Epoch 10 / 10, Step 220 / 280, Loss = 0.0109387701
+14-09-2024 12:50:18 - __main__ - <module> - INFO: Epoch 10 / 10, Step 230 / 280, Loss = 0.0128299883
+14-09-2024 12:50:25 - __main__ - <module> - INFO: Epoch 10 / 10, Step 240 / 280, Loss = 0.0095742019
+14-09-2024 12:50:31 - __main__ - <module> - INFO: Epoch 10 / 10, Step 250 / 280, Loss = 0.0116695333
+14-09-2024 12:50:37 - __main__ - <module> - INFO: Epoch 10 / 10, Step 260 / 280, Loss = 0.0125262290
+14-09-2024 12:50:44 - __main__ - <module> - INFO: Epoch 10 / 10, Step 270 / 280, Loss = 0.0152725447
+14-09-2024 12:50:50 - __main__ - <module> - INFO: Epoch 10 / 10, Step 280 / 280, Loss = 0.0170322862
+14-09-2024 12:50:51 - __main__ - <module> - INFO: Starting Validation for epoch 10 / 10
+14-09-2024 12:51:13 - __main__ - <module> - INFO: Validation Loss: 0.0122294707
+14-09-2024 12:51:13 - visualize - save_plot_training_loss - INFO: Plot writen to ./logs/training_loss_8.png
+14-09-2024 12:51:13 - __main__ - <module> - INFO: Training finished!
+14-09-2024 12:51:13 - __main__ - <module> - INFO: Saved Model
+14-09-2024 12:51:13 - __main__ - <module> - INFO: Starting Test Step...
+14-09-2024 12:51:35 - __main__ - <module> - INFO: Test Loss: 0.0117194414
+14-09-2024 12:51:36 - visualize - compareTimeDomainComplex - INFO: Saved comparison of random prediction and label to ./random_test_prediction.png
+14-09-2024 12:51:36 - __main__ - <module> - INFO: Test Step finished!
