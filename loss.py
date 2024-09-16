@@ -76,21 +76,32 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
 
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean()
+            loss += mse_real.mean() + mse_imag.mean() + 30*mse_intensity.mean()
         # devide by batch size 
         loss = loss / batch_size
 
         return loss
 
-
-def createSHGmat(analytical_time_signal, sampling_time, w_center):
-    N = len(analytical_time_signal)
+def createSHGmat(yta, Ts, wCenter):
+    N = len(yta)
     # create a tensor storing indicies starting with -N/2 to N/2
     start = -N // 2
     end = N // 2    
     delayIdxVec = torch.arange(start, end, dtype=torch.float32)
 
     # calculate shift factor
-    shiftFactor = torch.exp(-1j * 2 * w_center * sampling_time * delayIdxVec)
-    9
+    shiftFactor = torch.exp(-1j * 2 * wCenter * Ts * delayIdxVec)
 
+    shgMat = torch.zeros((N, N), dtype=torch.complex64)
+
+    def fftshift(x):
+        return torch.fft.fftshift(x)
+    
+    def circshift(x, shift):
+        shift = shift % x.size[0]
+        return torch.roll(x, shifts=shift, dims=0)
+
+    for (matIdx, delayIdx) in enumerate(delayIdxVec):
+        ytaShifted = circshift(yta, delayIdx)
+        fft_yta = torch.fft.fft(fftshift(yta* ytaShifted * shiftFactor))
+        shgMat[matIdx, :] = Ts * fftshift(fft_yta)
