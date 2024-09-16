@@ -289,7 +289,7 @@ with torch.no_grad():
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
         # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
-        vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
+        vis.compareTimeDomainComplex(config.prediction_filepath, label, prediction)
 
 logger.info("Test Step finished!")
 
