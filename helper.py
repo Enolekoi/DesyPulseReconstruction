@@ -498,6 +498,54 @@ class ReadLabelFromEsComplex(object):
         label = torch.from_numpy(label)
         return label
 
+'''
+RemoveAmbiguitiesFromLabel()
+Read labels (real and imag part) from Es.dat
+'''
+class RemoveAmbiguitiesFromLabel(object):
+    def __init__(self, number_elements):
+        '''
+        Inputs:
+            number_elements     -> Number of elements in the intensity and phase array each [int]
+        '''
+        self.number_elements = number_elements
+        # get the center index of each half
+        self.index_center = number_elements // 2
+
+    def __call__(self, label):    
+        '''
+        Read Ek.dat file and place columns in arrays
+        Inputs:
+            label -> List of arrays containing real and imag part of time signal [tensor]
+        Outputs:
+            output_label -> List of arrays containing real and imag part of time signal, without ambiguities [tensor]
+        '''
+        real_part = label[:self.number_elements]
+        imag_part = label[self.number_elements:]
+
+        # calculate the intensity of the signal
+        intensity = real_part**2 + imag_part**2
+
+        # get the index of the highest intensity value and calculate the offset
+        index_peak = torch.argmax(intensity)
+        offset = self.index_center - index_peak
+
+        # shift the real and imaginary parts to center the peak
+        real_part = torch.roll(real_part, offset.item() )
+        imag_part = torch.roll(imag_part, offset.item() )
+        
+        # Calculate the mean of the pulse before and after the center index
+        mean_first_half = torch.mean(intensity[:self.index_center])
+        mean_second_half = torch.mean(intensity[self.index_center:])
+
+        # if the mean after the intensity peak is higher, mirror real and imaginary part
+        if mean_second_half > mean_first_half:
+            real_part = torch.flip(real_part, dims=[0])
+            imag_part = torch.flip(imag_part, dims=[0])
+        
+        output_label = torch.cat([real_part, imag_part])
+        return output_label
+
 class Scaler(object):
     def __init__(self, max_intensity, max_phase):
         '''

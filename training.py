@@ -49,10 +49,11 @@ logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are u
 # Transforms
 spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
 label_reader = helper.ReadLabelFromEsComplex(config.OUTPUT_SIZE)
+label_remove_ambiguieties = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
 # label_phase_correction = helper.RemoveAbsolutePhaseShift()
 label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 # label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
-label_transform = transforms.Compose([label_reader, label_scaler])
+label_transform = transforms.Compose([label_reader, label_remove_ambiguieties, label_scaler])
 
 label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 
