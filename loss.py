@@ -81,5 +81,4 @@ class PulseRetrievalLossFunction(nn.Module):
 def createSHGmat(analytical_time_signal, sampling_time, w_center):
     N = len(analytical_time_signal)
     delay_index_vector = (-N // 2) 
-    delayIdxVec = (-N ÷ 2):(N ÷ 2 - 1)
     
