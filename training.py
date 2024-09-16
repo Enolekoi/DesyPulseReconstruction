@@ -204,7 +204,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
         if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10f}")
+            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10e}")
         # Write loss into array
         training_losses.append(loss.item())
     if (epoch < config.NUM_EPOCHS-1):
@@ -239,7 +239,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             validation_losses.append(validation_loss.item())  # plave validation loss into list
 
         avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
-    logger.info(f"Validation Loss: {avg_val_loss:.10f}")
+    logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # plot training loss
 vis.save_plot_training_loss(
@@ -274,7 +274,7 @@ with torch.no_grad():
         test_losses.append(test_loss.item())
 
     avg_test_loss = np.mean(test_losses)
-    logger.info(f"Test Loss: {avg_test_loss:.10f}")
+    logger.info(f"Test Loss: {avg_test_loss:.10e}")
 
     if len(test_data) > 0:
         # get a random sample
