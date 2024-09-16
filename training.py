@@ -46,16 +46,27 @@ logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
 logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
 logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are used!")
 
-# Transforms
-spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
+# Transforms (Inputs)
+# Resample the spectrograms
+spec_transform = helper.ResampleSpectrogram(
+    config.OUTPUT_NUM_DELAYS, 
+    config.OUTPUT_TIMESTEP, 
+    config.OUTPUT_NUM_WAVELENGTH,
+    config.OUTPUT_START_WAVELENGTH,
+    config.OUTPUT_END_WAVELENGTH
+    )
+
+# Transforms (Labels)
 label_reader = helper.ReadLabelFromEsComplex(config.OUTPUT_SIZE)
 label_remove_ambiguieties = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
-# label_phase_correction = helper.RemoveAbsolutePhaseShift()
-label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
-# label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
+scaler = helper.Scaler(
+    number_elements=config.OUTPUT_SIZE, 
+    max_real=config.MAX_REAL, 
+    max_imag=config.MAX_IMAG
+    )
+label_scaler = scaler.scale
+label_unscaler = scaler.unscale
 label_transform = transforms.Compose([label_reader, label_remove_ambiguieties, label_scaler])
-
-label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
 
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

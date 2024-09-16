@@ -292,160 +292,6 @@ class ResampleSpectrogram(object):
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
 
 '''
-ReadIntensityFromEs()
-Read labels (phase) from Es.dat
-'''
-class ReadIntensityFromEs(object):
-    def __init__(self, number_elements):
-        '''
-        Inputs:
-            number_elements     -> Number of elements in the intensity and phase array each [int]
-        '''
-        self.number_elements = number_elements
-
-    def __call__(self, path):    
-        '''
-        Read Ek.dat file and place columns in arrays
-        Inputs:
-            Path -> Path to Ek.dat [string]
-        Outputs:
-            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
-            [
-                time_axis   -> Array containing time axis of time signal [numpy array]
-                intensity   -> Array containing intensity of time signal (squared amplitude) [numpy array]
-                phase       -> Array containing phase of time signal [numpy array]
-                real_part   -> Array containing real part of time signal [numpy array]
-                imag_part   -> Array containing imaginary part of time signal [numpy array]
-            ]
-        '''
-        # read the dataframe
-        dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
-        
-        TimeDomainSignal = TimeDomain(time_axis = dataframe[0].to_numpy(),
-                                      intensity = dataframe[1].to_numpy(),
-                                      phase = dataframe[2].to_numpy(), 
-                                      real = dataframe[3].to_numpy(),
-                                      imag = dataframe[4].to_numpy())
-
-        # Resample to fit correct number of elements
-        original_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=len(TimeDomainSignal.intensity))
-        new_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=self.number_elements)
-        interpolation_func_intensity = interp1d(original_indicies, TimeDomainSignal.intensity, kind='linear')
-        TimeDomainSignal.intensity = interpolation_func_intensity(new_indicies)
-
-        label = TimeDomainSignal.intensity
-        label = torch.from_numpy(label)
-        
-        label = torch.round(label * 512)
-        label = label / 512
-        return label
-
-'''
-ReadPhaseFromEs()
-Read labels (phase) from Es.dat
-'''
-class ReadPhaseFromEs(object):
-    def __init__(self, number_elements):
-        '''
-        Inputs:
-            number_elements     -> Number of elements in the intensity and phase array each [int]
-        '''
-        self.number_elements = number_elements
-
-    def __call__(self, path):    
-        '''
-        Read Ek.dat file and place columns in arrays
-        Inputs:
-            Path -> Path to Ek.dat [string]
-        Outputs:
-            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
-            [
-                time_axis   -> Array containing time axis of time signal [numpy array]
-                intensity   -> Array containing intensity of time signal (squared amplitude) [numpy array]
-                phase       -> Array containing phase of time signal [numpy array]
-                real_part   -> Array containing real part of time signal [numpy array]
-                imag_part   -> Array containing imaginary part of time signal [numpy array]
-            ]
-        '''
-        # read the dataframe
-        dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
-        
-        TimeDomainSignal = TimeDomain(time_axis = dataframe[0].to_numpy(),
-                                      intensity = dataframe[1].to_numpy(),
-                                      phase = dataframe[2].to_numpy(), 
-                                      real = dataframe[3].to_numpy(),
-                                      imag = dataframe[4].to_numpy())
-
-        # Resample to fit correct number of elements
-        original_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=len(TimeDomainSignal.intensity))
-        new_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=self.number_elements)
-        interpolation_func_phase = interp1d(original_indicies, TimeDomainSignal.phase, kind='linear')
-        TimeDomainSignal.phase = interpolation_func_phase(new_indicies)
-        # correct phase
-        phase_normalized = TimeDomainSignal.phase - np.mean(TimeDomainSignal.phase)
-        if np.mean(phase_normalized) <= 0:
-            phase_normalized = -phase_normalized
-
-        phase_wrapped = np.mod(phase_normalized, 2 * np.pi)
-        # phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
-        TimeDomainSignal.phase = phase_wrapped
-        label = TimeDomainSignal.phase
-        label = torch.from_numpy(label)
-        return label
-'''
-ReadLabelFromEs()
-Read labels (intensity and phase) from Es.dat
-'''
-class ReadLabelFromEs(object):
-    def __init__(self, number_elements):
-        '''
-        Inputs:
-            number_elements     -> Number of elements in the intensity and phase array each [int]
-        '''
-        self.number_elements = number_elements
-
-    def __call__(self, path):    
-        '''
-        Read Ek.dat file and place columns in arrays
-        Inputs:
-            Path -> Path to Ek.dat [string]
-        Outputs:
-            label -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
-            [
-                time_axis   -> Array containing time axis of time signal [numpy array]
-                intensity   -> Array containing intensity of time signal (squared amplitude) [numpy array]
-                phase       -> Array containing phase of time signal [numpy array]
-                real_part   -> Array containing real part of time signal [numpy array]
-                imag_part   -> Array containing imaginary part of time signal [numpy array]
-            ]
-        '''
-        # read the dataframe
-        dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
-        
-        TimeDomainSignal = TimeDomain(time_axis = dataframe[0].to_numpy(),
-                                      intensity = dataframe[1].to_numpy(),
-                                      phase = dataframe[2].to_numpy(), 
-                                      real = dataframe[3].to_numpy(),
-                                      imag = dataframe[4].to_numpy())
-
-        # Resample to fit correct number of elements
-        original_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=len(TimeDomainSignal.intensity))
-        new_indicies = np.linspace(0, len(TimeDomainSignal.intensity) - 1, num=self.number_elements)
-        interpolation_func_inten = interp1d(original_indicies, TimeDomainSignal.intensity, kind='linear')
-        interpolation_func_phase = interp1d(original_indicies, TimeDomainSignal.phase, kind='linear')
-        TimeDomainSignal.intensity = interpolation_func_inten(new_indicies)
-        TimeDomainSignal.phase = interpolation_func_phase(new_indicies)
-        # correct phase
-        phase_normalized = TimeDomainSignal.phase - np.mean(TimeDomainSignal.phase)
-        phase_wrapped = np.mod(phase_normalized, 2 * np.pi)
-        phase_wrapped = np.where(phase_wrapped < 0, phase_wrapped + 2 * np.pi, phase_wrapped)
-        TimeDomainSignal.phase = phase_wrapped
-
-        label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
-        label = torch.from_numpy(label)
-        return label
-
-'''
 ReadLabelFromEsComplex()
 Read labels (real and imag part) from Es.dat
 '''
@@ -547,38 +393,56 @@ class RemoveAmbiguitiesFromLabel(object):
         return output_label
 
 class Scaler(object):
-    def __init__(self, max_intensity, max_phase):
+    def __init__(self, number_elements, max_real, max_imag):
         '''
         Inputs:
-            max_intensity   -> >= maximum intesity in dataset [float]
-            max_phase       -> >= maximum phase in dataset [float]
+            number_elements -> Number of elements in each the real and imaginary part of the array [int]
+            max_intensity   -> >= maximum real part in dataset [float]
+            max_phase       -> >= maximum imag part in dataset [float]
         '''
-        self.max_intensity = max_intensity
-        self.max_phase = max_phase
-    def scalePhase(self, phase):
+        self.number_elements = number_elements
+        self.max_real = max_real
+        self.max_imag = max_imag
+
+    def scale(self, label):
         '''
         Scale the values of intensity and phase to [-1,1]
         Inputs:
-            phase -> List of arrays containing intesity of time signal (squared amplitute) and it's phase [tensor]
+            label -> List of arrays containing real and imaginary part of time signal [tensor]
         Outputs:
-            scaled_phase -> List of arrays containing of phase of the time signal scaled to [-1,1] [tensor]
+            scaled_label -> List of arrays containing real and imaginary part of the time signal scaled to [-1,1] [tensor]
         '''
-        scaled_phase = phase / self.max_phase
+        # get real and imaginary part
+        real_part = label[:self.number_elements]
+        imag_part = label[self.number_elements:]
+        # scale the real and imaginary part
+        scaled_real = real_part / self.max_real
+        scaled_imag = imag_part / self.max_imag
+        # concat them back into label
+        scaled_label = torch.cat([scaled_real, scaled_imag])
 
-        return scaled_phase
+        return scaled_label
         
-    def unscalePhase(self, scaled_phase):
+    def unscale(self, scaled_label):
         '''
         Unscales the values of the phase to [-1,1]
         Inputs:
-            scaled_label -> List of arrays containing the phase scaled to [-1,1] [tensor]
+            scaled_label -> List of arrays containing the real and imaginary part scaled to [-1,1] [tensor]
         Outputs:
-            label -> List of arrays containing the phase of time signal [tensor]
+            label -> List of arrays containing the real and imaginary part of time signal [tensor]
         '''
-        phase = scaled_phase * self.max_phase
+        # get real and imaginary part
+        scaled_real_part = scaled_label[:self.number_elements]
+        scaled_imag_part = scaled_label[self.number_elements:]
 
-        return phase
+        # scale the real and imaginary part
+        unscaled_real_part = scaled_real_part * self.max_real
+        unscaled_imag_part = scaled_imag_part * self.max_imag
 
+        # concat them back into label
+        unscaled_label = torch.cat([unscaled_real_part, unscaled_imag_part])
+
+        return unscaled_label
 
 '''
 ScaleLabel()
