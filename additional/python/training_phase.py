@@ -8,12 +8,14 @@ import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader, random_split, Subset 
-import matplotlib 
-matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering import matplotlib.pyplot as plt
+from torch.utils.data import Dataset, DataLoader, random_split, Subset
+import matplotlib
+matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering
+import matplotlib.pyplot as plt
 
 import random
 import logging
+import gc
 
 from sklearn.model_selection import KFold
 # Classes, methods and functions from different files
@@ -36,42 +38,32 @@ logging.basicConfig(
             ]
 )
 logger = logging.getLogger(__name__)
+
 # Log some information
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
-logger.info(f"Spectrograms used: {config.SpecFilename}")
+logger.info(f"Noise level used: {config.SpecFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
 logger.info(f"Batch size: {config.BATCH_SIZE} elements")
 logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
 logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
-logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are used!")
 
-# Transforms (Inputs)
-# Resample the spectrograms
-spec_transform = helper.ResampleSpectrogram(
-    config.OUTPUT_NUM_DELAYS, 
-    config.OUTPUT_TIMESTEP, 
-    config.OUTPUT_NUM_FREQUENCIES,
-    config.OUTPUT_START_FREQUENCY,
-    config.OUTPUT_END_FREQUENCY
-    )
+# Transforms
+spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
+# label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
+label_reader = helper.ReadPhaseFromEs(config.OUTPUT_SIZE)
+# label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
+label_scaler = helper.Scaler(config.MAX_INTENSITY, config.MAX_PHASE)
+# label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
+label_transform = transforms.Compose([label_reader, label_scaler.scalePhase])
 
-# Transforms (Labels)
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
-label_remove_ambiguieties = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
-scaler = helper.Scaler(
-    number_elements=config.OUTPUT_SIZE, 
-    max_real=config.MAX_REAL, 
-    max_imag=config.MAX_IMAG
-    )
-label_scaler = scaler.scale
-label_unscaler = scaler.unscale
-label_transform = transforms.Compose([label_reader, label_remove_ambiguieties, label_scaler])
+label_unscaler = label_scaler.scalePhase
 
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 logger.info(f"Device used (cuda/cpu): {device}")
 if device == 'cuda':
+    gc.collect()
     torch.cuda.empty_cache()
 
 '''
@@ -79,24 +71,14 @@ Load Model
 '''
 logger.info("Loading Model...")
 # Load custom DenseNet
-model = helper.CustomDenseNet(
-    num_outputs=2*config.OUTPUT_SIZE
+modelPhase = helper.CustomDenseNet(
+    num_outputs=config.OUTPUT_SIZE
     )
-model.load_state_dict(torch.load('./models/trained_model_3.pth', weights_only=True))
-model.float()
-model.to(device)
-model.eval()
-# Freeze the layers before self.densenet
-for param in model.densenet.parameters():
-    param.requires_grad = False
 
-# Only allow gradients on the layers after densenet
-for param in model.fc1.parameters():
-    param.requires_grad = True
+modelPhase.float()
+modelPhase.to(device)
+modelPhase.eval()
 
-for param in model.fc2.parameters():
-    param.requires_grad = True
-logger.info("Freezing early layers!")
 logger.info("Loading Model finished!")
 
 '''
@@ -107,8 +89,6 @@ logger.info("Loading Data...")
 data = helper.SimulatedDataset(path=config.Path,
                                label_filename=config.LabelFilename,
                                spec_filename=config.SpecFilename,
-                               tbdrms_file=config.TBDrmsFilename,  # Path to the file containing TBDrms values
-                               tbdrms_threshold=config.TBDRMS_THRESHOLD,  # TBDrms threshold for filtering    
                                transform=spec_transform,
                                target_transform=label_transform)
 ################
@@ -143,45 +123,16 @@ logger.info(f"Starting training...")
 ## loss and optimizer ##
 ########################
 # loss function
-# criterion = nn.MSELoss()
-criterion = helper.PulseRetrievalLossFunction(
-        penalty_factor=config.PENALTY_FACTOR,
-        threshold=config.PENALTY_THRESHOLD
-        )
-
+criterion = nn.MSELoss()
 # optimizer used
-# optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
-optimizer = torch.optim.Adam(
-        [   
-         {'params': model.fc1.parameters()},
-         {'params': model.fc2.parameters()}
-        ],
-        lr=config.LEARNING_RATE,
-	weight_decay=config.WEIGHT_DECAY
-	)
-# optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-# optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
-#optimizer = torch.optim.SGD(
-        # [   
-        # { 'params': model.fc1.parameters()},
-        # {'params': model.fc2.parameters()}
-        # ],
-        # lr=config.LEARNING_RATE,
-	#momentum = 0.9)
-
+optimizer = torch.optim.Adam(modelPhase.parameters(), lr=config.LEARNING_RATE)
 # scheduler for changing learning rate after each epoch
-scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
-
+scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
 # list containing all loss values
-training_losses = []
-validation_losses = []
-learning_rates = []
-
-# save initial learning_rate
-learning_rates.append(config.LEARNING_RATE)
+loss_values = []
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
-    model.train()       
+    modelPhase.train()       
     for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
             # make spectrograms float for compatability with the model
             # spectrograms = spectrograms.float()
@@ -190,69 +141,46 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         labels = labels.float().to(device)      # [tensor]
         
         # Forward pass
-        outputs = model(spectrograms)   # [tensor]
+        outputs = modelPhase(spectrograms)   # [tensor]
         loss = criterion(outputs, labels)   # [float]
 
         # Backward pass
-        loss.backward()
-	# Gradient clipping
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-        optimizer.step()
         optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
         # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
         if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10f}")
+            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1}, Loss = {loss.item():.10f}")
         # Write loss into array
-        training_losses.append(loss.item())
-    if (epoch < config.NUM_EPOCHS-1):
-        # get new learning_rate
-        scheduler.step()
-        # write new learning rate in variable
-        new_lr = scheduler.get_last_lr()[0]
-        # save new learning_rate 
-        learning_rates.append(new_lr)
-        logger.info(f"New learning rate: {new_lr}")
-        # After the unfreeze_epoch, unfreeze the earlier layers and update the optimizer    
-    if (epoch == config.UNFREEZE_EPOCH - 1):
-        logger.info("Unfreezing earlier layers")
-        
-        # Unfreeze all layers
-        for param in model.densenet.parameters():
-            param.requires_grad = True
-        
-        # Update optimizer to include all parameters of the model
-        optimizer = optim.SGD(model.parameters(), lr=config.LEARNING_RATE)
-        scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
+        loss_values.append(loss.item())
+    scheduler.step()
+    new_lr = scheduler.get_last_lr()
+    logger.info(f"New learning rate: {new_lr}")
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
-    model.eval()    # put model into evaluation mode
+    modelPhase.eval()    # put model into evaluation mode
     with torch.no_grad():   # disable gradient computation for evaluation
+        val_losses = []     # list containing all validation losses (resets after each epoch)
         for spectrograms, labels in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
             spectrograms = spectrograms.float().to(device)  # send spectrogram to device
             labels = labels.float().to(device)  # send label to device
 
-            outputs = model(spectrograms)   # calculate prediction
-            validation_loss = criterion(outputs, labels)   # calcultate validation loss
-            validation_losses.append(validation_loss.item())  # plave validation loss into list
+            outputs = modelPhase(spectrograms)   # calculate prediction
+            val_loss = criterion(outputs, labels)   # calcultate validation loss
+            val_losses.append(val_loss.item())  # plave validation loss into list
 
-        avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
+        avg_val_loss = np.mean(val_losses)  # calculate validation loss for this epoch
     logger.info(f"Validation Loss: {avg_val_loss:.10f}")
 
 # plot training loss
-vis.save_plot_training_loss(
-        training_loss = training_losses,
-        validation_loss = validation_losses,
-        learning_rates = learning_rates,
-        train_size = train_size // config.BATCH_SIZE,
-        num_epochs = config.NUM_EPOCHS,
-        filepath = f"{config.loss_plot_filepath}"
-        )
+vis.save_plot_training_loss(loss_values, f"{config.loss_plot_filepath}")
+logger.info(f"Saved plot of training loss! to {config.loss_plot_filepath}!")
 logger.info("Training finished!")
 
 # Write state_dict of model to file
-torch.save(model.state_dict(), config.model_filepath)
+torch.save(modelPhase.state_dict(), config.model_filepath)
 logger.info("Saved Model")
 
 # '''
@@ -262,13 +190,13 @@ logger.info("Starting Test Step...")
 test_loader = DataLoader(test_data, batch_size=config.BATCH_SIZE, shuffle=False)
 test_losses = []
 
-model.eval()
+modelPhase.eval()
 with torch.no_grad():
     for spectrograms, labels in test_loader:
         spectrograms = spectrograms.float().to(device)
         labels = labels.float().to(device)
 
-        outputs = model(spectrograms)
+        outputs = modelPhase(spectrograms)
         test_loss = criterion(outputs, labels)
         test_losses.append(test_loss.item())
 
@@ -284,12 +212,12 @@ with torch.no_grad():
         label = label.unsqueeze(0)
         # send spectrogram to device and make prediction
         spectrogram = spectrogram.float().to(device)
-        prediction = model(spectrogram) 
+        prediction = modelPhase(spectrogram) 
         # send label and prediction to cpu, so that it can be plotted
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
-        # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
-        vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
+        vis.comparePhase("./random_test_phase_prediction.png", label, prediction)
+        # vis.compareTimeDomainComplex("./random_test_prediction.png", label, prediction)
 
 logger.info("Test Step finished!")
 
