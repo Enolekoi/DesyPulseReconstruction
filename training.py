@@ -18,6 +18,7 @@ import logging
 from sklearn.model_selection import KFold
 # Classes, methods and functions from different files
 import helper
+import loss
 import visualize as vis
 import config
 
@@ -144,7 +145,7 @@ logger.info(f"Starting training...")
 ########################
 # loss function
 # criterion = nn.MSELoss()
-criterion = helper.PulseRetrievalLossFunction(
+criterion = loss.PulseRetrievalLossFunction(
         penalty_factor=config.PENALTY_FACTOR,
         threshold=config.PENALTY_THRESHOLD
         )
