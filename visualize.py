@@ -350,7 +350,7 @@ def compareTimeDomainComplex(filepath, label, prediction):
     # ax_intensity.legend(loc='best')
 
     # Combine legends from both axes
-    lines_1, labels_1 = ax[2].get_legend_handles_labels()
+    lines_1, labels_1 = axs[2].get_legend_handles_labels()
     lines_2, labels_2 = ax_intensity.get_legend_handles_labels()
     axs[2].legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
 
