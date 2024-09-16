@@ -34,6 +34,9 @@ class PulseRetrievalLossFunction(nn.Module):
         predictions_real = predictions[:, :half_size]
         predictions_imag = predictions[:, half_size:]
         
+        label_intensity = labels_real**2 + labels_imag**2
+        prediction_intensity = predictions_real**2 + predictions_imag**2
+
         # initialize loss
         loss = 0.0
         # Loop over each batch
@@ -70,8 +73,10 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_imag[:first_significant_idx_imag] *= self.penalty_factor
             mse_imag[last_significant_idx_imag + 1:] *= self.penalty_factor
             
+            mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
+
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean()
+            loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean()
         # devide by batch size 
         loss = loss / batch_size
 
@@ -80,5 +85,12 @@ class PulseRetrievalLossFunction(nn.Module):
 
 def createSHGmat(analytical_time_signal, sampling_time, w_center):
     N = len(analytical_time_signal)
-    delay_index_vector = (-N // 2) 
-    
+    # create a tensor storing indicies starting with -N/2 to N/2
+    start = -N // 2
+    end = N // 2    
+    delayIdxVec = torch.arange(start, end, dtype=torch.float32)
+
+    # calculate shift factor
+    shiftFactor = torch.exp(-1j * 2 * w_center * sampling_time * delayIdxVec)
+    9
+
