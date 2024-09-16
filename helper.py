@@ -180,20 +180,20 @@ Transform Class that resamples spectrograms to use the same axis and size
 '''
 class ResampleSpectrogram(object):
 
-    def __init__(self, num_delays_out, timestep_out, num_wavelength_out, start_wavelength_out, end_wavelength_out):
+    def __init__(self, num_delays_out, timestep_out, num_frequencies_out, start_frequency_out, end_frequency_out):
         '''
         Inputs:
             num_delays_out          -> Number of delay values the resampled spectrogram will have [int]
             timestep_out            -> Length of time between delays [fs] [int]
-            num_wavelength_out      -> Number of wavelength values the resampled spectrogram will have [int]
-            start_wavelength_out    -> Lowest wavelength value of the resampled spectrogram [nm] [int]
-            end_wavelength_out      -> Highest wavelength value of the resampled spectrogram [nm] [int]
+            num_frequencies_out     -> Number of frequency values the resampled spectrogram will have [int]
+            start_frequency_out     -> Lowest frequency value of the resampled spectrogram [nm] [int]
+            end_frequency_out       -> Highest frequency value of the resampled spectrogram [nm] [int]
         '''
         output_number_rows = num_delays_out
         output_time_step = timestep_out
-        output_number_cols = num_wavelength_out
-        output_start_wavelength = start_wavelength_out   # the first element of the wavelength output axis
-        output_stop_wavelength = end_wavelength_out    # the last element of the wavelength output axis 
+        output_number_cols = num_frequencies_out
+        output_start_frequency = start_frequency_out   # the first element of the frequency output axis
+        output_stop_frequency = end_frequency_out    # the last element of the frequency output axis 
         output_start_time = -int(output_number_rows/2) * output_time_step     # calculate time at which the output time axis starts
         output_end_time = output_start_time + (output_time_step * output_number_rows) - output_time_step    # calculate the last element of the output time axis 
 
@@ -201,7 +201,7 @@ class ResampleSpectrogram(object):
         ## Define output axis ##
         ########################
         self.output_time = np.linspace(output_start_time, output_end_time, output_number_rows )  # create array that corresponds to the output time axis
-        self.output_wavelength = np.linspace(output_start_wavelength, output_stop_wavelength, output_number_cols)    # create array that corresponds tot the output wavelength axis
+        self.output_frequency = np.linspace(output_start_frequency, output_stop_frequency, output_number_cols)    # create array that corresponds tot the output wavelength axis
  
 
     def __call__(self, path):
@@ -215,10 +215,11 @@ class ResampleSpectrogram(object):
             input_wavelength        -> Original (not resampled) wavelength axis [numpy array]
             output_spectrogram      -> Resampled spectrogram [tensor]
             self.output_time        -> Resampled time axis [numpy array]
-            self.output_wavelength  -> Resampled wavelenght axis [numpy array]
+            self.output_wavelength  -> Resampled frequency axis [numpy array]
         '''
         # Constants 
         NUM_HEADER_ELEMENTS = 5
+        SPEED_OF_LIGHT = 3e8
 
         #########################
         ## Read Header of file ##
@@ -275,11 +276,17 @@ class ResampleSpectrogram(object):
         input_stop_wavelength = input_center_wavelength + (input_number_cols/2)*input_wavelength_step       # calculate the last element of the wavelength input axis
         input_wavelength = np.linspace(input_start_wavelength, input_stop_wavelength, input_number_cols)    # create array that corresponds tot the input wavelength axis
         
+        ##########################
+        ## Convert to frequency ##
+        ##########################
+        input_freq = (SPEED_OF_LIGHT * 1e9) / input_wavelength # convert wavelenght [nm] to frequency [Hz]
+        input_freq = input_freq[::-1]   # ensure increasing order of frequency
+        
         ##############################
-        ## Resample wavelength axis ##
+        ## Resample frequency axis ##
         ##############################
-        interpolate_wavelength = interp1d(input_wavelength, spectrogram, axis=1, kind='linear', bounds_error=False, fill_value=0) 
-        output_spectrogram = interpolate_wavelength(self.output_wavelength)
+        interpolate_frequency = interp1d(input_freq, spectrogram, axis=1, kind='linear', bounds_error=False, fill_value=0) 
+        output_spectrogram = interpolate_frequency(self.output_frequency)
         
         ########################
         ## Resample time axis ##
@@ -289,7 +296,7 @@ class ResampleSpectrogram(object):
         output_spectrogram = torch.from_numpy(output_spectrogram)  # convert to tensor
         spectrogram = spectrogram
 
-        return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_wavelength
+        return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency
 
 '''
 ReadLabelFromEsComplex()
