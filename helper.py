@@ -219,7 +219,7 @@ class ResampleSpectrogram(object):
         '''
         # Constants 
         NUM_HEADER_ELEMENTS = 5
-        SPEED_OF_LIGHT = 3e8
+        SPEED_OF_LIGHT = 299792458
 
         #########################
         ## Read Header of file ##
@@ -299,10 +299,10 @@ class ResampleSpectrogram(object):
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency
 
 '''
-ReadLabelFromEsComplex()
+ReadLabelFromEs()
 Read labels (real and imag part) from Es.dat
 '''
-class ReadLabelFromEsComplex(object):
+class ReadLabelFromEs(object):
     def __init__(self, number_elements):
         '''
         Inputs:
