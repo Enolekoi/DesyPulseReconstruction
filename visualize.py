@@ -342,13 +342,17 @@ def compareTimeDomainComplex(filepath, label, prediction):
     axs[2].set_ylabel("Phase (rad)")
     axs[2].set_xlabel("Time in fs")
     axs[2].grid(True)
-    axs[2].legend()
     
     ax_intensity = axs[2].twinx()
     ax_intensity.plot(orig_intensity, label="original intensity", color="red")
     ax_intensity.plot(pred_intensity, label="predicted intensity", color="orange")
     ax_intensity.set_ylabel("Intensity")
     # ax_intensity.legend(loc='best')
+
+    # Combine legends from both axes
+    lines_1, labels_1 = ax[2].get_legend_handles_labels()
+    lines_2, labels_2 = ax_intensity.get_legend_handles_labels()
+    axs[2].legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
 
     # Plot Intensity difference
     intensity_diff = orig_intensity - pred_intensity
