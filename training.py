@@ -144,9 +144,18 @@ optimizer = torch.optim.Adam(
          {'params': model.fc1.parameters()},
          {'params': model.fc2.parameters()}
         ],
-        lr=config.LEARNING_RATE)
+        lr=config.LEARNING_RATE,
+	weight_decay=config.WEIGHT_DECAY
+	)
 # optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 # optimizer = torch.optim.SGD(model.parameters(), lr=config.LEARNING_RATE, momentum=0.9)
+#optimizer = torch.optim.SGD(
+        # [   
+        # { 'params': model.fc1.parameters()},
+        # {'params': model.fc2.parameters()}
+        # ],
+        # lr=config.LEARNING_RATE,
+	#momentum = 0.9)
 
 # scheduler for changing learning rate after each epoch
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
@@ -174,6 +183,8 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
 
         # Backward pass
         loss.backward()
+	# Gradient clipping
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         optimizer.zero_grad()
 
