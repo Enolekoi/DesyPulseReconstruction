@@ -15,3 +15,5 @@ def plotSpectrogram(spectrogram):
 
     # Show the plot
     plt.show()
+
+    return True
