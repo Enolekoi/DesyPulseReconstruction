@@ -1,0 +1,24 @@
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Writing into log file: ./logs/training_22.log
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v3/
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Spectrograms used: as_gn00.dat
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Size of output tensor: 256 elements
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Batch size: 10 elements
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Number of epochs: 20
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Initial learning rate: 0.001
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 0.5 are used!
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Loading Model...
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Freezing early layers!
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Loading Model finished!
+17-09-2024 14:41:47 - __main__ - <module> - INFO: Loading Data...
+17-09-2024 14:41:48 - __main__ - <module> - INFO: Size of dataset: 3510
+17-09-2024 14:41:48 - __main__ - <module> - INFO: Size of training data:   2808
+17-09-2024 14:41:48 - __main__ - <module> - INFO: Size of validation data: 351
+17-09-2024 14:41:48 - __main__ - <module> - INFO: Size of test data:       351
+17-09-2024 14:41:48 - __main__ - <module> - INFO: Finished loading data!
+17-09-2024 14:41:48 - __main__ - <module> - INFO: Starting training...
+17-09-2024 14:41:54 - __main__ - <module> - INFO: Epoch 1 / 20, Step 10 / 280, Loss = 3.6759094238e+01
+17-09-2024 14:42:01 - __main__ - <module> - INFO: Epoch 1 / 20, Step 20 / 280, Loss = 3.4207271576e+01
+17-09-2024 14:42:07 - __main__ - <module> - INFO: Epoch 1 / 20, Step 30 / 280, Loss = 3.3902091980e+01
+17-09-2024 14:42:13 - __main__ - <module> - INFO: Epoch 1 / 20, Step 40 / 280, Loss = 3.2651409149e+01
+17-09-2024 14:42:19 - __main__ - <module> - INFO: Epoch 1 / 20, Step 50 / 280, Loss = 3.1729217529e+01
