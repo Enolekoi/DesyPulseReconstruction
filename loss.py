@@ -33,7 +33,10 @@ class PulseRetrievalLossFunction(nn.Module):
 
         predictions_real = predictions[:, :half_size]
         predictions_imag = predictions[:, half_size:]
-        
+
+        label_phase = np.mod(np.arctan2(labels_imag, labels_real), 2*np.pi)
+        prediction_phase = np.mod(np.arctan2(prediction_imag, prediction_real), 2*np.pi)
+
         label_intensity = labels_real**2 + labels_imag**2
         prediction_intensity = predictions_real**2 + predictions_imag**2
 
@@ -74,9 +77,10 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_imag[last_significant_idx_imag + 1:] *= self.penalty_factor
             
             mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
+            mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
 
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean() + 30*mse_intensity.mean()
+            loss += mse_real.mean() + mse_imag.mean() + 30*mse_intensity.mean() + 30*mse_phase
         # devide by batch size 
         loss = loss / batch_size
 
