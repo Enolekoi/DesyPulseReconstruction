@@ -34,8 +34,8 @@ class PulseRetrievalLossFunction(nn.Module):
         prediction_real = prediction[:, :half_size]
         prediction_imag = prediction[:, half_size:]
 
-        # label_phase =      torch.atan2(label_imag, label_real)
-        # prediction_phase = torch.atan2(prediction_imag, prediction_real)
+        label_phase =      torch.atan2(label_imag, label_real)
+        prediction_phase = torch.atan2(prediction_imag, prediction_real)
 
         label_intensity = label_real**2 + label_imag**2
         prediction_intensity = prediction_real**2 + prediction_imag**2
@@ -80,7 +80,7 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
 
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean() + 30*mse_intensity.mean() + 30*mse_phase
+            loss += mse_real.mean() + mse_imag.mean() + 30*mse_intensity.mean() + 30*mse_phase.mean()
         # devide by batch size 
         loss = loss / batch_size
 
