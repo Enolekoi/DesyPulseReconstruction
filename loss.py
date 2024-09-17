@@ -80,7 +80,7 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
 
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean() + 30*mse_intensity.mean() + 10*mse_phase.mean()
+            loss += mse_real.mean() + mse_imag.mean() + 50*mse_intensity.mean() + 0*mse_phase.mean()
         # devide by batch size 
         loss = loss / batch_size
 
