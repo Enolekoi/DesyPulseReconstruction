@@ -33,10 +33,10 @@ class PulseRetrievalLossFunction(nn.Module):
 
         prediction_real = prediction[:, :half_size]
         prediction_imag = prediction[:, half_size:]
-        print("0")
-        label_phase =      torch.atan2(label_imag, label_real)
-        prediction_phase = torch.atan2(prediction_imag, prediction_real)
-        print("1")
+
+        # label_phase =      torch.atan2(label_imag, label_real)
+        # prediction_phase = torch.atan2(prediction_imag, prediction_real)
+
         label_intensity = label_real**2 + label_imag**2
         prediction_intensity = prediction_real**2 + prediction_imag**2
         
