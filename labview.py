@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 def plotSpectrogram(spectrogram):
-    matplotlib.pyplot.ioff()    
+    plt.ioff()    
     # Plot the spectrogram
     plt.figure(figsize=(10, 6))
     # plt.imshow(spectrogram, aspect='auto', origin='lower', extent=[t.min(), t.max(), f.min(), f.max()], cmap='viridis')
