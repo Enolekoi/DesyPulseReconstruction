@@ -18,35 +18,35 @@ class PulseRetrievalLossFunction(nn.Module):
         self.penalty_factor = penalty_factor
         self.threshold = threshold
 
-    def forward(self, predictions, labels):
+    def forward(self, prediction, label):
         # print(f"prediction size = {predictions}")
         # print(f"label size = {labels}")
         
         # get the number of batches, as well as the shape of the labels
-        batch_size, num_elements = labels.shape
+        batch_size, num_elements = label.shape
         # get half of elements
         half_size = num_elements // 2
 
         # get real and imaginary parts of labels and predictions
-        labels_real = labels[:, :half_size]
-        labels_imag = labels[:, half_size:]
+        label_real = label[:, :half_size]
+        label_imag = label[:, half_size:]
 
-        predictions_real = predictions[:, :half_size]
-        predictions_imag = predictions[:, half_size:]
+        prediction_real = prediction[:, :half_size]
+        prediction_imag = prediction[:, half_size:]
 
-        label_phase = np.mod(np.arctan2(labels_imag, labels_real), 2*np.pi)
-        prediction_phase = np.mod(np.arctan2(prediction_imag, prediction_real), 2*np.pi)
+        label_phase =      torch.fmod(torch.atan2(label_imag, label_real), 2*torch.pi)
+        prediction_phase = torch.fmod(torch.atan2(prediction_imag, prediction_real), 2*torch.pi)
 
-        label_intensity = labels_real**2 + labels_imag**2
-        prediction_intensity = predictions_real**2 + predictions_imag**2
+        label_intensity = label_real**2 + label_imag**2
+        prediction_intensity = prediction_real**2 + prediction_imag**2
 
         # initialize loss
         loss = 0.0
         # Loop over each batch
         for i in range(batch_size):
             # Create masks for all absolute values higher than the threshold
-            mask_real_threshold = abs(labels_real[i]) > self.threshold
-            mask_imag_threshold = abs(labels_imag[i]) > self.threshold
+            mask_real_threshold = abs(label_real[i]) > self.threshold
+            mask_imag_threshold = abs(label_imag[i]) > self.threshold
             
             # if any real value is greater than the threshold
             if torch.any(mask_real_threshold):
@@ -67,8 +67,8 @@ class PulseRetrievalLossFunction(nn.Module):
                 last_significant_idx_imag = half_size - 1
 
             # Calculate MSE for the real and imaginary part
-            mse_real = (predictions_real[i] - labels_real[i]) ** 2
-            mse_imag = (predictions_imag[i] - labels_imag[i]) ** 2
+            mse_real = (prediction_real[i] - label_real[i]) ** 2
+            mse_imag = (prediction_imag[i] - label_imag[i]) ** 2
 
             # Apply penalty for values before the first significant index and after the last
             mse_real[:first_significant_idx_real] *= self.penalty_factor
