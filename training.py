@@ -40,6 +40,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 # Log some information
+logger.info(config.DESCRIPTOR)
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
 logger.info(f"Spectrograms used: {config.SpecFilename}")
