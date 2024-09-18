@@ -1,3 +1,8 @@
+'''
+visualize.py Module
+
+Module containing functions used for plotting or visualizing data
+'''
 import matplotlib.pyplot as plt
 import numpy as np
 import logging
