@@ -7,7 +7,7 @@ import logging
 import numpy as np
 import os
 
-DESCRIPTOR = "Testing training grid_256_v3"
+DESCRIPTOR = "Testing training grid_256_v3 - Reduced factor of intensity in loss function"
 OUTPUT_SIZE = 128   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
 NUM_EPOCHS = 5      # Number of epochs to train the model
