@@ -7,11 +7,11 @@ import logging
 import numpy as np
 import os
 
-DESCRIPTOR = "Testing training grid_256_v3 - Reduced factor of intensity in loss function"
+DESCRIPTOR = "Testing training grid_256_v3 - Testing ReduceLROnPlateau Scheduler"
 OUTPUT_SIZE = 128   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
 NUM_EPOCHS = 5      # Number of epochs to train the model
-UNFREEZE_EPOCH = 18 # Epoch after which the whole model is trained (before that only the output layers are trained)
+UNFREEZE_EPOCH = 20 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-3    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-3
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch
