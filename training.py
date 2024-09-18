@@ -174,7 +174,15 @@ optimizer = torch.optim.Adam(
 	#momentum = 0.9)
 
 # scheduler for changing learning rate after each epoch
-scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
+# scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer, 
+    mode='min', 
+    factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
+    patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
+    threshold=0.0001,  # Threshold for measuring the new optimum.
+    verbose=True  # To display information when the learning rate is reduced.
+    )
 
 # list containing all loss values
 training_losses = []
@@ -212,12 +220,13 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         training_losses.append(loss.item())
     if (epoch < config.NUM_EPOCHS-1):
         # get new learning_rate
-        scheduler.step()
+        # When using ExponentialLR
+        # scheduler.step()
         # write new learning rate in variable
-        new_lr = scheduler.get_last_lr()[0]
+        # new_lr = scheduler.get_last_lr()[0]
         # save new learning_rate 
-        learning_rates.append(new_lr)
-        logger.info(f"New learning rate: {new_lr}")
+        # learning_rates.append(new_lr)
+        # logger.info(f"New learning rate: {new_lr}")
         # After the unfreeze_epoch, unfreeze the earlier layers and update the optimizer    
     if (epoch == config.UNFREEZE_EPOCH - 1):
         logger.info("Unfreezing earlier layers")
@@ -228,7 +237,16 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         
         # Update optimizer to include all parameters of the model
         optimizer = optim.SGD(model.parameters(), lr=config.LEARNING_RATE)
-        scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, 
+            mode='min', 
+            factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
+            patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
+            threshold=0.0001,  # Threshold for measuring the new optimum.
+            verbose=True  # To display information when the learning rate is reduced.
+            )
+        # When using ExponentialLR
+        # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
 
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
@@ -243,6 +261,13 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
 
         avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
     logger.info(f"Validation Loss: {avg_val_loss:.10e}")
+    # When using ReduceLROnPlateau
+    scheduler.step(avg_val_loss)
+    # write new learning rate in variable
+    new_lr = scheduler.get_last_lr()[0]
+    # save new learning_rate 
+    learning_rates.append(new_lr) 
+    logger.info(f"New learning rate: {new_lr}")
 
 # plot training loss
 vis.save_plot_training_loss(
