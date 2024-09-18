@@ -72,10 +72,11 @@ def getTBDrmsValues(data_directory, root_directory, output_filename):
                             rmsW = float(line.split(';')[1].strip())
 
                 # Check if rmsT and rmsW have values
-                if (rmsT is not None) and (rmsW is not None): TBDrms = rmsT*rmsW
-                    
+                if (rmsT is not None) and (rmsW is not None): 
+                    TBDrms = rmsT*rmsW
                     # Store values as a tuple (subdirectory, rmsT, rmsW, TBDrms)
                     data.append([subdirectory, rmsT, rmsW, TBDrms])
+
     logger.info('Got all data from subdirectories')
     #####################
     ## WRITE CSV FILES ##
