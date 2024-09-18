@@ -1,5 +1,7 @@
 '''
-Libraries and classes/methods
+training.py Script
+
+Script containing the training of the pulse reconstruction model
 '''
 # Libraries used in this file
 import numpy as np

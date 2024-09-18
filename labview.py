@@ -1,6 +1,23 @@
+'''
+labview.py Module 
+
+Module containing functions to be integrated into the labview programm
+'''
 import matplotlib.pyplot as plt
 
+'''
+plotSpectrogram
+
+Plot a spectrogram using matplotlib
+'''
 def plotSpectrogram(spectrogram):
+    '''
+    Inputs:
+        spectrogram     -> Matrix containing spectrogram to be plotted 
+    Outputs:
+        finished        -> Variable containing information if function is finished [boolean]
+    '''
+    finished = False
     plt.ioff()    
     # Plot the spectrogram
     plt.figure(figsize=(10, 6))
@@ -15,5 +32,7 @@ def plotSpectrogram(spectrogram):
 
     # Show the plot
     plt.show()
+    
+    finished = True
 
-    return True
+    return finished

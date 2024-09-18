@@ -1,5 +1,7 @@
 '''
-HELPER FUNCTIONS
+helper.py Module
+
+Module containing various helper functions
 '''
 #############
 ## Imports ##
