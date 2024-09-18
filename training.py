@@ -218,7 +218,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10e}")
         # Write loss into array
         training_losses.append(loss.item())
-    if (epoch < config.NUM_EPOCHS-1):
+    # if (epoch < config.NUM_EPOCHS-1):
         # get new learning_rate
         # When using ExponentialLR
         # scheduler.step()
@@ -227,6 +227,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # save new learning_rate 
         # learning_rates.append(new_lr)
         # logger.info(f"New learning rate: {new_lr}")
+
         # After the unfreeze_epoch, unfreeze the earlier layers and update the optimizer    
     if (epoch == config.UNFREEZE_EPOCH - 1):
         logger.info("Unfreezing earlier layers")
