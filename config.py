@@ -28,8 +28,8 @@ OUTPUT_NUM_FREQUENCIES = 512    # Number of frequency points the spectrograms ge
 OUTPUT_TIMESTEP = 1.5           # Size of timestep between delays [fs]
 OUTPUT_START_WAVELENGTH = 226   # Smallest wavelength in the dataset [nm]
 # OUTPUT_START_WAVELENGTH = 504   # [nm]
-OUTPUT_END_WAVELENGTH = 451     # Highest wavelength in the dataset [nm]
-# OUTPUT_END_WAVELENGTH = 528     # [nm]
+# OUTPUT_END_WAVELENGTH = 451     # Highest wavelength in the dataset [nm]
+OUTPUT_END_WAVELENGTH = 528     # [nm]
 OUTPUT_START_FREQUENCY = (299792458 * 1e9) / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
 OUTPUT_END_FREQUENCY = (299792458 * 1e9) / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
 
