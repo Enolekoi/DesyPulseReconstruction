@@ -262,13 +262,14 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
 
         avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
     logger.info(f"Validation Loss: {avg_val_loss:.10e}")
-    # When using ReduceLROnPlateau
-    scheduler.step(avg_val_loss)
-    # write new learning rate in variable
-    new_lr = scheduler.get_last_lr()[0]
-    # save new learning_rate 
-    learning_rates.append(new_lr) 
-    logger.info(f"New learning rate: {new_lr}")
+    if epoch < config.NUM_EPOCHS-1:
+        # When using ReduceLROnPlateau
+        scheduler.step(avg_val_loss)
+        # write new learning rate in variable
+        new_lr = scheduler.get_last_lr()[0]
+        # save new learning_rate 
+        learning_rates.append(new_lr) 
+        logger.info(f"New learning rate: {new_lr}")
 
 # plot training loss
 vis.save_plot_training_loss(
