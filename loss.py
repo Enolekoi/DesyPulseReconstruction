@@ -6,6 +6,7 @@ Module containing functions used for loss functions
 
 import torch
 import torch.nn as nn 
+import torch.fft as trafo 
 
 '''
 PulseRetrievalLossFunction():
@@ -115,3 +116,40 @@ def createSHGmat(yta, Ts, wCenter):
         ytaShifted = circshift(yta, delayIdx)
         fft_yta = torch.fft.fft(fftshift(yta* ytaShifted * shiftFactor))
         shgMat[matIdx, :] = Ts * fftshift(fft_yta)
+
+'''
+hilbert()
+
+Calculate the hilbert transforma of a real-valued signal
+'''
+def hilbert(signal):
+    """
+    Inputs:
+        signal  -> real-valued signal [tensor]
+    Outputs:
+        analytical_signal -> the analytical signal (with the hilbert transform as the imaginary part) [tensor]
+    """
+    N = signal.size(0)  # Length of the input signal
+    signal_fft = trafo.fft(signal)  # FFT of input signal
+    
+    # Create the frequency mask for the hilbert transform
+    H = torch.zeros(N, dtype=torch.complex64, device=signal.device)
+
+    # if N is even
+    if N % 2 == 0:
+        N_half = N // 2     # Half of the signal (when N is even)
+        H[0] = 1            # DC component
+        H[1: N_half] = 2    # Positive frequencies
+        H[N_half] = 1       # Nyquist frequency (only for even N)
+    else:
+        N_half = (N+1) // 2 # Half of the signal (when N is uneven)
+        H[0] = 1            # DC component
+        H[1: N_half] = 2    # Positive frequencies
+
+    # apply the frequency mask
+    signal_fft_hilbert = signal_fft * H
+
+    # inverse FFT to get the analytical signal
+    analytical_signal = trafo.ifft(signal_fft_hilbert)
+
+    return analytical_signal
