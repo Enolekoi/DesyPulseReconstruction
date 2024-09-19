@@ -180,8 +180,7 @@ scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
     mode='min', 
     factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
     patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
-    threshold=0.0001,  # Threshold for measuring the new optimum.
-    verbose=True  # To display information when the learning rate is reduced.
+    threshold=0.0001   # Threshold for measuring the new optimum.
     )
 
 # list containing all loss values
@@ -243,8 +242,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             mode='min', 
             factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
             patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
-            threshold=0.0001,  # Threshold for measuring the new optimum.
-            verbose=True  # To display information when the learning rate is reduced.
+            threshold=0.0001  # Threshold for measuring the new optimum.
             )
         # When using ExponentialLR
         # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
