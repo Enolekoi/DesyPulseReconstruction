@@ -43,7 +43,7 @@ imag_label_np = imag_label.numpy()
 imag_label_np = imag_label
 imag_hilbert_np = imag_hilbert.numpy()
 
-plt.figure(figsize=(12,10))
+plt.figure(figsize=(20,20))
 
 # Plot 1
 plt.subplot(5, 1, 1)
