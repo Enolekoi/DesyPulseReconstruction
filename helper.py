@@ -314,7 +314,7 @@ class ReadLabelFromEs(object):
     def __init__(self, number_elements):
         '''
         Inputs:
-            number_elements     -> Number of elements in the intensity and phase array each [int]
+            number_elements     -> Number of elements in the real and imaginary part array each [int]
         '''
         self.number_elements = number_elements
 
