@@ -6,11 +6,12 @@ Module used for changing training parameters
 import logging
 import numpy as np
 import os
+import torch
 
-DESCRIPTOR = "Testing training grid_256_v3 - first implementation of frog error, with 3 Epochs"
+DESCRIPTOR = "Testing training grid_256_v3 - phase blanking in loss function , with 30 Epochs"
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
-NUM_EPOCHS = 3      # Number of epochs to train the model
+NUM_EPOCHS = 30     # Number of epochs to train the model
 UNFREEZE_EPOCH = 20 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-3    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5
@@ -25,13 +26,13 @@ MAX_IMAG = 1    # The highest possible value the imaginary part of the signal ca
 
 OUTPUT_NUM_DELAYS = 512         # Number of delays the spectrograms get resampled to
 OUTPUT_NUM_FREQUENCIES = 512    # Number of frequency points the spectrograms get resampled to
-OUTPUT_TIMESTEP = 1.5           # Size of timestep between delays [fs]
-OUTPUT_START_WAVELENGTH = 226   # Smallest wavelength in the dataset [nm]
+OUTPUT_TIMESTEP = 1.5e-15           # Size of timestep between delays [fs]
+OUTPUT_START_WAVELENGTH = 226e-9  # Smallest wavelength in the dataset [nm]
 # OUTPUT_START_WAVELENGTH = 504   # [nm]
 # OUTPUT_END_WAVELENGTH = 451     # Highest wavelength in the dataset [nm]
-OUTPUT_END_WAVELENGTH = 528     # [nm]
-OUTPUT_START_FREQUENCY = (299792458 * 1e9) / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
-OUTPUT_END_FREQUENCY = (299792458 * 1e9) / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
+OUTPUT_END_WAVELENGTH = 528e-9     # [nm]
+OUTPUT_START_FREQUENCY = (299792458 * 1e9 * 2 * torch.pi) / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
+OUTPUT_END_FREQUENCY = (299792458 * 1e9 * 2 * torch.pi) / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
 
 ModelPath = "./models/trained_model_7.pth"  # path of pretrained model used to initialize weights before training
 

@@ -210,24 +210,16 @@ class ResampleSpectrogram(object):
         ########################
         self.output_time = np.linspace(output_start_time, output_end_time, output_number_rows )  # create array that corresponds to the output time axis
         self.output_frequency = np.linspace(output_start_frequency, output_stop_frequency, output_number_cols)    # create array that corresponds tot the output wavelength axis
- 
 
     def __call__(self, path):
-        '''
-        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
-        Inputs:
-            path    -> Path to spectrogram [string]
-        Outputs:
-            spectrogram             -> Original (not resampled) spectrogram [tensor]
-            input_time              -> Original (not resampled) time axis [numpy array]
-            input_wavelength        -> Original (not resampled) wavelength axis [numpy array]
-            output_spectrogram      -> Resampled spectrogram [tensor]
-            self.output_time        -> Resampled time axis [numpy array]
-            self.output_wavelength  -> Resampled frequency axis [numpy array]
-        '''
+        input_spectrogram, input_time, input_wavelength = self.read(path)
+        spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency = self.resample(input_spectrogram, input_time, input_wavelength)
+        
+        return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency
+
+    def read(self, path):
         # Constants 
         NUM_HEADER_ELEMENTS = 5
-        SPEED_OF_LIGHT = 299792458
 
         #########################
         ## Read Header of file ##
@@ -260,9 +252,9 @@ class ResampleSpectrogram(object):
         
         input_number_rows = int(header[0]) # delay points
         input_number_cols = int(header[1]) # wavelength points
-        input_time_step = float(header[2]) # [fs]
-        input_wavelength_step = float(header[3]) # [nm]
-        input_center_wavelength = float(header[4]) # [nm]
+        input_time_step = float(header[2]) * 1e-15  # [fs]
+        input_wavelength_step = float(header[3]) * 1e-9     # [nm]
+        input_center_wavelength = float(header[4]) * 1e-9   # [nm]
         
         ######################
         ## Read Spectrogram ##
@@ -284,10 +276,27 @@ class ResampleSpectrogram(object):
         input_stop_wavelength = input_center_wavelength + (input_number_cols/2)*input_wavelength_step       # calculate the last element of the wavelength input axis
         input_wavelength = np.linspace(input_start_wavelength, input_stop_wavelength, input_number_cols)    # create array that corresponds tot the input wavelength axis
         
+        return spectrogram, input_time, input_wavelength
+
+    def resample(self, spectrogram, input_time, input_wavelength):
+        '''
+        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
+        Inputs:
+            spectrogram             -> Original (not resampled) spectrogram [tensor]
+            input_time              -> Original (not resampled) time axis [numpy array]
+            input_wavelength        -> Original (not resampled) wavelength axis [numpy array]
+        Outputs:
+            output_spectrogram      -> Resampled spectrogram [tensor]
+            self.output_time        -> Resampled time axis [numpy array]
+            self.output_wavelength  -> Resampled frequency axis [numpy array]
+        '''
+        # Constants 
+        SPEED_OF_LIGHT = 299792458
+
         ##########################
         ## Convert to frequency ##
         ##########################
-        input_freq = (SPEED_OF_LIGHT * 1e9) / input_wavelength # convert wavelenght [nm] to frequency [Hz]
+        input_freq = (2* torch.pi * SPEED_OF_LIGHT * 1e9) / input_wavelength # convert wavelenght [nm] to frequency [Hz]
         input_freq = input_freq[::-1]   # ensure increasing order of frequency
         
         ##############################
@@ -305,6 +314,37 @@ class ResampleSpectrogram(object):
         spectrogram = spectrogram
 
         return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency
+
+    def resampleFreq(self, spectrogram, input_time, input_freq):
+        '''
+        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
+        Inputs:
+            spectrogram             -> Original (not resampled) spectrogram [tensor]
+            input_time              -> Original (not resampled) time axis [numpy array]
+            input_freq              -> Original (not resampled) frequency axis [numpy array]
+        Outputs:
+            output_spectrogram      -> Resampled spectrogram [tensor]
+            self.output_time        -> Resampled time axis [numpy array]
+            self.output_wavelength  -> Resampled frequency axis [numpy array]
+        '''
+        # Constants 
+        SPEED_OF_LIGHT = 299792458
+
+        ##############################
+        ## Resample frequency axis ##
+        ##############################
+        interpolate_frequency = interp1d(input_freq, spectrogram, axis=1, kind='linear', bounds_error=False, fill_value=0) 
+        output_spectrogram = interpolate_frequency(self.output_frequency)
+        
+        ########################
+        ## Resample time axis ##
+        ######################## 
+        interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
+        output_spectrogram = interpolate_time(self.output_time)
+        output_spectrogram = torch.from_numpy(output_spectrogram)  # convert to tensor
+        spectrogram = spectrogram
+
+        return spectrogram, input_time, input_freq, output_spectrogram, self.output_time, self.output_frequency
 
 '''
 ReadLabelFromEs()
