@@ -21,6 +21,7 @@ real_label = label[:config.OUTPUT_SIZE]
 imag_label = label[config.OUTPUT_SIZE:]
 
 label_analytical = torch.complex(real_label, imag_label)
+
 # label_analytical = scipy.signal.hilbert(real_label.numpy())
 hilbert_analytical = loss.hilbert(real_label)
 
@@ -43,7 +44,7 @@ imag_label_np = imag_label.numpy()
 imag_label_np = imag_label
 imag_hilbert_np = imag_hilbert.numpy()
 
-plt.figure(figsize=(20,20))
+plt.figure()
 
 # Plot 1
 plt.subplot(5, 1, 1)

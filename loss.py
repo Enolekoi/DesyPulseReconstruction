@@ -7,6 +7,8 @@ Module containing functions used for loss functions
 import torch
 import torch.nn as nn 
 import torch.fft as trafo 
+import config
+import helper
 
 '''
 PulseRetrievalLossFunction():
@@ -24,8 +26,17 @@ class PulseRetrievalLossFunction(nn.Module):
 
         self.penalty_factor = penalty_factor
         self.threshold = threshold
+        self.spec_transform = helper.ResampleSpectrogram(
+            config.OUTPUT_NUM_DELAYS, 
+            config.OUTPUT_TIMESTEP, 
+            config.OUTPUT_NUM_FREQUENCIES,
+            config.OUTPUT_START_FREQUENCY,
+            config.OUTPUT_END_FREQUENCY
+            )
 
-    def forward(self, prediction, label):
+
+
+    def forward(self, prediction, label, spectrogram):
         # print(f"prediction size = {predictions}")
         # print(f"label size = {labels}")
         
@@ -46,11 +57,26 @@ class PulseRetrievalLossFunction(nn.Module):
 
         label_intensity = label_real**2 + label_imag**2
         prediction_intensity = prediction_real**2 + prediction_imag**2
-        
+
+        label_analytical = torch.complex(label_real, label_imag)
+        prediction_analytical = torch.complex(prediction_real, prediction_imag)
+
         # initialize loss
         loss = 0.0
+        frog_error = 0.0
+        Ts = 1.5
+        wCenter = 337.927
+
         # Loop over each batch
         for i in range(batch_size):
+
+            # create new SHG Matrix
+            predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
+            # resample to correct size
+            predicted_spectrogram = self.spec_transform(predicted_spectrogram)
+            # calculate_frog_error
+            frog_error = calcFrogError(predicted_spectrogram, spectrogram)
+
             # Create masks for all absolute values higher than the threshold
             mask_real_threshold = abs(label_real[i]) > self.threshold
             mask_imag_threshold = abs(label_imag[i]) > self.threshold
@@ -87,7 +113,8 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
 
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean() + 5*mse_intensity.mean() + 0*mse_phase.mean()
+            # loss += mse_real.mean() + mse_imag.mean() + 5*mse_intensity.mean() + 0*mse_phase.mean()
+            loss += frog_error
         # devide by batch size 
         loss = loss / batch_size
 
@@ -116,6 +143,16 @@ def createSHGmat(yta, Ts, wCenter):
         ytaShifted = circshift(yta, delayIdx)
         fft_yta = torch.fft.fft(fftshift(yta* ytaShifted * shiftFactor))
         shgMat[matIdx, :] = Ts * fftshift(fft_yta)
+    return shgMat
+
+def calcFrogError(Tref, Tmeas):
+
+    mu = torch.sum(torch.matmul(Tmeas, Tref)) / torch.sum(torch.matmul(Tref, Tref)) # pypret gl. 13 (s. 497)
+    r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
+
+    normFactor = torch.prod(torch.tensor(Tmeas.shape)) * torch.max(Tmeas)**2    # pypret gl. 12 (s. 497)
+    frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
+    return frog_error
 
 '''
 hilbert()
