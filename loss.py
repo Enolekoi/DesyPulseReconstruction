@@ -141,7 +141,7 @@ def createSHGmat(yta, Ts, wCenter):
 
     for (matIdx, delayIdx) in enumerate(delayIdxVec):
         ytaShifted = circshift(yta, delayIdx)
-        multiplied_matrixes = torch.matmul(torch.matmul(yta, ytaShifted), shiftFactor)
+        multiplied_matrixes = torch.matmul((yta* ytaShifted), shiftFactor)
         fft_yta = torch.fft.fft(fftshift(multiplied_matrixes))
         shgMat[matIdx, :] = Ts * fftshift(fft_yta)
     return shgMat
