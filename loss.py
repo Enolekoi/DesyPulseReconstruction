@@ -131,7 +131,7 @@ def createSHGmat(yta, Ts, wCenter):
     delayIdxVec = torch.arange(start, end, dtype=torch.float32).to(device)
 
     # calculate shift factor
-    shiftFactor = torch.exp(-1j * 2 * wCenter * Ts * delayIdxVec)
+    shiftFactor = torch.exp(-1j * 2 * wCenter * Ts * delayIdxVec).to(device)
 
     shgMat = torch.zeros((N, N), dtype=torch.complex64)
 
