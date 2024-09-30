@@ -6,6 +6,7 @@ Module containing functions used for loss functions
 
 import torch
 import torch.nn as nn 
+import torch.nn.functional as F
 import torch.fft as trafo 
 import config
 import helper
@@ -35,7 +36,6 @@ class PulseRetrievalLossFunction(nn.Module):
             )
 
 
-
     def forward(self, prediction, label, spectrogram):
         # print(f"prediction size = {predictions}")
         # print(f"label size = {labels}")
@@ -44,7 +44,6 @@ class PulseRetrievalLossFunction(nn.Module):
         batch_size, num_elements = label.shape
         # get half of elements
         half_size = num_elements // 2
-
         # get real and imaginary parts of labels and predictions
         label_real = label[:, :half_size]
         label_imag = label[:, half_size:]
@@ -63,19 +62,19 @@ class PulseRetrievalLossFunction(nn.Module):
 
         # initialize loss
         loss = 0.0
-        frog_error = 0.0
-        Ts = 1.5
-        wCenter = 337.927
+        # frog_error = 0.0
+        # Ts = 1.5
+        # wCenter = 337.927
 
         # Loop over each batch
         for i in range(batch_size):
 
             # create new SHG Matrix
-            predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
+            # predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
             # resample to correct size
-            predicted_spectrogram = self.spec_transform(predicted_spectrogram)
+            # predicted_spectrogram = self.spec_transform(predicted_spectrogram)
             # calculate_frog_error
-            frog_error = calcFrogError(predicted_spectrogram, spectrogram)
+            # frog_error = calcFrogError(predicted_spectrogram, spectrogram)
 
             # Create masks for all absolute values higher than the threshold
             mask_real_threshold = abs(label_real[i]) > self.threshold
@@ -111,10 +110,10 @@ class PulseRetrievalLossFunction(nn.Module):
             
             mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
             mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
-
+            mse_phase[label_phase < 0.01] = 0
             # Add to total loss
-            # loss += mse_real.mean() + mse_imag.mean() + 5*mse_intensity.mean() + 0*mse_phase.mean()
-            loss += frog_error
+            loss += mse_real.mean() + mse_imag.mean() + 5*mse_intensity.mean() + 0*mse_phase.mean()
+            # loss += frog_error
         # devide by batch size 
         loss = loss / batch_size
 
@@ -122,9 +121,8 @@ class PulseRetrievalLossFunction(nn.Module):
 
 def createSHGmat(yta, Ts, wCenter):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
     N = len(yta)
-    yta.to(device)
+
     # create a tensor storing indicies starting with -N/2 to N/2
     start = -N // 2
     end = N // 2    
@@ -144,7 +142,7 @@ def createSHGmat(yta, Ts, wCenter):
 
     for (matIdx, delayIdx) in enumerate(delayIdxVec):
         ytaShifted = circshift(yta, delayIdx).to(device)
-        multiplied_matrixes = torch.matmul((yta* ytaShifted), shiftFactor)
+        multiplied_matrixes = torch.mul((yta* ytaShifted), shiftFactor)
         fft_yta = torch.fft.fft(fftshift(multiplied_matrixes))
         shgMat[matIdx, :] = Ts * fftshift(fft_yta)
     return shgMat
