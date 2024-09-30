@@ -62,9 +62,9 @@ class PulseRetrievalLossFunction(nn.Module):
 
         # initialize loss
         loss = 0.0
-        # frog_error = 0.0
-        # Ts = 1.5
-        # wCenter = 337.927
+        frog_error = 0.0
+        Ts = 1.5
+        freq_resolution = 2*torch.pi / (num_elements*Ts)    # vgl. 213 Trebino
 
         # Loop over each batch
         for i in range(batch_size):
@@ -76,7 +76,7 @@ class PulseRetrievalLossFunction(nn.Module):
             # calculate_frog_error
             # frog_error = calcFrogError(predicted_spectrogram, spectrogram)
 
-            phase_mask = abs(label_phase[i]) < 0.01
+            phase_mask = abs(label_intensity[i]) < 0.01
 
             # Create masks for all absolute values higher than the threshold
             mask_real_threshold = abs(label_real[i]) > self.threshold
