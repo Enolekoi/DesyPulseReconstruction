@@ -76,6 +76,8 @@ class PulseRetrievalLossFunction(nn.Module):
             # calculate_frog_error
             # frog_error = calcFrogError(predicted_spectrogram, spectrogram)
 
+            phase_mask = abs(label_phase[i]) < 0.01
+
             # Create masks for all absolute values higher than the threshold
             mask_real_threshold = abs(label_real[i]) > self.threshold
             mask_imag_threshold = abs(label_imag[i]) > self.threshold
@@ -110,9 +112,9 @@ class PulseRetrievalLossFunction(nn.Module):
             
             mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
             mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
-            mse_phase[label_phase < 0.01] = 0
+            mse_phase[phase_mask] = 0
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean() + 5*mse_intensity.mean() + 0*mse_phase.mean()
+            loss += mse_real.mean() + mse_imag.mean() + 5*mse_intensity.mean() + 5*mse_phase.mean()
             # loss += frog_error
         # devide by batch size 
         loss = loss / batch_size
