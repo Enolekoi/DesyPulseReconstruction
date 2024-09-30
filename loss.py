@@ -136,8 +136,8 @@ def createSHGmat(yta, Ts, wCenter):
         return torch.fft.fftshift(x)
     
     def circshift(x, shift):
-        shift = int( shift % x.size(0) ) 
-        return torch.roll(x, shifts=shift.item(), dims=0)
+        shift = int( shift % x.size(0)) 
+        return torch.roll(x, shifts=shift, dims=0)
 
     for (matIdx, delayIdx) in enumerate(delayIdxVec):
         ytaShifted = circshift(yta, delayIdx)
