@@ -121,11 +121,14 @@ class PulseRetrievalLossFunction(nn.Module):
         return loss
 
 def createSHGmat(yta, Ts, wCenter):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
     N = len(yta)
+    yta.to(device)
     # create a tensor storing indicies starting with -N/2 to N/2
     start = -N // 2
     end = N // 2    
-    delayIdxVec = torch.arange(start, end, dtype=torch.float32)
+    delayIdxVec = torch.arange(start, end, dtype=torch.float32).to(device)
 
     # calculate shift factor
     shiftFactor = torch.exp(-1j * 2 * wCenter * Ts * delayIdxVec)
@@ -140,7 +143,7 @@ def createSHGmat(yta, Ts, wCenter):
         return torch.roll(x, shifts=shift, dims=0)
 
     for (matIdx, delayIdx) in enumerate(delayIdxVec):
-        ytaShifted = circshift(yta, delayIdx)
+        ytaShifted = circshift(yta, delayIdx).to(device)
         multiplied_matrixes = torch.matmul((yta* ytaShifted), shiftFactor)
         fft_yta = torch.fft.fft(fftshift(multiplied_matrixes))
         shgMat[matIdx, :] = Ts * fftshift(fft_yta)
