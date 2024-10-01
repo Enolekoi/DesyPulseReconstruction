@@ -25,6 +25,7 @@ class PulseRetrievalLossFunction(nn.Module):
         '''
         super(PulseRetrievalLossFunction, self).__init__()
 
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.penalty_factor = penalty_factor
         self.threshold = threshold
         self.spec_transform = helper.ResampleSpectrogram(
@@ -58,7 +59,7 @@ class PulseRetrievalLossFunction(nn.Module):
         prediction_intensity = prediction_real**2 + prediction_imag**2
 
         label_analytical = torch.complex(label_real, label_imag)
-        prediction_analytical = torch.complex(prediction_real, prediction_imag)
+        prediction_analytical = torch.complex(prediction_real, prediction_imag).to(self.device)
 
         # initialize loss
         loss = 0.0
@@ -134,7 +135,7 @@ def getCenterFreq(yta):
     dt = 1.0
     frequencies = trafo.fftfreq(n, d=dt)
     # Calculate the power spectrum
-    power_spectrum = torch.abs(yta_fft)**2
+    power_spectrum = (torch.abs(yta_fft)**2)
     # Calculate center frequency (weighted average of the frequency bins)
     wCenter = torch.sum(frequencies * power_spectrum) / torch.sum(power_spectrum)
     return wCenter
