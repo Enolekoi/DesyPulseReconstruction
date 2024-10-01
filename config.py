@@ -8,7 +8,7 @@ import numpy as np
 import os
 import torch
 
-DESCRIPTOR = "Testing training grid_256_v3 - phase blanking in loss function , with 30 Epochs"
+DESCRIPTOR = "Testing training grid_256_v3 - frog error as loss function , with 30 Epochs"
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
 NUM_EPOCHS = 30     # Number of epochs to train the model
