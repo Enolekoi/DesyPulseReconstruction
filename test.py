@@ -32,9 +32,12 @@ spec_transform = helper.ResampleSpectrogram(
     )
 # Initialize Label reader
 label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
+label_ambig = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
 
 # get label
 label = label_reader(PathLabel)
+label = label_ambig(label)
+
 
 # create analytical signal from label
 label_size = label.size(0)
