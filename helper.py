@@ -502,4 +502,4 @@ class Scaler(object):
 def ensureSameDevice(tensors, device='cpu'):
     # Move each tensor to the specified device
     tensors_on_device = [tensor.to(device) for tensor in tensors]
-    return tensors
+    return tensors_on_device
