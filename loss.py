@@ -77,7 +77,7 @@ class PulseRetrievalLossFunction(nn.Module):
             freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements).to(self.device) 
             freq_axis = freq_axis * freq_resolution + wCenter
             # create new SHG Matrix
-            predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
+            predicted_spectrogram = createSHGmat(prediction_analytical[i], Ts, wCenter)
             # resample to correct size
             predicted_spectrogram = self.spec_transform.resampleFreq(prediction_analytical, time_axis, freq_axis)
             # calculate_frog_error
