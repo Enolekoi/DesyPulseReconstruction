@@ -72,7 +72,7 @@ class PulseRetrievalLossFunction(nn.Module):
         for i in range(batch_size):
 
             # calculate the center frequency of the predicted pulse
-            wCenter = getCenterFreq(prediction_analytical)
+            wCenter = getCenterFreq(prediction_analytical[i])
             freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements) * freq_resolution + wCenter
             # create new SHG Matrix
             predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
