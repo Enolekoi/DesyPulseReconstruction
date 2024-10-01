@@ -24,7 +24,7 @@ class PulseRetrievalLossFunction(nn.Module):
             threshold       -> Label value over which the higher weights get multiplied with the loss [float]
         '''
         super(PulseRetrievalLossFunction, self).__init__()
-
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.penalty_factor = penalty_factor
         self.threshold = threshold
         self.spec_transform = helper.ResampleSpectrogram(
@@ -45,11 +45,11 @@ class PulseRetrievalLossFunction(nn.Module):
         # get half of elements
         half_size = num_elements // 2
         # get real and imaginary parts of labels and predictions
-        label_real = label[:, :half_size]
-        label_imag = label[:, half_size:]
+        label_real = label[:, :half_size].to(self.device)
+        label_imag = label[:, half_size:].to(self.device)
 
-        prediction_real = prediction[:, :half_size]
-        prediction_imag = prediction[:, half_size:]
+        prediction_real = prediction[:, :half_size].to(self.device)
+        prediction_imag = prediction[:, half_size:].to(self.device)
 
         label_phase =      torch.atan2(label_imag, label_real)
         prediction_phase = torch.atan2(prediction_imag, prediction_real)
@@ -72,7 +72,7 @@ class PulseRetrievalLossFunction(nn.Module):
         for i in range(batch_size):
 
             # calculate the center frequency of the predicted pulse
-            wCenter = getCenterFreq(prediction_analytical[i])
+            wCenter = getCenterFreq(prediction_analytical[i], device=self.device)
             freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements) * freq_resolution + wCenter
             # create new SHG Matrix
             predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
@@ -126,16 +126,18 @@ class PulseRetrievalLossFunction(nn.Module):
 
         return loss
 
-def getCenterFreq(yta):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+def getCenterFreq(yta, device='cpu'):
     # Calculate the fft of the analytical signal
     yta_fft = trafo.fft(yta)
     # Calculate the frequencies that correspond to the fourier coefficients (frequency bins)
     n = yta.shape[0]
     dt = 1.0
-    frequencies = trafo.fftfreq(n, d=dt).to(device)
+    frequencies = trafo.fftfreq(n, d=dt)
     # Calculate the power spectrum
     power_spectrum = (torch.abs(yta_fft)**2)
+    tensors = [frequencies, power_spectrum]
+    tensors = helper.ensureSameDevice(tensors, device=device)
+    frequencies, power_spectrum = tensors
     # Calculate center frequency (weighted average of the frequency bins)
     wCenter = torch.sum(frequencies * power_spectrum) / torch.sum(power_spectrum)
     return wCenter

@@ -498,3 +498,8 @@ class Scaler(object):
         unscaled_label = torch.cat([unscaled_real_part, unscaled_imag_part])
 
         return unscaled_label
+
+def ensureSameDevice(tensors, device='cpu'):
+    # Move each tensor to the specified device
+    tensors_on_device = [tensor.to(device) for tensor in tensors]
+    return tensors
