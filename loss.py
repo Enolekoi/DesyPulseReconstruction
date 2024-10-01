@@ -63,18 +63,23 @@ class PulseRetrievalLossFunction(nn.Module):
         # initialize loss
         loss = 0.0
         frog_error = 0.0
-        Ts = 1.5
+        Ts = 1.5e-15
+        time_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements) * Ts
         freq_resolution = 2*torch.pi / (num_elements*Ts)    # vgl. 213 Trebino
+
 
         # Loop over each batch
         for i in range(batch_size):
 
+            # calculate the center frequency of the predicted pulse
+            wCenter = getCenterFreq(prediction_analytical)
+            freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements) * freq_resolution + wCenter
             # create new SHG Matrix
-            # predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
+            predicted_spectrogram = createSHGmat(prediction_analytical, Ts, wCenter)
             # resample to correct size
-            # predicted_spectrogram = self.spec_transform(predicted_spectrogram)
+            predicted_spectrogram = self.spec_transform.resampleFreq(prediction_analytical, time_axis, freq_axis)
             # calculate_frog_error
-            # frog_error = calcFrogError(predicted_spectrogram, spectrogram)
+            frog_error = calcFrogError(predicted_spectrogram, spectrogram)
 
             phase_mask = abs(label_intensity[i]) < 0.01
 
@@ -114,12 +119,26 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
             mse_phase[phase_mask] = 0
             # Add to total loss
-            loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean() + 5*mse_phase.mean()
-            # loss += frog_error
+            # loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean() + 5*mse_phase.mean()
+            loss += frog_error
         # devide by batch size 
         loss = loss / batch_size
 
         return loss
+
+def getCenterFreq(yta):
+    # Calculate the fft of the analytical signal
+    yta_fft = trafo.fft(yta)
+    # Calculate the frequencies that correspond to the fourier coefficients (frequency bins)
+    n = yta.shape[0]
+    dt = 1.0
+    frequencies = trafo.fftfreq(n, d=dt)
+    # Calculate the power spectrum
+    power_spectrum = torch.abs(yta_fft)**2
+    # Calculate center frequency (weighted average of the frequency bins)
+    wCenter = torch.sum(frequencies * power_spectrum) / torch.sum(power_spectrum)
+    return wCenter
+
 
 def createSHGmat(yta, Ts, wCenter):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -144,7 +163,7 @@ def createSHGmat(yta, Ts, wCenter):
 
     for (matIdx, delayIdx) in enumerate(delayIdxVec):
         ytaShifted = circshift(yta, delayIdx).to(device)
-        multiplied_matrixes = torch.mul((yta* ytaShifted), shiftFactor)
+        multiplied_matrixes = yta * ytaShifted * shiftFactor
         fft_yta = torch.fft.fft(fftshift(multiplied_matrixes))
         shgMat[matIdx, :] = Ts * fftshift(fft_yta)
     return shgMat

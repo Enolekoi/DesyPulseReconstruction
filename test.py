@@ -51,8 +51,9 @@ End = Center + (N/2)*Step       # calculate the last element of the wavelength i
 input_wave = np.linspace(Start, End, N)    # create array that corresponds tot the input wavelength axis
 input_freq = (2* torch.pi * SPEED_OF_LIGHT * 1e9) / input_wave # convert wavelenght [nm] to frequency [Hz]
 input_freq = input_freq[::-1]   # ensure increasing order of frequency
-centerIdx = len(input_freq) // 2
-wCenter = input_freq[centerIdx - 1]
+# centerIdx = len(input_freq) // 2
+# wCenter = input_freq[centerIdx - 1]
+wCenter = (2* torch.pi * SPEED_OF_LIGHT * 1e9) / Center # convert wavelenght [nm] to frequency [Hz]
 
 tStart = -int(N / 2) * Ts    # calculate time at which the input time axis starts
 tEnd = tStart + (Ts * N) - Ts    # calculate the last element of the input time axis
