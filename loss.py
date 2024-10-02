@@ -137,11 +137,9 @@ def getCenterFreq(yta):
     # Calculate the frequencies that correspond to the fourier coefficients (frequency bins)
     n = yta.shape[0]
     dt = 1.0
-    frequencies = trafo.fftfreq(n, d=dt)
+    frequencies = trafo.fftfreq(n, d=dt).to(device)
     # Calculate the power spectrum
-    power_spectrum = (torch.abs(yta_fft)**2)
-    power_spectrum.to(device)
-    frequencies.to(device)
+    power_spectrum = (torch.abs(yta_fft)**2).to(device)
     # Calculate center frequency (weighted average of the frequency bins)
     wCenter = torch.sum(frequencies * power_spectrum) / torch.sum(power_spectrum)
     return wCenter
