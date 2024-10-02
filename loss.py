@@ -190,7 +190,7 @@ def calcFrogError(Tref, Tmeas):
     print(f"mat1_min = {mat1.min()}")
     mat2 = Tmeas* Tref
     print(f"mat2 = {mat2}")
-    print(f"mat1_min = {mat2.min()}")
+    print(f"mat2_min = {mat2.min()}")
     mu = torch.sum(mat1 / mat2) # pypret gl. 13 (s. 497)
     print(f"mu = {mu}")
     r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
