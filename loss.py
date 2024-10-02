@@ -179,6 +179,8 @@ def createSHGmat(yta, Ts, wCenter):
     return shgMat
 
 def calcFrogError(Tref, Tmeas):
+    print(f"Shape Tref: {Tref.shape}")
+    print(f"Shape Tmeas: {Tmeas.shape}")
     device = Tref.device
     Tmeas.to(device)
 
