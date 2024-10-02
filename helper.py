@@ -248,6 +248,8 @@ class ReadSpectrogram(object):
         input_start_wavelength = input_center_wavelength - (input_number_cols/2)*input_wavelength_step      # calculate the first element of the wavelength input axis
         input_stop_wavelength = input_center_wavelength + (input_number_cols/2)*input_wavelength_step       # calculate the last element of the wavelength input axis
         input_wavelength = np.linspace(input_start_wavelength, input_stop_wavelength, input_number_cols)    # create array that corresponds tot the input wavelength axis
+        input_time = torch.from_numpy(input_time)
+        input_wavelength = torch.from_numpy(input_wavelength)
         spectrogram_data = [spectrogram, input_time, input_wavelength]
         return spectrogram_data
 
