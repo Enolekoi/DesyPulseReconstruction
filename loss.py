@@ -177,7 +177,10 @@ def calcFrogError(Tref, Tmeas):
     # Ensure Tref and Tmeas are tensors, not tuples
     if isinstance(Tref, tuple):
         Tref = Tref[0]  # Extract the tensor if Tref is a tuple
-        print(1)
+        print("Tref is a touple 1")
+        if isinstance(Tref, tuple):
+            Tref= Tref[0]
+            print("Tref is a touple 3")
     if isinstance(Tmeas, tuple):
         Tmeas = Tmeas[0]  # Extract the tensor if Tmeas is a tuple
         print(2)
