@@ -71,6 +71,9 @@ class PulseRetrievalLossFunction(nn.Module):
 
         # Loop over each batch
         for i in range(batch_size):
+            # get original spectrogram (without 3 identical channels)
+            original_spectrogram = spectrogram[i]
+            original_spectrogram = original_spectrogram[0]
             # calculate the center frequency of the predicted pulse
             wCenter = getCenterFreq(prediction_analytical[i])
             # create frequency axis and move it around center frequency
@@ -86,8 +89,8 @@ class PulseRetrievalLossFunction(nn.Module):
             # calculate_frog_error
             # print(f"Type of predicted spectrogram: {predicted_spectrogram.shape}")
             # print(f"Type of original spectrogram: {spectrogram.shape}")
-
-            frog_error = calcFrogError(predicted_spectrogram, spectrogram[i])
+            
+            frog_error = calcFrogError(predicted_spectrogram, original_spectrogram)
             print(f"FROG Error: {frog_error}")
 
             phase_mask = abs(label_intensity[i]) < 0.01
