@@ -314,7 +314,7 @@ class ResampleSpectrogram(object):
             return
         device = spectrogram.device
         # ensure all tensors are of the same type (float32)
-        spectrogram = spectrogram.float().to(device)
+        spectrogram = spectrogram.float()
         input_time = input_time.float().to(device)
         input_freq = input_freq.float().to(device)
         
