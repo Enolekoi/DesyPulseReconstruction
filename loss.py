@@ -182,7 +182,6 @@ def calcFrogError(Tref, Tmeas):
 
     device = Tmeas.device
     Tref.to(device)
-    Tmeas.to(device)
 
     mu = torch.sum(torch.matmul(Tmeas, Tref)) / torch.sum(torch.matmul(Tref, Tref)) # pypret gl. 13 (s. 497)
     r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
