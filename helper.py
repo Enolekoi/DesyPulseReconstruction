@@ -319,8 +319,11 @@ class ResampleSpectrogram(object):
         grid_time, grid_freq = torch.meshgrid(normalized_output_time,
                                               normalized_output_freq,
                                               indexing='ij')
-        # grid sample needs the shape [batch_size, 1, H, W] -> Batch size = 1
-        grid = torch.stack((grid_time, grid_freq), dim=-1).unsqueeze(0).repeat(1, 1, 1, 1)
+        # grid sample needs the shape [H, W, 2]
+        grid = torch.stack((grid_time, grid_freq), dim=-1).unsqueeze(0)
+        
+        # reshape the spectrogram to [1, 1, H, W] for grid_sample
+        spectrogram = spectrogram.unsqueeze(0).unsqueeze(0)
         
         output_spectrogram = F.grid_sample(
                 spectrogram,
@@ -491,47 +494,3 @@ def ensureSameDevice(tensors, device='cpu'):
     # Move each tensor to the specified device
     tensors_on_device = [tensor.to(device) for tensor in tensors]
     return tensors
-
-def interpolateAxis(old_axis, new_axis, input, dim):
-    # get the size of the original input along dim
-    old_size = input.size(dim)
-    print(new_axis.size)
-    
-    # create a new tensor for the new interpolated tensor fill with zeros
-    if dim == 0:
-        output = torch.zeros(new_axis.size(0), input.size(1), dtype=input.dtype, device=input.device)
-    else:
-        output = torch.zeros(new_axis.size(0), input.size(0), dtype=input.dtype, device=input.device)
-
-    #perform interpolation
-    for i in range(input.size(1)): # loop over other dimension
-        # get the old values from the current input
-        old_values = input[:, i] if dim == 0 else input[i, :]
-
-        # interpolate the values using the defined old_axis and new_axis
-        interpolated_values = interpolate(new_axis, old_axis, old_values)
-
-        # Assign the interpolated values to the new output
-        if dim == 0:
-            output[:, i] = interpolated_values
-        else:
-            output[i, :] = interpolated_values
-
-def interpolate(new_axis, old_axis, old_values):
-    # Ensure old_axis is sorted and old_values corresponds to it
-    indices = torch.argsort(old_axis)
-    old_axis = old_axis[indices]
-    old_values = old_values[indices]
-
-    # find indices in old_axis for interpolation
-    x_clamped = torch.clamp(new_axis, old_axis[0], old_axis[-1])
-    indices = torch.searchsorted(old_axis, x_clamped) - 1
-    indices = torch.clamp(indices, 0, len(old_axis) - 2)
-
-    # Calculate slopes between points
-    slopes = (old_values[indices + 1] - old_values[indices] / (old_axis[indices + 1] - old_axis[indices]))
-
-    # Interpolate linearly
-    interpolated_values = old_values[indices] + slopes * (x_clamped - old_axis[indices])
-
-    return interpolated_values
