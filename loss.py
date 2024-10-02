@@ -80,7 +80,7 @@ class PulseRetrievalLossFunction(nn.Module):
             predicted_spectrogram = createSHGmat(prediction_analytical[i], Ts, wCenter)
             # resample to correct size
             predicted_spectrogram_data = [predicted_spectrogram, time_axis, freq_axis]
-            predicted_spectrogram = self.spec_transform(predicted_spectrogram_data)
+            spectrogram, input_time, input_freq, output_spectrogram, output_time, output_freq = self.spec_transform(predicted_spectrogram_data)
 
             # calculate_frog_error
             print(f"Type of predicted spectrogram: {type(predicted_spectrogram)}")
