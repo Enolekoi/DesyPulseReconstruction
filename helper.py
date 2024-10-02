@@ -312,10 +312,11 @@ class ResampleSpectrogram(object):
         else:   # if unvalid type
             logger.error(f"type='{self.type}' is not a valid type. Use 'wavelength' or 'frequency' instead!")
             return
+        device = spectrogram.device
         # ensure all tensors are of the same type (float32)
-        spectrogram = spectrogram.float()
-        input_time = input_time.float()
-        input_freq = input_freq.float()
+        spectrogram = spectrogram.float().to(device)
+        input_time = input_time.float().to(device)
+        input_freq = input_freq.float().to(device)
         
          # get minimum and maximum values of the input_time and input_freq tensors
         input_time_min, input_time_max = input_time.min(), input_time.max()
