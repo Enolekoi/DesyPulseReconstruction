@@ -37,6 +37,7 @@ class PulseRetrievalLossFunction(nn.Module):
             )
 
     def forward(self, prediction, label, spectrogram):
+        device = spectrogram.device()
         # print(f"prediction size = {predictions}")
         # print(f"label size = {labels}")
         
@@ -45,11 +46,11 @@ class PulseRetrievalLossFunction(nn.Module):
         # get half of elements
         half_size = num_elements // 2
         # get real and imaginary parts of labels and predictions
-        label_real = label[:, :half_size].to(self.device)
-        label_imag = label[:, half_size:].to(self.device)
+        label_real = label[:, :half_size].to(device)
+        label_imag = label[:, half_size:].to(device)
 
-        prediction_real = prediction[:, :half_size].to(self.device)
-        prediction_imag = prediction[:, half_size:].to(self.device)
+        prediction_real = prediction[:, :half_size].to(device)
+        prediction_imag = prediction[:, half_size:].to(device)
 
         label_phase =      torch.atan2(label_imag, label_real)
         prediction_phase = torch.atan2(prediction_imag, prediction_real)
@@ -57,8 +58,8 @@ class PulseRetrievalLossFunction(nn.Module):
         label_intensity = label_real**2 + label_imag**2
         prediction_intensity = prediction_real**2 + prediction_imag**2
 
-        label_analytical = torch.complex(label_real, label_imag)
-        prediction_analytical = torch.complex(prediction_real, prediction_imag)
+        label_analytical = torch.complex(label_real, label_imag).to(device)
+        prediction_analytical = torch.complex(prediction_real, prediction_imag).to(device)
 
         # initialize loss
         loss = 0.0
@@ -71,7 +72,7 @@ class PulseRetrievalLossFunction(nn.Module):
         # Loop over each batch
         for i in range(batch_size):
             # calculate the center frequency of the predicted pulse
-            wCenter = getCenterFreq(prediction_analytical[i], device=self.device)
+            wCenter = getCenterFreq(prediction_analytical[i])
             # create frequency axis and move it around center frequency
             freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements).to(self.device) 
             freq_axis = freq_axis * freq_resolution + wCenter
@@ -129,7 +130,8 @@ class PulseRetrievalLossFunction(nn.Module):
 
         return loss
 
-def getCenterFreq(yta, device='cpu'):
+def getCenterFreq(yta):
+    device = yta.device()
     # Calculate the fft of the analytical signal
     yta_fft = trafo.fft(yta)
     # Calculate the frequencies that correspond to the fourier coefficients (frequency bins)
@@ -138,9 +140,8 @@ def getCenterFreq(yta, device='cpu'):
     frequencies = trafo.fftfreq(n, d=dt)
     # Calculate the power spectrum
     power_spectrum = (torch.abs(yta_fft)**2)
-    tensors = [frequencies, power_spectrum]
-    tensors = helper.ensureSameDevice(tensors, device=device)
-    frequencies, power_spectrum = tensors
+    power_spectrum.to(device)
+    frequencies.to(device)
     # Calculate center frequency (weighted average of the frequency bins)
     wCenter = torch.sum(frequencies * power_spectrum) / torch.sum(power_spectrum)
     return wCenter
