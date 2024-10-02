@@ -12,6 +12,7 @@ from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import os   # Dataloader, 
 import torch    # Dataloader,
+import torch.nn.functional as F
 from torch.utils.data import Dataset    # Dataloader,
 import torchvision.models as models     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
@@ -181,43 +182,15 @@ class SimulatedDataset(Dataset):
             label = torch.tensor(label)
 
         return output_spec, label
-
 '''
-ResampleSpectrogram()
-Transform Class that resamples spectrograms to use the same axis and size
+ReadSpectrogram()
+Read the spectrogram from a given path
 '''
-class ResampleSpectrogram(object):
-
-    def __init__(self, num_delays_out, timestep_out, num_frequencies_out, start_frequency_out, end_frequency_out):
-        '''
-        Inputs:
-            num_delays_out          -> Number of delay values the resampled spectrogram will have [int]
-            timestep_out            -> Length of time between delays [fs] [int]
-            num_frequencies_out     -> Number of frequency values the resampled spectrogram will have [int]
-            start_frequency_out     -> Lowest frequency value of the resampled spectrogram [nm] [int]
-            end_frequency_out       -> Highest frequency value of the resampled spectrogram [nm] [int]
-        '''
-        output_number_rows = num_delays_out
-        output_time_step = timestep_out
-        output_number_cols = num_frequencies_out
-        output_start_frequency = start_frequency_out   # the first element of the frequency output axis
-        output_stop_frequency = end_frequency_out    # the last element of the frequency output axis 
-        output_start_time = -int(output_number_rows/2) * output_time_step     # calculate time at which the output time axis starts
-        output_end_time = output_start_time + (output_time_step * output_number_rows) - output_time_step    # calculate the last element of the output time axis 
-
-        ######################## Used here to save time later
-        ## Define output axis ##
-        ########################
-        self.output_time = np.linspace(output_start_time, output_end_time, output_number_rows )  # create array that corresponds to the output time axis
-        self.output_frequency = np.linspace(output_start_frequency, output_stop_frequency, output_number_cols)    # create array that corresponds tot the output wavelength axis
+class ReadSpectrogram(object):
+    def __init__(self):
+        pass
 
     def __call__(self, path):
-        input_spectrogram, input_time, input_wavelength = self.read(path)
-        spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency = self.resample(input_spectrogram, input_time, input_wavelength)
-        
-        return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency
-
-    def read(self, path):
         # Constants 
         NUM_HEADER_ELEMENTS = 5
 
@@ -275,78 +248,93 @@ class ResampleSpectrogram(object):
         input_start_wavelength = input_center_wavelength - (input_number_cols/2)*input_wavelength_step      # calculate the first element of the wavelength input axis
         input_stop_wavelength = input_center_wavelength + (input_number_cols/2)*input_wavelength_step       # calculate the last element of the wavelength input axis
         input_wavelength = np.linspace(input_start_wavelength, input_stop_wavelength, input_number_cols)    # create array that corresponds tot the input wavelength axis
-        
-        return spectrogram, input_time, input_wavelength
-
-    def resample(self, spectrogram, input_time, input_wavelength):
-        '''
-        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
-        Inputs:
-            spectrogram             -> Original (not resampled) spectrogram [tensor]
-            input_time              -> Original (not resampled) time axis [numpy array]
-            input_wavelength        -> Original (not resampled) wavelength axis [numpy array]
-        Outputs:
-            output_spectrogram      -> Resampled spectrogram [tensor]
-            self.output_time        -> Resampled time axis [numpy array]
-            self.output_wavelength  -> Resampled frequency axis [numpy array]
-        '''
-        # Constants 
-        SPEED_OF_LIGHT = 299792458
-
-        ##########################
-        ## Convert to frequency ##
-        ##########################
-        input_freq = (2* torch.pi * SPEED_OF_LIGHT * 1e9) / input_wavelength # convert wavelenght [nm] to frequency [Hz]
-        input_freq = input_freq[::-1]   # ensure increasing order of frequency
-        
-        ##############################
-        ## Resample frequency axis ##
-        ##############################
-        interpolate_frequency = interp1d(input_freq, spectrogram, axis=1, kind='linear', bounds_error=False, fill_value=0) 
-        output_spectrogram = interpolate_frequency(self.output_frequency)
-        
-        ########################
-        ## Resample time axis ##
-        ######################## 
-        interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
-        output_spectrogram = interpolate_time(self.output_time)
-        output_spectrogram = torch.from_numpy(output_spectrogram)  # convert to tensor
-        spectrogram = spectrogram
-
-        return spectrogram, input_time, input_wavelength, output_spectrogram, self.output_time, self.output_frequency
-
-    def resampleFreq(self, spectrogram, input_time, input_freq):
-        '''
-        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
-        Inputs:
-            spectrogram             -> Original (not resampled) spectrogram [tensor]
-            input_time              -> Original (not resampled) time axis [numpy array]
-            input_freq              -> Original (not resampled) frequency axis [numpy array]
-        Outputs:
-            output_spectrogram      -> Resampled spectrogram [tensor]
-            self.output_time        -> Resampled time axis [numpy array]
-            self.output_wavelength  -> Resampled frequency axis [numpy array]
-        '''
-        # Constants 
-        SPEED_OF_LIGHT = 299792458
-
-        ##############################
-        ## Resample frequency axis ##
-        ##############################
-        interpolate_frequency = interp1d(input_freq, spectrogram, axis=1, kind='linear', bounds_error=False, fill_value=0) 
-        output_spectrogram = interpolate_frequency(self.output_frequency)
-        
-        ########################
-        ## Resample time axis ##
-        ######################## 
-        interpolate_time = interp1d(input_time, output_spectrogram, axis=0, kind='linear', bounds_error=False, fill_value=0)
-        output_spectrogram = interpolate_time(self.output_time)
-        output_spectrogram = torch.from_numpy(output_spectrogram)  # convert to tensor
-        spectrogram = spectrogram
-
-        return spectrogram, input_time, input_freq, output_spectrogram, self.output_time, self.output_frequency
+        spectrogram_data = [spectrogram, input_time, input_wavelength]
+        return spectrogram_data
 
 '''
+ResampleSpectrogram()
+Transform Class that resamples spectrograms to use the same axis and size
+'''
+class ResampleSpectrogram(object):
+
+    def __init__(self, num_delays_out, timestep_out, num_frequencies_out, start_frequency_out, end_frequency_out, type='wavelength'):
+        '''
+        Inputs:
+            num_delays_out          -> Number of delay values the resampled spectrogram will have [int]
+            timestep_out            -> Length of time between delays [fs] [int]
+            num_frequencies_out     -> Number of frequency values the resampled spectrogram will have [int]
+            start_frequency_out     -> Lowest frequency value of the resampled spectrogram [nm] [int]
+            end_frequency_out       -> Highest frequency value of the resampled spectrogram [nm] [int]
+            type                    -> input axis type ('wavelength' or 'frequency')
+        '''
+        self.type = type
+        self.c0 = 299792458
+        self.output_number_rows = num_delays_out
+        output_time_step = timestep_out
+        self.output_number_cols = num_frequencies_out
+        output_start_frequency = start_frequency_out   # the first element of the frequency output axis
+        output_stop_frequency = end_frequency_out    # the last element of the frequency output axis 
+        output_start_time = -int(self.output_number_rows/2) * output_time_step     # calculate time at which the output time axis starts
+        output_end_time = output_start_time + (output_time_step * self.output_number_rows) - output_time_step    # calculate the last element of the output time axis 
+
+        ######################## Used here to save time later
+        ## Define output axis ##
+        ########################
+        self.output_time = torch.linspace(output_start_time, output_end_time, self.output_number_rows )  # create array that corresponds to the output time axis
+        self.output_freq = torch.linspace(output_start_frequency, output_stop_frequency, self.output_number_cols)    # create array that corresponds tot the output wavelength axis
+
+    def __call__(self, spectrogram_data):
+        '''
+        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
+        Inputs:
+            spectrogram_data_freq   -> Original (not resampled) [spectrogram [tensor], time axis [tensor], wavelength/frequency axis [tensor] ]
+        Outputs:
+            output_spectrogram      -> Resampled spectrogram [tensor]
+            self.output_time        -> Resampled time axis [numpy array]
+            self.output_freq        -> Resampled frequency axis [numpy array]
+        '''
+
+        if self.type == 'wavelength':   # if input axis is wavelength
+            # get spectrogram and axis from spectrogram_data
+            spectrogram, input_time, input_wavelength = spectrogram_data
+            # Convert wavelength 
+            input_freq = (2* torch.pi * self.c0) / input_wavelength # convert wavelenght [nm] to frequency [Hz]
+
+        elif self.type == 'frequency':  # if input axis is frequency
+            spectrogram, input_time, input_freq = spectrogram_data
+
+        else:   # if unvalid type
+            logger.error(f"type='{self.type}' is not a valid type. Use 'wavelength' or 'frequency' instead!")
+            return
+
+         # get minimum and maximum values of the input_time and input_freq tensors
+        input_time_min, input_time_max = input_time.min(), input_time.max()
+        input_freq_min, input_freq_max = input_freq.min(), input_freq.max()
+
+        # normalize the output time and frequencies to [-1,1]
+        normalized_output_time = 2 * (self.output_time - input_time_min) / (input_time_max - input_time_min) - 1 
+        normalized_output_freq = 2 * (self.output_freq - input_freq_min) / (input_freq_max - input_freq_min) - 1
+        
+        # create meshgrid for output time and frequency
+        grid_time, grid_freq = torch.meshgrid(normalized_output_time,
+                                              normalized_output_freq,
+                                              indexing='ij')
+        # grid sample needs the shape [batch_size, 1, H, W] -> Batch size = 1
+        grid = torch.stack((grid_time, grid_freq), dim=-1).unsqueeze(0).repeat(1, 1, 1, 1)
+        
+        output_spectrogram = F.grid_sample(
+                spectrogram,
+                grid,
+                mode='bilinear',
+                padding_mode='zeros',
+                align_corners=True
+                )
+        # remove additional dimensions for shape [H, W]
+        output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
+        
+        return spectrogram, input_time, input_freq, output_spectrogram, self.output_time, self.output_freq
+
+    '''
 ReadLabelFromEs()
 Read labels (real and imag part) from Es.dat
 '''
@@ -502,4 +490,48 @@ class Scaler(object):
 def ensureSameDevice(tensors, device='cpu'):
     # Move each tensor to the specified device
     tensors_on_device = [tensor.to(device) for tensor in tensors]
-    return tensors_on_device
+    return tensors
+
+def interpolateAxis(old_axis, new_axis, input, dim):
+    # get the size of the original input along dim
+    old_size = input.size(dim)
+    print(new_axis.size)
+    
+    # create a new tensor for the new interpolated tensor fill with zeros
+    if dim == 0:
+        output = torch.zeros(new_axis.size(0), input.size(1), dtype=input.dtype, device=input.device)
+    else:
+        output = torch.zeros(new_axis.size(0), input.size(0), dtype=input.dtype, device=input.device)
+
+    #perform interpolation
+    for i in range(input.size(1)): # loop over other dimension
+        # get the old values from the current input
+        old_values = input[:, i] if dim == 0 else input[i, :]
+
+        # interpolate the values using the defined old_axis and new_axis
+        interpolated_values = interpolate(new_axis, old_axis, old_values)
+
+        # Assign the interpolated values to the new output
+        if dim == 0:
+            output[:, i] = interpolated_values
+        else:
+            output[i, :] = interpolated_values
+
+def interpolate(new_axis, old_axis, old_values):
+    # Ensure old_axis is sorted and old_values corresponds to it
+    indices = torch.argsort(old_axis)
+    old_axis = old_axis[indices]
+    old_values = old_values[indices]
+
+    # find indices in old_axis for interpolation
+    x_clamped = torch.clamp(new_axis, old_axis[0], old_axis[-1])
+    indices = torch.searchsorted(old_axis, x_clamped) - 1
+    indices = torch.clamp(indices, 0, len(old_axis) - 2)
+
+    # Calculate slopes between points
+    slopes = (old_values[indices + 1] - old_values[indices] / (old_axis[indices + 1] - old_axis[indices]))
+
+    # Interpolate linearly
+    interpolated_values = old_values[indices] + slopes * (x_clamped - old_axis[indices])
+
+    return interpolated_values

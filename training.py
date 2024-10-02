@@ -52,13 +52,16 @@ logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are u
 
 # Transforms (Inputs)
 # Resample the spectrograms
-spec_transform = helper.ResampleSpectrogram(
+spec_read = helper.ReadSpectrogram()
+spec_resample = helper.ResampleSpectrogram(
     config.OUTPUT_NUM_DELAYS, 
     config.OUTPUT_TIMESTEP, 
     config.OUTPUT_NUM_FREQUENCIES,
     config.OUTPUT_START_FREQUENCY,
-    config.OUTPUT_END_FREQUENCY
+    config.OUTPUT_END_FREQUENCY,
+    type='wavelength'
     )
+spec_transform = transforms.Compose([spec_read, spec_resample])
 
 # Transforms (Labels)
 label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
