@@ -131,7 +131,7 @@ class PulseRetrievalLossFunction(nn.Module):
         return loss
 
 def getCenterFreq(yta):
-    device = yta.device()
+    device = yta.device
     # Calculate the fft of the analytical signal
     yta_fft = trafo.fft(yta)
     # Calculate the frequencies that correspond to the fourier coefficients (frequency bins)
