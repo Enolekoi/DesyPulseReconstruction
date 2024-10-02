@@ -185,13 +185,11 @@ def calcFrogError(Tref, Tmeas):
     device = Tref.device
     Tmeas.to(device)
     
-    mat1 = Tmeas* Tref
-    print(f"mat1 = {mat1}")
-    print(f"mat1_min = {mat1.min()}")
-    mat2 = Tmeas* Tref
-    print(f"mat2 = {mat2}")
-    print(f"mat2_min = {mat2.min()}")
-    mu = torch.sum(mat1) / torch.sum(mat2) # pypret gl. 13 (s. 497)
+    sum1 = torch.sum(Tmeas* Tref)
+    print(f"sum1 = {sum1}")
+    sum2 = torch.sum(Tmeas* Tref)
+    print(f"sum2 = {sum2}")
+    mu = sum1 / sum2 # pypret gl. 13 (s. 497)
     print(f"mu = {mu}")
     r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
     print(f"r = {r}")
