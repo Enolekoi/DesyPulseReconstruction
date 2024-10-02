@@ -84,8 +84,8 @@ class PulseRetrievalLossFunction(nn.Module):
             # get FROG intensity from FROG amplitude
             predicted_spectrogram = (torch.abs(predicted_spectrogram)**2).to(device)
             # calculate_frog_error
-            print(f"Type of predicted spectrogram: {type(predicted_spectrogram)}")
-            print(f"Type of original spectrogram: {type(spectrogram)}")
+            print(f"Type of predicted spectrogram: {predicted_spectrogram.shape}")
+            print(f"Type of original spectrogram: {spectrogram.shape}")
 
             frog_error = calcFrogError(predicted_spectrogram, spectrogram)
 
