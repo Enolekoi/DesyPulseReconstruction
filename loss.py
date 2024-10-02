@@ -37,7 +37,7 @@ class PulseRetrievalLossFunction(nn.Module):
             )
 
     def forward(self, prediction, label, spectrogram):
-        device = spectrogram.device()
+        device = spectrogram.device
         # print(f"prediction size = {predictions}")
         # print(f"label size = {labels}")
         
