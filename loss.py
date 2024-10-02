@@ -87,7 +87,7 @@ class PulseRetrievalLossFunction(nn.Module):
             # print(f"Type of predicted spectrogram: {predicted_spectrogram.shape}")
             # print(f"Type of original spectrogram: {spectrogram.shape}")
 
-            frog_error = calcFrogError(predicted_spectrogram, spectrogram)
+            frog_error = calcFrogError(predicted_spectrogram, spectrogram[i])
             print(f"FROG Error: {frog_error}")
 
             phase_mask = abs(label_intensity[i]) < 0.01
