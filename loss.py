@@ -184,8 +184,11 @@ def createSHGmat(yta, Ts, wCenter):
 def calcFrogError(Tref, Tmeas):
     device = Tref.device
     Tmeas.to(device)
-
-    mu = torch.sum(torch.matmul(Tmeas, Tref)) / torch.sum(torch.matmul(Tref, Tref)) # pypret gl. 13 (s. 497)
+    
+    mat1 = torch.matmul(Tmeas, Tref)
+    print(f"mat1 = {mat1}")
+    mat2 = torch.matmul(Tmeas, Tref)
+    mu = torch.sum(mat1 / mat2) # pypret gl. 13 (s. 497)
     print(f"mu = {mu}")
     r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
     print(f"r = {r}")
