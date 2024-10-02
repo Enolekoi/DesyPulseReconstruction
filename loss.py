@@ -182,13 +182,13 @@ def createSHGmat(yta, Ts, wCenter):
     return shgMat
 
 def calcFrogError(Tref, Tmeas):
-    print(f"Shape Tref: {Tref.shape}")
-    print(f"Shape Tmeas: {Tmeas.shape}")
     device = Tref.device
     Tmeas.to(device)
 
     mu = torch.sum(torch.matmul(Tmeas, Tref)) / torch.sum(torch.matmul(Tref, Tref)) # pypret gl. 13 (s. 497)
+    print(f"mu = {mu}")
     r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
+    print(f"r = {r}")
 
     normFactor = torch.prod(torch.tensor(Tmeas.shape)) * torch.max(Tmeas)**2    # pypret gl. 12 (s. 497)
     frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
