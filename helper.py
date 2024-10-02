@@ -334,8 +334,8 @@ class ResampleSpectrogram(object):
         spectrogram = spectrogram.unsqueeze(0).unsqueeze(0)
         
         output_spectrogram = F.grid_sample(
-                spectrogram,
-                grid,
+                spectrogram.float(),
+                grid.float(),
                 mode='bilinear',
                 padding_mode='zeros',
                 align_corners=True
