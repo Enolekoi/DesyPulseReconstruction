@@ -31,8 +31,8 @@ OUTPUT_START_WAVELENGTH = 226e-9  # Smallest wavelength in the dataset [nm]
 # OUTPUT_START_WAVELENGTH = 504   # [nm]
 # OUTPUT_END_WAVELENGTH = 451     # Highest wavelength in the dataset [nm]
 OUTPUT_END_WAVELENGTH = 528e-9     # [nm]
-OUTPUT_START_FREQUENCY = (299792458 * 1e9 * 2 * torch.pi) / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
-OUTPUT_END_FREQUENCY = (299792458 * 1e9 * 2 * torch.pi) / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
+OUTPUT_START_FREQUENCY = (299792458  * 2 * torch.pi) / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
+OUTPUT_END_FREQUENCY = (299792458 * 2 * torch.pi) / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
 
 ModelPath = "./models/trained_model_7.pth"  # path of pretrained model used to initialize weights before training
 

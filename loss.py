@@ -32,9 +32,9 @@ class PulseRetrievalLossFunction(nn.Module):
             config.OUTPUT_TIMESTEP, 
             config.OUTPUT_NUM_FREQUENCIES,
             config.OUTPUT_START_FREQUENCY,
-            config.OUTPUT_END_FREQUENCY
+            config.OUTPUT_END_FREQUENCY,
+            type='frequency'
             )
-
 
     def forward(self, prediction, label, spectrogram):
         # print(f"prediction size = {predictions}")
@@ -70,7 +70,6 @@ class PulseRetrievalLossFunction(nn.Module):
 
         # Loop over each batch
         for i in range(batch_size):
-
             # calculate the center frequency of the predicted pulse
             wCenter = getCenterFreq(prediction_analytical[i], device=self.device)
             # create frequency axis and move it around center frequency
@@ -79,7 +78,9 @@ class PulseRetrievalLossFunction(nn.Module):
             # create new SHG Matrix
             predicted_spectrogram = createSHGmat(prediction_analytical[i], Ts, wCenter)
             # resample to correct size
-            predicted_spectrogram = self.spec_transform.resampleFreq(prediction_analytical, time_axis, freq_axis)
+            predicted_spectrogram_data = [predicted_spectrogram, time_axis, freq_axis]
+            predicted_spectrogram = self.spec_transform(predicted_spectrogram_data)
+
             # calculate_frog_error
             frog_error = calcFrogError(predicted_spectrogram, spectrogram)
 
