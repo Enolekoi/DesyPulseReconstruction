@@ -8,11 +8,11 @@ import numpy as np
 import os
 import torch
 
-DESCRIPTOR = "Testing training grid_256_v3 - frog error as loss function , with 30 Epochs"
+DESCRIPTOR = "Testing training grid_256_v3 - regular error as loss function , with 100 Epochs"
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
-NUM_EPOCHS = 30     # Number of epochs to train the model
-UNFREEZE_EPOCH = 20 # Epoch after which the whole model is trained (before that only the output layers are trained)
+NUM_EPOCHS = 100     # Number of epochs to train the model
+UNFREEZE_EPOCH = 70 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-3    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch

@@ -71,28 +71,34 @@ class PulseRetrievalLossFunction(nn.Module):
 
         # Loop over each batch
         for i in range(batch_size):
+            '''
+            FROG Error
+            '''
             # get original spectrogram (without 3 identical channels)
-            original_spectrogram = spectrogram[i]
-            original_spectrogram = original_spectrogram[0]
+            # original_spectrogram = spectrogram[i]
+            # original_spectrogram = original_spectrogram[0]
             # calculate the center frequency of the predicted pulse
-            wCenter = getCenterFreq(prediction_analytical[i])
+            # wCenter = getCenterFreq(prediction_analytical[i])
             # create frequency axis and move it around center frequency
-            freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements).to(self.device) 
-            freq_axis = freq_axis * freq_resolution + wCenter
+            # freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements).to(self.device) 
+            # freq_axis = freq_axis * freq_resolution + wCenter
             # create new SHG Matrix
-            predicted_spectrogram = createSHGmat(prediction_analytical[i], Ts, wCenter)
+            # predicted_spectrogram = createSHGmat(prediction_analytical[i], Ts, wCenter)
             # resample to correct size
-            predicted_spectrogram_data = [predicted_spectrogram, time_axis, freq_axis]
+            # predicted_spectrogram_data = [predicted_spectrogram, time_axis, freq_axis]
             in_spectrogram, input_time, input_freq, predicted_spectrogram, output_time, output_freq = self.spec_transform(predicted_spectrogram_data)
             # get FROG intensity from FROG amplitude
-            predicted_spectrogram = (torch.abs(predicted_spectrogram)**2).to(device)
+            # predicted_spectrogram = (torch.abs(predicted_spectrogram)**2).to(device)
             # calculate_frog_error
             # print(f"Type of predicted spectrogram: {predicted_spectrogram.shape}")
             # print(f"Type of original spectrogram: {spectrogram.shape}")
             
-            frog_error = calcFrogError(predicted_spectrogram, original_spectrogram)
-            print(f"FROG Error: {frog_error}")
-
+            # frog_error = calcFrogError(predicted_spectrogram, original_spectrogram)
+            # print(f"FROG Error: {frog_error}")
+            
+            '''
+            Regular Error
+            '''
             phase_mask = abs(label_intensity[i]) < 0.01
 
             # Create masks for all absolute values higher than the threshold
@@ -131,8 +137,8 @@ class PulseRetrievalLossFunction(nn.Module):
             mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
             mse_phase[phase_mask] = 0
             # Add to total loss
-            # loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean() + 5*mse_phase.mean()
-            loss += frog_error
+            loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean() + 5*mse_phase.mean()
+            # loss += frog_error
         # devide by batch size 
         loss = loss / batch_size
 
@@ -184,18 +190,22 @@ def createSHGmat(yta, Ts, wCenter):
 def calcFrogError(Tref, Tmeas):
     device = Tref.device
     Tmeas.to(device)
-    
+    M, N = Tmeas.shape
+    # print(f"M = {M}")
+    # print(f"N = {N}")
     sum1 = torch.sum(Tmeas* Tref)
-    print(f"sum1 = {sum1}")
-    sum2 = torch.sum(Tmeas* Tref)
-    print(f"sum2 = {sum2}")
+    # print(f"sum1 = {sum1}")
+    sum2 = torch.sum(Tref* Tref)
+    # print(f"sum2 = {sum2}")
     mu = sum1 / sum2 # pypret gl. 13 (s. 497)
-    print(f"mu = {mu}")
-    r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
-    print(f"r = {r}")
+    # print(f"mu = {mu}")
+    r = torch.sum(Tmeas - mu*Tref)**2    # pypret gl. 11 (s. 497)
+    # print(f"r = {r}")
 
-    normFactor = torch.prod(torch.tensor(Tmeas.shape)) * torch.max(Tmeas)**2    # pypret gl. 12 (s. 497)
+    normFactor = M * N * torch.max(Tmeas)**2    # pypret gl. 12 (s. 497)
+    # print(f"norm factor = {normFactor}")
     frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
+    # print(f"FROG Error = {frog_error}")
     return frog_error
 
 '''
