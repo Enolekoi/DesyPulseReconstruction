@@ -180,12 +180,6 @@ def calcFrogError(Tref, Tmeas):
     device = Tref.device
     Tmeas.to(device)
 
-    # Ensure Tref and Tmeas are tensors, not tuples
-    if isinstance(Tref, tuple):
-        Tref = Tref[0]  # Extract the tensor if Tref is a tuple
-    if isinstance(Tmeas, tuple):
-        Tmeas = Tmeas[0]  # Extract the tensor if Tmeas is a tuple
-
     mu = torch.sum(torch.matmul(Tmeas, Tref)) / torch.sum(torch.matmul(Tref, Tref)) # pypret gl. 13 (s. 497)
     r = torch.sum( (Tmeas - mu*Tref)**2)    # pypret gl. 11 (s. 497)
 
