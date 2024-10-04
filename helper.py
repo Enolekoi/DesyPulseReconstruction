@@ -255,13 +255,12 @@ class LoadDatasetTBDrms(Dataset):
         self.data_dirs = os.listdir(self.path)  # list all subdirectories in the root directory
         
         # Load the TBDrms file
-        self.tbdrms_data = pd.read_csv(tbd_filename, header=None)
-        print(self.tbdrms_data.shape)
-        self.tbdrms_data.iloc[:, 0] = self.tbdrms_data.iloc[:, 0].astype(str)
-        self.tbdrms_data['index'] = self.tbdrms_data.iloc[:, 0].str[1].astype(int)
-        self.tbdrms_data = self.tbdrms_data.sort_values('index')
-        self.tbdrms_data = self.tbdrms_data.drop('index', axis=1)
-        self.tbdrms_values = self.tbdrms_data.iloc[3]
+        tbdrms_data = pd.read_csv(tbd_filename)
+        print(tbdrms_data.shape)
+        tbdrms_data['index'] = tbdrms_data.iloc['Directory'].str[1].astype(int)
+        tbdrms_data = tbdrms_data.sort_values('index')
+        tbdrms_data = tbdrms_data.drop('index', axis=1)
+        self.tbdrms_values = tbdrms_data.iloc['TBDrms']
 
     def __len__(self):
         '''
@@ -281,7 +280,7 @@ class LoadDatasetTBDrms(Dataset):
         INDEX_TBD_COLUMN = 3
         data_dir = self.data_dirs[index]    # get the subdirectory for the given index
         spec_path = os.path.join(self.path, data_dir, self.spec_filename)   # construct the full path to the spectrogram file
-        label = self.tbdrms_data.iloc[index, INDEX_TBD_COLUMN]
+        label = self.tbdrms_values.iloc[index]
 
         if self.transform:
             spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
