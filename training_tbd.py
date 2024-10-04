@@ -192,7 +192,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Forward pass
         outputs = model(spectrograms)   # [tensor]
         # loss = criterion(outputs, labels)   # [float]
-        loss = criterion(outputs, labels, spectrograms)   # [float]
+        loss = criterion(outputs, labels)   # [float]
 
         # Backward pass
         loss.backward()
@@ -245,7 +245,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             labels = labels.float().to(device)  # send label to device
 
             outputs = model(spectrograms)   # calculate prediction
-            validation_loss = criterion(outputs, labels, spectrograms)   # calcultate validation loss
+            validation_loss = criterion(outputs, labels)   # calcultate validation loss
             validation_losses.append(validation_loss.item())  # plave validation loss into list
 
         avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
@@ -288,7 +288,7 @@ with torch.no_grad():
         labels = labels.float().to(device)
 
         outputs = model(spectrograms)
-        test_loss = criterion(outputs, labels, spectrograms)
+        test_loss = criterion(outputs, labels)
         test_losses.append(test_loss.item())
 
     avg_test_loss = np.mean(test_losses)
