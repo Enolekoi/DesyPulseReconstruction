@@ -192,7 +192,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Forward pass
         outputs = model(spectrograms)   # [tensor]
         # loss = criterion(outputs, labels)   # [float]
-        loss = criterion(outputs, labels)   # [float]
+        loss = criterion(outputs.squeeze(), labels.squeeze())   # [float]
 
         # Backward pass
         loss.backward()
