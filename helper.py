@@ -256,7 +256,7 @@ class LoadDatasetTBDrms(Dataset):
         
         # Load the TBDrms file
         self.tbdrms_data = pd.read_csv(tbd_filename)
-        self.tbdrms_data['index'] = self.tbdrms_data[0].str.extract('(\d+)').astype(int)
+        self.tbdrms_data['index'] = self.tbdrms_data[0].str.extract(r'(\d+)').astype(int)
         self.tbdrms_data = self.tbdrms_data.sort_values('index')
         self.tbdrms_data = self.tbdrms_data.drop('index', axis=1)
         self.tbdrms_values = self.tbdrms_data.iloc[3]
