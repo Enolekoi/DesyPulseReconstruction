@@ -71,7 +71,7 @@ class CustomDenseNetReconstruction(nn.Module):
         # x = torch.relu(x)
         
         # use tanh activation function to scale the output to [-1, 1] and then scale it (intensity)
-        x = torch.tanh(x) 
+        x = torch.sigmoid(x)*20 + 0.25 
         return x
 
 '''
