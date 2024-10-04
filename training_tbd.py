@@ -41,6 +41,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 # Log some information
 logger.info(config.DESCRIPTOR)
+logger.info(f"Training TBDrms retrieval from spectrogram")
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
 logger.info(f"Spectrograms used: {config.SpecFilename}")
@@ -63,18 +64,6 @@ spec_resample = helper.ResampleSpectrogram(
     )
 spec_transform = transforms.Compose([spec_read, spec_resample])
 
-# Transforms (Labels)
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
-label_remove_ambiguieties = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
-scaler = helper.Scaler(
-    number_elements=config.OUTPUT_SIZE, 
-    max_real=config.MAX_REAL, 
-    max_imag=config.MAX_IMAG
-    )
-label_scaler = scaler.scale
-label_unscaler = scaler.unscale
-label_transform = transforms.Compose([label_reader, label_remove_ambiguieties, label_scaler])
-
 # Define device used
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 logger.info(f"Device used (cuda/cpu): {device}")
@@ -86,9 +75,7 @@ Load Model
 '''
 logger.info("Loading Model...")
 # Load custom DenseNet
-model = helper.CustomDenseNetReconstruction(
-    num_outputs=2*config.OUTPUT_SIZE
-    )
+model = helper.CustomDenseNetTBDrms()
 # model.load_state_dict(torch.load('./models/trained_model_3.pth', weights_only=True))
 model.float()
 model.to(device)
@@ -111,14 +98,11 @@ Load Data
 '''
 # print('Loading Data...')
 logger.info("Loading Data...")
-data = helper.LoadDatasetReconstruction(
+data = helper.LoadDatasetTBDrms(
         path=config.Path,
-        label_filename=config.LabelFilename,
+        tbd_filename=config.TBDrmsFilename,
         spec_filename=config.SpecFilename,
-        tbdrms_file=config.TBDrmsFilename,  # Path to the file containing TBDrms values
-        tbdrms_threshold=config.TBDRMS_THRESHOLD,  # TBDrms threshold for filtering    
-        transform=spec_transform,
-        target_transform=label_transform
+        transform=spec_transform
         )
 ################
 ## Split Data ##
@@ -152,11 +136,11 @@ logger.info(f"Starting training...")
 ## loss and optimizer ##
 ########################
 # loss function
-# criterion = nn.MSELoss()
-criterion = loss.PulseRetrievalLossFunction(
-        penalty_factor=config.PENALTY_FACTOR,
-        threshold=config.PENALTY_THRESHOLD
-        )
+criterion = nn.MSELoss()
+# criterion = loss.PulseRetrievalLossFunction(
+        # penalty_factor=config.PENALTY_FACTOR,
+        # threshold=config.PENALTY_THRESHOLD
+        # )
 
 # optimizer used
 # optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
@@ -320,11 +304,9 @@ with torch.no_grad():
         # send spectrogram to device and make prediction
         spectrogram = spectrogram.float().to(device)
         prediction = model(spectrogram) 
-        # send label and prediction to cpu, so that it can be plotted
-        label = label_unscaler(label).cpu()
-        prediction = label_unscaler(prediction).cpu()
-        # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
-        vis.compareTimeDomainComplex(config.prediction_filepath, label, prediction)
+        logger.info(f"Testing Step: Random Predicted TBDrms: {prediction:.4e}")
+        logger.info(f"Testing Step: Random Label TBDrms:     {label:.4e}")
+        logger.info(f"Testing Step: Difference TBDrms:       {torch.abs(label-prediction):.4e}")
 
 logger.info("Test Step finished!")
 
