@@ -280,7 +280,7 @@ class LoadDatasetTBDrms(Dataset):
         INDEX_TBD_COLUMN = 3
         data_dir = self.data_dirs[index]    # get the subdirectory for the given index
         spec_path = os.path.join(self.path, data_dir, self.spec_filename)   # construct the full path to the spectrogram file
-        label = self.tbdrms_values.iloc[index]
+        label = self.tbdrms_values.iloc[index].squeeze()
 
         if self.transform:
             spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
