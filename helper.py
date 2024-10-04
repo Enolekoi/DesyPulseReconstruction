@@ -260,7 +260,7 @@ class LoadDatasetTBDrms(Dataset):
         tbdrms_data['index'] = tbdrms_data['Directory'].str[1].astype(int)
         tbdrms_data = tbdrms_data.sort_values('index')
         tbdrms_data = tbdrms_data.drop('index', axis=1)
-        self.tbdrms_values = tbdrms_data.iloc['TBDrms']
+        self.tbdrms_values = tbdrms_data['TBDrms']
 
     def __len__(self):
         '''
