@@ -92,8 +92,7 @@ class PulseRetrievalLossFunction(nn.Module):
             # calculate_frog_error
             # print(f"Type of predicted spectrogram: {predicted_spectrogram.shape}")
             # print(f"Type of original spectrogram: {spectrogram.shape}")
-            
-            # frog_error = calcFrogError(predicted_spectrogram, original_spectrogram)
+            # frog_error = calcFrogError(original_spectrogram, predicted_spectrogram)
             # print(f"FROG Error: {frog_error}")
             
             '''
