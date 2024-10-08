@@ -300,10 +300,10 @@ with torch.no_grad():
         spectrogram, label = test_sample
         # adding an extra dimension to spectrogram and label to simulate a batch size of 1
         spectrogram = spectrogram.unsqueeze(0)
-        label = label.unsqueeze(0)
+        label = label.unsqueeze(0).numpy()
         # send spectrogram to device and make prediction
         spectrogram = spectrogram.float().to(device)
-        prediction = model(spectrogram) 
+        prediction = model(spectrogram).numpy()
         logger.info(f"Testing Step: Random Predicted TBDrms: {prediction:.4e}")
         logger.info(f"Testing Step: Random Label TBDrms:     {label:.4e}")
         logger.info(f"Testing Step: Difference TBDrms:       {torch.abs(label-prediction):.4e}")
