@@ -112,4 +112,4 @@ fig.colorbar(cax2, ax=ax)
 # Layout anpassen plt.tight_layout()
 
 # Zeige die Plots an
-# plt.show()
+plt.show()
