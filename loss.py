@@ -11,6 +11,8 @@ import torch.fft as trafo
 import config
 import helper
 
+import matplotlib.pyplot as plt
+
 '''
 PulseRetrievalLossFunction():
 Loss function for pulse retrieval
@@ -143,6 +145,142 @@ class PulseRetrievalLossFunction(nn.Module):
 
         return loss
 
+'''
+PulseRetrievalLossFunction():
+Loss function for pulse retrieval
+'''
+class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
+    def __init__(
+            self, 
+            penalty_factor=2.0,
+            threshold=0.01
+            ):
+        '''
+        Initialization
+        Inputs:
+            weight_factor   -> Factor by which the loss is multiplied, when the label is greater than the threshold [float]
+            threshold       -> Label value over which the higher weights get multiplied with the loss [float]
+        '''
+        super(PulseRetrievalLossFunction, self).__init__()
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.penalty_factor = penalty_factor
+        self.threshold = threshold
+        self.spec_transform = helper.ResampleSpectrogram(
+            config.OUTPUT_NUM_DELAYS, 
+            config.OUTPUT_TIMESTEP, 
+            config.OUTPUT_NUM_FREQUENCIES,
+            config.OUTPUT_START_FREQUENCY,
+            config.OUTPUT_END_FREQUENCY,
+            type='frequency'
+            )
+
+    def forward(self, prediction, label, spectrogram):
+        device = spectrogram.device
+        
+        # get the number of batches, as well as the shape of the labels
+        batch_size, num_elements = label.shape
+        # get half of elements
+        half_size = num_elements // 2
+        # create the analytical signal using the hilbert transformation
+        label_analytical = hilbert(label, plot=False)
+        # get real and imaginary parts of labels and predictions
+        label_real = label_analytical.real.to(device)
+        label_imag = label_analytical.imag.to(device)
+        prediction_real = prediction[:, :half_size].to(device)
+        prediction_imag = prediction[:, half_size:].to(device)
+
+        label_phase =      torch.atan2(label_imag, label_real)
+        prediction_phase = torch.atan2(prediction_imag, prediction_real)
+
+        label_intensity = label_real**2 + label_imag**2
+        prediction_intensity = prediction_real**2 + prediction_imag**2
+
+        label_analytical = torch.complex(label_real, label_imag).to(device)
+        prediction_analytical = torch.complex(prediction_real, prediction_imag).to(device)
+
+        # initialize loss
+        loss = 0.0
+        frog_error = 0.0
+        Ts = 1.5e-15
+        time_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements) * Ts
+        freq_resolution = 2*torch.pi / (num_elements*Ts)    # vgl. 213 Trebino
+
+
+        # Loop over each batch
+        for i in range(batch_size):
+            '''
+            FROG Error
+            '''
+            # get original spectrogram (without 3 identical channels)
+            original_spectrogram = spectrogram[i]
+            original_spectrogram = original_spectrogram[0]
+            # calculate the center frequency of the predicted pulse
+            wCenter = getCenterFreq(prediction_analytical[i])
+            # create frequency axis and move it around center frequency
+            freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements).to(self.device) 
+            freq_axis = freq_axis * freq_resolution + wCenter
+            # create new SHG Matrix
+            predicted_spectrogram = createSHGmat(prediction_analytical[i], Ts, wCenter)
+            # resample to correct size
+            predicted_spectrogram_data = [predicted_spectrogram, time_axis, freq_axis]
+            in_spectrogram, input_time, input_freq, predicted_spectrogram, output_time, output_freq = self.spec_transform(predicted_spectrogram_data)
+            # get FROG intensity from FROG amplitude
+            predicted_spectrogram = (torch.abs(predicted_spectrogram)**2).to(device)
+            # calculate_frog_error
+            # print(f"Type of predicted spectrogram: {predicted_spectrogram.shape}")
+            # print(f"Type of original spectrogram: {spectrogram.shape}")
+            frog_error = calcFrogError(original_spectrogram, predicted_spectrogram)
+            # print(f"FROG Error: {frog_error}")
+            
+            '''
+            Regular Error
+            '''
+            phase_mask = abs(label_intensity[i]) < 0.01
+
+            # Create masks for all absolute values higher than the threshold
+            mask_real_threshold = abs(label_real[i]) > self.threshold
+            mask_imag_threshold = abs(label_imag[i]) > self.threshold
+            
+            # if any real value is greater than the threshold
+            if torch.any(mask_real_threshold):
+                # get the first and last index, where a value is greater than the threshold
+                first_significant_idx_real = torch.nonzero(mask_real_threshold).min().item()
+                last_significant_idx_real = torch.nonzero(mask_real_threshold).max().item()
+            else:
+                first_significant_idx_real = 0
+                last_significant_idx_real = half_size - 1
+
+            # if any imaginary value is greater than the threshold
+            if torch.any(mask_imag_threshold):
+                # get the first and last index, where a value is greater than the threshold
+                first_significant_idx_imag = torch.nonzero(mask_imag_threshold).min().item()
+                last_significant_idx_imag = torch.nonzero(mask_imag_threshold).max().item()
+            else:
+                first_significant_idx_imag = 0
+                last_significant_idx_imag = half_size - 1
+
+            # Calculate MSE for the real and imaginary part
+            mse_real = (prediction_real[i] - label_real[i]) ** 2
+            mse_imag = (prediction_imag[i] - label_imag[i]) ** 2
+
+            # Apply penalty for values before the first significant index and after the last
+            mse_real[:first_significant_idx_real] *= self.penalty_factor
+            mse_real[last_significant_idx_real + 1:] *= self.penalty_factor
+            mse_imag[:first_significant_idx_imag] *= self.penalty_factor
+            mse_imag[last_significant_idx_imag + 1:] *= self.penalty_factor
+            
+            mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
+            mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
+            mse_phase[phase_mask] = 0
+            # Add to total loss
+            loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean() + 5*mse_phase.mean()
+            loss += frog_error
+        # devide by batch size 
+        loss = loss / batch_size
+
+        return loss
+
+
 def getCenterFreq(yta):
     device = yta.device
     # Calculate the fft of the analytical signal
@@ -212,7 +350,7 @@ hilbert()
 
 Calculate the hilbert transforma of a real-valued signal
 '''
-def hilbert(signal):
+def hilbert(signal, plot=False):
     """
     Inputs:
         signal  -> real-valued signal [tensor]
@@ -241,5 +379,45 @@ def hilbert(signal):
 
     # inverse FFT to get the analytical signal
     analytical_signal = trafo.ifft(signal_fft_hilbert)
-
+    
+    if plot == True:
+        plt.figure()
+        # plot 1 (time domain, real part)
+        plt.subplot(4,1,1)
+        plt.plot(signal, label='real part')
+        plt.title('Real part of time domain signal')
+        plt.ylabel('Intensity')
+        plt.xlabel('Time')
+        plt.legend()
+        plt.grid()
+        
+        # plot 2 (frequency domain, real part[fft] )
+        plt.subplot(4,1,2)
+        plt.plot(signal_fft, label='real part')
+        plt.title('FFT of the real part of time domain signal')
+        plt.ylabel('Intensity')
+        plt.xlabel('Frequency')
+        plt.legend()
+        plt.grid()
+        
+        # plot 3 (frequency domain, hilbert mask)
+        plt.subplot(4,1,3)
+        plt.plot(H, label='Hilbert Mask')
+        plt.title('Mask of the Hilbert transform')
+        plt.ylabel('Intensity')
+        plt.xlabel('Frequency')
+        plt.legend()
+        plt.grid()
+        
+        # plot 4 (frequency domain, hilbert mask)
+        plt.subplot(4,1,4)
+        plt.plot(signal_fft_hilbert, label='Signal after Hilbert Mask')
+        plt.title('Signal after multiplication with the mask of the Hilbert transform')
+        plt.ylabel('Intensity')
+        plt.xlabel('Frequency')
+        plt.legend()
+        plt.grid()
+        
+        plt.show()
+    
     return analytical_signal

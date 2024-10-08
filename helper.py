@@ -91,9 +91,9 @@ class CustomDenseNetTBDrms(nn.Module):
         # Get the number of features before the last layer
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
-        self.densenet.classifier = nn.Linear(num_features, 2048)
-        self.fc1 = nn.Linear(2048, 1024)
-        self.fc2 = nn.Linear(1024, 1)
+        self.densenet.classifier = nn.Linear(num_features, 512)
+        self.fc1 = nn.Linear(512, 128)
+        self.fc2 = nn.Linear(128, 1)
         # self.densenet.classifier = nn.Linear(num_features, num_outputs)
 
         # initialize weights
@@ -119,8 +119,8 @@ class CustomDenseNetTBDrms(nn.Module):
         x = self.fc2(x)
         # x = torch.relu(x)
         
-        # use relu activation function to get values from 0 to [inf]
-        x = torch.sigmoid(x) * 20 + 0.25 
+        # use sigmoid activation function for output to be between 0 and 1 -> then scale with 20 for larger TBDrms values
+        x = torch.sigmoid(x) * 20
         return x
 
 '''
