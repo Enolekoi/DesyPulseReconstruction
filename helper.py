@@ -467,7 +467,7 @@ class ResampleSpectrogram(object):
         
         return spectrogram, input_time, input_freq, output_spectrogram, self.output_time, self.output_freq
 
-    '''
+'''
 ReadLabelFromEs()
 Read labels (real and imag part) from Es.dat
 '''
@@ -545,27 +545,19 @@ class RemoveAmbiguitiesFromLabel(object):
         real_part = label[:self.number_elements]
         imag_part = label[self.number_elements:]
 
-        # calculate the intensity of the signal
-        intensity = real_part**2 + imag_part**2
+        complex_signal = torch.complex(real_part, imag_part)
 
-        # get the index of the highest intensity value and calculate the offset
-        index_peak = torch.argmax(intensity)
-        offset = self.index_center - index_peak
+        # remove translation ambiguity Eamb(t) = E(t-t0)
+        complex_signal = removeTranslationAmbiguity(complex_signal, self.index_center)
+        # remove mirrored complex conjugate ambiguity Eamb(t) = E*(-t)
+        complex_signal = removeKonjugationAmbiguity(complex_signal, self.index_center)
+        # remove absolute phase shift ambiguity Eamb(t) = E(t)*exp(j\phi0)
+        complex_signal = removePhaseShiftAmbiguity(complex_signal, self.index_center)
 
-        # shift the real and imaginary parts to center the peak
-        real_part = torch.roll(real_part, offset.item() )
-        imag_part = torch.roll(imag_part, offset.item() )
-        
-        # Calculate the mean of the pulse before and after the center index
-        mean_first_half = torch.mean(intensity[:self.index_center])
-        mean_second_half = torch.mean(intensity[self.index_center:])
+        real = complex_signal.real
+        imag = complex_signal.imag
 
-        # if the mean after the intensity peak is higher, mirror real and imaginary part
-        if mean_second_half > mean_first_half:
-            real_part = torch.flip(real_part, dims=[0])
-            imag_part = torch.flip(imag_part, dims=[0])
-        
-        output_label = torch.cat([real_part, imag_part])
+        output_label = torch.cat([real, imag])
         return output_label
 
 class Scaler(object):
@@ -620,3 +612,57 @@ class Scaler(object):
 
         return unscaled_label
 
+def removeTranslationAmbiguity(complex, index_center):
+    # calculate the intensity of the signal
+    intensity = complex.real**2 + complex.imag**2
+
+    # get the index of the highest intensity value and calculate the offset
+    index_peak = torch.argmax(intensity)
+    offset = index_center - index_peak
+
+    # shift the real and imaginary parts to center the peak
+    complex = torch.roll(complex, offset.item() )
+
+    return complex
+    
+def removeKonjugationAmbiguity(complex, index_center):
+    # calculate the intensity of the signal
+    intensity = complex.real**2 + complex.imag**2
+
+    # Calculate the mean of the pulse before and after the center index
+    mean_first_half = torch.mean(intensity[:index_center])
+    mean_second_half = torch.mean(intensity[index_center:])
+    
+    # if the weight of the signal is in the second half of the signal
+    if mean_second_half > mean_first_half:
+        # conjugate the signal
+        complex = complex.conj()
+        # mirror the signal
+        complex = torch.flip(complex, dims=[0])
+    # if the weight of the signal is in the first half of the signal
+    else:   
+        # do nothing
+        pass
+
+    return complex
+
+def removePhaseShiftAmbiguity(complex, index_center):
+    # calculate the phase of the signal [rad]
+    phase = torch.angle(complex)
+
+    # get phase at center index
+    center_phase = phase[index_center]
+    # remove the absolute phase shift from the whole phase tensor
+    phase = phase - center_phase
+
+    # reconstruct real and imaginary parts
+    # get the magnitude
+    magnitude = torch.abs(complex)
+    # calculate real part
+    real_part = magnitude * torch.cos(phase) 
+    imag_part = magnitude * torch.sin(phase)
+    
+    # create a new complex tensor
+    complex = torch.complex(real_part, imag_part)
+    
+    return complex

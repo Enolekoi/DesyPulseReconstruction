@@ -302,8 +302,8 @@ with torch.no_grad():
         spectrogram = spectrogram.unsqueeze(0)
         label = label.unsqueeze(0).numpy()
         # send spectrogram to device and make prediction
-        spectrogram = spectrogram.float().to(device)
-        prediction = model(spectrogram).numpy()
+        spectrogram = spectrogram.float().cpu()
+        prediction = model(spectrogram).cpu().numpy()
         logger.info(f"Testing Step: Random Predicted TBDrms: {prediction:.4e}")
         logger.info(f"Testing Step: Random Label TBDrms:     {label:.4e}")
         logger.info(f"Testing Step: Difference TBDrms:       {torch.abs(label-prediction):.4e}")
