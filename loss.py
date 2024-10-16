@@ -174,7 +174,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
         half_size = num_elements // 2
 
         # create the analytical signal using the hilbert transformation
-        prediction_analytical = torch.zeros(batch_size, 256, dtype=torch.complex64)
+        prediction_analytical = torch.zeros(batch_size, half_size, dtype=torch.complex64)
         for i in range(batch_size):
             prediction_analytical[i] = hilbert(prediction[i], plot=False).to(device)
 
