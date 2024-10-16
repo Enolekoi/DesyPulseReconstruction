@@ -86,7 +86,7 @@ Load Model
 logger.info("Loading Model...")
 # Load custom DenseNet
 model = helper.CustomDenseNetReconstruction(
-    num_outputs=2*config.OUTPUT_SIZE
+    num_outputs=config.OUTPUT_SIZE
     )
 # model.load_state_dict(torch.load('./models/trained_model_3.pth', weights_only=True))
 model.float()
