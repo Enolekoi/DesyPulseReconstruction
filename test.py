@@ -49,7 +49,6 @@ sim_spec, header, sim_output_spec, sim_output_time, sim_output_freq = spec_trans
 
 prediction_header = copy.deepcopy(header)
 prediction_header.correct_freq_axis()
-prediction_header.center_freq = 3.14159e15
 # calculate SHG Matrix from analytical signal
 spec = loss.createSHGmat(label_analytical, prediction_header.delta_time, prediction_header.center_freq)
 spec = torch.abs(spec)**2
