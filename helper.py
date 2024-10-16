@@ -218,7 +218,7 @@ class LoadDatasetReconstruction(Dataset):
             # label = torch.from_numpy(label)
         else:
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
-
+    
         # create a spectrogram with 3 identical channels
         output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
         output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
@@ -230,7 +230,16 @@ class LoadDatasetReconstruction(Dataset):
         if not isinstance(label, torch.Tensor):
             label = torch.tensor(label)
 
-        return output_spec, label, header
+        # place header information into tensor
+        header_tensor = [
+            header.num_delay,
+            header.num_wavelength,
+            header.delta_time,
+            header.delta_wavelength,
+            header.center_wavelength
+                ]
+
+        return output_spec, label, header_tensor
 
 '''
 LoadDatasetTBDrms()
