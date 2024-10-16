@@ -124,26 +124,6 @@ class CustomDenseNetTBDrms(nn.Module):
         return x
 
 '''
-TimeDomain()
-Class containing information of the time domain signal
-'''
-class TimeDomain:
-    def __init__(self, time_axis, intensity, phase, real, imag):
-        '''
-        Inputs:
-            time_axis   -> Time axis
-            intensity   -> Intensity (squared amplitude) of time domain signal
-            phase       -> Phase of time domain signal
-            real        -> Real part of time domain signal
-            imag        -> Imaginary part of time domain signal
-        '''
-        self.time_axis = time_axis
-        self.intensity = intensity
-        self.phase = phase
-        self.real = real
-        self.imag = imag
-
-'''
 LoadDatasetReconstruction()
 Custom Dataloader Class
 '''
@@ -310,51 +290,6 @@ class LoadDatasetTBDrms(Dataset):
 
         return output_spec, label
 
-class Header:
-    def __init__(self, num_delays, num_wavelength, delta_time, delta_wavelength, center_wavelength):
-        ###############
-        ## Constants ##
-        ###############
-        c0 = 299792458                  # Speed of Ligth
-
-        ######################
-        ## Time information ##
-        ######################
-        self.num_delays         = num_delays
-        self.delta_time         = delta_time
-        # calculate first and last element of time axis
-        start_time  = -((self.num_delays // 2)) * self.delta_time
-        end_time    = start_time + (self.num_delays -1) *self.delta_time
-        # calculate time axis
-        self.time_axis = torch.linspace(start_time, end_time, self.num_delays)
-
-        ############################
-        ## Wavelength information ##
-        ############################
-        self.num_wavelength     = num_wavelength
-        self.delta_wavelength   = delta_wavelength
-        self.center_wavelength  = center_wavelength
-        # calculate fist and last element of wavelength axis calculate input wavelength axis
-        self.start_wavelength   = self.center_wavelength - (self.num_wavelength/2) * self.delta_wavelength
-        self.end_wavelength     = self.center_wavelength + (self.num_wavelength/2) * self.delta_wavelength
-        # calculate wavelength axis
-        self.wavelength_axis = torch.linspace(self.start_wavelength, self.end_wavelength, self.num_wavelength)
-        # calculate frequency axis
-        self.freq_axis      = (c0 * 2 * torch.pi) / self.wavelength_axis
-        # calculate first, center and last element of frequency axis 
-        center_freq_index = self.freq_axis.size(0) // 2
-        self.center_freq = self.freq_axis[center_freq_index]
-        # self.center_freq   = (c0 * 2 * torch.pi) / self.center_wavelength
-
-    def correct_freq_axis(self):
-        ###############
-        ## Constants ##
-        ###############
-        c0 = 299792458                  # Speed of Ligth
-        # center_freq_index = self.freq_axis.size(0) // 2
-        # self.center_freq = self.freq_axis[center_freq_index]
-        # self.center_freq   = (c0 * 2 * torch.pi) / self.center_wavelength
-
 '''
 ReadSpectrogram()
 Read the spectrogram from a given path
@@ -396,13 +331,13 @@ class ReadSpectrogram(object):
             num_rows_skipped = 2 # header is in first 2 rows
             # print("Header is in 2 rows")    # for debugging
         
-        spectrogram_header = Header(
+        spectrogram_header = [
                 int(header[0]),             # number of delay samples
                 int(header[1]),             # number of wavelength samples
                 float(header[2]) * 1e-15,   # time step per delay [s]
                 float(header[3]) * 1e-9,    # wavelength step per sample [m]
                 float(header[4]) * 1e-9     # center wavelength [m]
-                )
+                ]
         ######################
         ## Read Spectrogram ##
         ######################
@@ -451,7 +386,7 @@ class ResampleSpectrogram(object):
         '''
         Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
         Inputs:
-            spectrogram_data_freq   -> Original (not resampled) [spectrogram [tensor], header [Header]]
+            spectrogram_data_freq   -> Original (not resampled) [spectrogram [tensor], header [list]]
         Outputs:
             output_spectrogram      -> Resampled spectrogram [tensor]
             self.output_time        -> Resampled time axis [numpy array]
@@ -525,26 +460,26 @@ class ReadLabelFromEs(object):
         # read the dataframe
         dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
         
-        TimeDomainSignal = TimeDomain(time_axis = dataframe[0].to_numpy(),
-                                      intensity = dataframe[1].to_numpy(),
-                                      phase = dataframe[2].to_numpy(), 
-                                      real = dataframe[3].to_numpy(),
-                                      imag = dataframe[4].to_numpy())
+        time_axis = dataframe[0].to_numpy()
+        intensity = dataframe[1].to_numpy()
+        phase = dataframe[2].to_numpy()
+        real = dataframe[3].to_numpy()
+        imag = dataframe[4].to_numpy()
 
         # Resample to fit correct number of elements
-        # TimeDomainSignal.intensity = TimeDomainSignal.intensity.reshape(self.number_elements,2).mean(axis=1)
-        # TimeDomainSignal.phase = TimeDomainSignal.phase.reshape(self.number_elements,2).mean(axis=1)
-        original_indicies = np.linspace(0, len(TimeDomainSignal.real) - 1, num=len(TimeDomainSignal.real))
-        new_indicies = np.linspace(0, len(TimeDomainSignal.real) - 1, num=self.number_elements)
-        interpolation_func_real = interp1d(original_indicies, TimeDomainSignal.real, kind='linear')
-        interpolation_func_imag = interp1d(original_indicies, TimeDomainSignal.imag, kind='linear')
-        TimeDomainSignal.real = interpolation_func_real(new_indicies)
-        TimeDomainSignal.imag = interpolation_func_imag(new_indicies)
-        # TimeDomainSignal.real = TimeDomainSignal.real.reshape(self.number_elements,2).mean(axis=1)
-        # TimeDomainSignal.imag = TimeDomainSignal.imag.reshape(self.number_elements,2).mean(axis=1)
+        # intensity = intensity.reshape(self.number_elements,2).mean(axis=1)
+        # phase = phase.reshape(self.number_elements,2).mean(axis=1)
+        original_indicies = np.linspace(0, len(real) - 1, num=len(real))
+        new_indicies = np.linspace(0, len(real) - 1, num=self.number_elements)
+        interpolation_func_real = interp1d(original_indicies, real, kind='linear')
+        interpolation_func_imag = interp1d(original_indicies, imag, kind='linear')
+        real = interpolation_func_real(new_indicies)
+        imag = interpolation_func_imag(new_indicies)
+        # real = real.reshape(self.number_elements,2).mean(axis=1)
+        # imag = imag.reshape(self.number_elements,2).mean(axis=1)
 
-        # label = np.concatenate( (TimeDomainSignal.intensity, TimeDomainSignal.phase), axis=0)
-        label = np.concatenate( (TimeDomainSignal.real, TimeDomainSignal.imag), axis=0)
+        # label = np.concatenate( (intensity, phase), axis=0)
+        label = np.concatenate( (real, imag), axis=0)
         label = torch.from_numpy(label)
         return label
 
