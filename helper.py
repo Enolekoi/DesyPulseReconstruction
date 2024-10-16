@@ -230,7 +230,7 @@ class LoadDatasetReconstruction(Dataset):
         if not isinstance(label, torch.Tensor):
             label = torch.tensor(label)
 
-        return output_spec, label
+        return output_spec, label, header
 
 '''
 LoadDatasetTBDrms()
