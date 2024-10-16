@@ -204,7 +204,7 @@ learning_rates.append(config.LEARNING_RATE)
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     model.train()       
-    for i, (spectrograms, labels) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
+    for i, (spectrograms, labels, header) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
             # make spectrograms float for compatability with the model
             # spectrograms = spectrograms.float()
         # send spectrogram and label data to selected device
