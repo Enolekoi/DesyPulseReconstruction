@@ -35,7 +35,6 @@ class PulseRetrievalLossFunction(nn.Module):
             config.OUTPUT_NUM_FREQUENCIES,
             config.OUTPUT_START_FREQUENCY,
             config.OUTPUT_END_FREQUENCY,
-            type='frequency'
             )
 
     def forward(self, prediction, label, spectrogram):
@@ -155,10 +154,9 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
             config.OUTPUT_NUM_FREQUENCIES,
             config.OUTPUT_START_FREQUENCY,
             config.OUTPUT_END_FREQUENCY,
-            type='frequency'
             )
 
-    def forward(self, prediction, label, spectrogram):
+    def forward(self, prediction, label, spectrogram, header):
         '''
         Inputs:
             prediction      -> real part of predicted signal (imaginary part will be calculated) [tensor]
@@ -198,9 +196,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
         mse_loss = 0.0
         frog_error = 0.0
         # initialize some values for SHG-trace creation
-        Ts = 1.5e-15
-        time_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements) * Ts
-        freq_resolution = 2*torch.pi / (num_elements*Ts)    # vgl. 213 Trebino
+        prediction_header = header
 
         # Loop over each batch
         for i in range(batch_size):
@@ -212,24 +208,19 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                 original_spectrogram = spectrogram[i]
                 # get original spectrogram (without 3 identical channels)
                 original_spectrogram = original_spectrogram[0]
-
-                # calculate the center frequency of the predicted pulse
-                wCenter = getCenterFreq(prediction_analytical[i], time_step=Ts)
-                print(f"wCenter = {wCenter:.4e}")
-                # create frequency axis and move it around center frequency
-                freq_axis = torch.linspace(-half_size, half_size - 1, steps= num_elements).to(device) 
-                freq_axis = freq_axis * freq_resolution + wCenter
-
+                
                 # create new SHG Matrix
-                predicted_spectrogram = createSHGmat(prediction_analytical[i], Ts, wCenter)
-                # print(f"predicted spectrogram (complex): {predicted_spectrogram}")
+                predicted_spectrogram = createSHGmat(
+                        yta = prediction_analytical[i],
+                        Ts = prediction_header.delta_time[i],
+                        wCenter = prediction_header.center_freq[i]
+                        )
                 # get FROG intensity from FROG amplitude
                 predicted_spectrogram = (torch.abs(predicted_spectrogram)**2).to(device)
-                # print(f"predicted spectrogram:           {predicted_spectrogram}")
-                # print(f"0 = {torch.max(predicted_spectrogram)}")
-                # resample to correct size
-                predicted_spectrogram_data = [predicted_spectrogram, time_axis, freq_axis]
-                in_spectrogram, input_time, input_freq, predicted_spectrogram, output_time, output_freq = self.spec_transform(predicted_spectrogram_data)
+                predicted_spectrogram = helper.min_max_normalize_spectrogram(spectrogram)
+
+                predicted_spectrogram_data = [predicted_spectrogram, header]
+                in_spectrogram, prediction_header, predicted_spectrogram, output_time, output_freq = self.spec_transform(predicted_spectrogram_data)
 
                 # print(f"1 = {torch.max(predicted_spectrogram)}")
                 # calculate_frog_error
@@ -330,13 +321,14 @@ def createSHGmat(yta, Ts, wCenter):
     delayIdxVec = torch.arange(start, end, dtype=torch.float32).to(device)
 
     # calculate shift factor
-    argument0 = 2*wCenter
-    argument1 = -1j * 2 * wCenter * Ts
-    argument2 = argument1 * delayIdxVec
+    # argument0 = 2*wCenter
+    # argument1 = -1j * 2 * wCenter * Ts
+    # argument2 = argument1 * delayIdxVec
     # print(f"2*wCenter = {argument0}")
     # print(f"-j 2*wCenter*Ts = {argument1}")
     # print(f"-j 2*wCenter*Ts*delayIdxVec = {argument2}")
 
+    # calculate shift factor
     shiftFactor = torch.exp(-1j * 2 * wCenter * Ts * delayIdxVec).to(device)
     # print(f"Shift factor = {shiftFactor}")
 
@@ -359,8 +351,8 @@ def createSHGmat(yta, Ts, wCenter):
 def calcFrogError(Tref, Tmeas):
     device = Tref.device
     Tmeas.to(device)
-    print(f"Max value of Tref = {torch.max(Tref)}")
-    print(f"Max value of Tmeas = {torch.max(Tmeas)}")
+    # print(f"Max value of Tref = {torch.max(Tref)}")
+    # print(f"Max value of Tmeas = {torch.max(Tmeas)}")
     M, N = Tmeas.shape
     # print(f"M = {M}")
     # print(f"N = {N}")
@@ -370,12 +362,15 @@ def calcFrogError(Tref, Tmeas):
     # print(f"Tref * Tref =  {sum2}")
     mu = sum1 / sum2 # pypret gl. 13 (s. 497)
     # print(f"mu = {mu}")
-    r = torch.sum(Tmeas - mu*Tref)**2    # pypret gl. 11 (s. 497)
+    # print(f"Tmeas-mu*Tref = {Tmeas - mu*Tref}")
+    r = torch.sum(Tmeas - mu*Tref)**2    # pypret gl. 11 (s. 497) 
     # print(f"r = {r}")
-
-    normFactor = M * N * torch.max(Tmeas)**2    # pypret gl. 12 (s. 497)
-    # print(f"norm factor = {normFactor}")
-    frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
+    if(r != 0.0):
+        normFactor = M * N * torch.max(Tmeas)**2    # pypret gl. 12 (s. 497)
+        # print(f"norm factor = {normFactor}")
+        frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
+    else:
+        frog_error = 0.0
     # print(f"FROG Error = {frog_error}")
     return frog_error
 

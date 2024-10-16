@@ -120,7 +120,7 @@ class CustomDenseNetTBDrms(nn.Module):
         # x = torch.relu(x)
         
         # use sigmoid activation function for output to be between 0 and 1 -> then scale with 20 for larger TBDrms values
-        x = torch.sigmoid(x) * 20
+        x = torch.sigmoid(x) * 15
         return x
 
 '''
@@ -301,6 +301,51 @@ class LoadDatasetTBDrms(Dataset):
 
         return output_spec, label
 
+class Header:
+    def __init__(self, num_delays, num_wavelength, delta_time, delta_wavelength, center_wavelength):
+        ###############
+        ## Constants ##
+        ###############
+        c0 = 299792458                  # Speed of Ligth
+
+        ######################
+        ## Time information ##
+        ######################
+        self.num_delays         = num_delays
+        self.delta_time         = delta_time
+        # calculate first and last element of time axis
+        start_time  = -((self.num_delays // 2)) * self.delta_time
+        end_time    = start_time + (self.num_delays -1) *self.delta_time
+        # calculate time axis
+        self.time_axis = torch.linspace(start_time, end_time, self.num_delays)
+
+        ############################
+        ## Wavelength information ##
+        ############################
+        self.num_wavelength     = num_wavelength
+        self.delta_wavelength   = delta_wavelength
+        self.center_wavelength  = center_wavelength
+        # calculate fist and last element of wavelength axis calculate input wavelength axis
+        self.start_wavelength   = self.center_wavelength - (self.num_wavelength/2) * self.delta_wavelength
+        self.end_wavelength     = self.center_wavelength + (self.num_wavelength/2) * self.delta_wavelength
+        # calculate wavelength axis
+        self.wavelength_axis = torch.linspace(self.start_wavelength, self.end_wavelength, self.num_wavelength)
+        # calculate frequency axis
+        self.freq_axis      = (c0 * 2 * torch.pi) / self.wavelength_axis
+        # calculate first, center and last element of frequency axis 
+        center_freq_index = self.freq_axis.size(0) // 2
+        self.center_freq = self.freq_axis[center_freq_index]
+        # self.center_freq   = (c0 * 2 * torch.pi) / self.center_wavelength
+
+    def correct_freq_axis(self):
+        ###############
+        ## Constants ##
+        ###############
+        c0 = 299792458                  # Speed of Ligth
+        # center_freq_index = self.freq_axis.size(0) // 2
+        # self.center_freq = self.freq_axis[center_freq_index]
+        # self.center_freq   = (c0 * 2 * torch.pi) / self.center_wavelength
+
 '''
 ReadSpectrogram()
 Read the spectrogram from a given path
@@ -342,12 +387,13 @@ class ReadSpectrogram(object):
             num_rows_skipped = 2 # header is in first 2 rows
             # print("Header is in 2 rows")    # for debugging
         
-        input_number_rows = int(header[0]) # delay points
-        input_number_cols = int(header[1]) # wavelength points
-        input_time_step = float(header[2]) * 1e-15  # [fs]
-        input_wavelength_step = float(header[3]) * 1e-9     # [nm]
-        input_center_wavelength = float(header[4]) * 1e-9   # [nm]
-        
+        spectrogram_header = Header(
+                int(header[0]),             # number of delay samples
+                int(header[1]),             # number of wavelength samples
+                float(header[2]) * 1e-15,   # time step per delay [s]
+                float(header[3]) * 1e-9,    # wavelength step per sample [m]
+                float(header[4]) * 1e-9     # center wavelength [m]
+                )
         ######################
         ## Read Spectrogram ##
         ######################
@@ -355,21 +401,7 @@ class ReadSpectrogram(object):
         spectrogram = spectrogram_df.to_numpy()     # convert to numpy array 
         spectrogram = torch.from_numpy(spectrogram)     # convert to tensor
 
-        #######################
-        ## Define input axis ##
-        #######################
-        # calculate input time axis
-        input_start_time = -int(input_number_rows / 2) * input_time_step    # calculate time at which the input time axis starts
-        input_end_time = input_start_time + (input_time_step * input_number_rows) - input_time_step    # calculate the last element of the input time axis
-        input_time = np.linspace(input_start_time, input_end_time, input_number_rows)   # create array that corresponds to the input time axis
-        
-        # calculate input wavelength axis
-        input_start_wavelength = input_center_wavelength - (input_number_cols/2)*input_wavelength_step      # calculate the first element of the wavelength input axis
-        input_stop_wavelength = input_center_wavelength + (input_number_cols/2)*input_wavelength_step       # calculate the last element of the wavelength input axis
-        input_wavelength = np.linspace(input_start_wavelength, input_stop_wavelength, input_number_cols)    # create array that corresponds tot the input wavelength axis
-        input_time = torch.from_numpy(input_time)
-        input_wavelength = torch.from_numpy(input_wavelength)
-        spectrogram_data = [spectrogram, input_time, input_wavelength]
+        spectrogram_data = [spectrogram, spectrogram_header]
         return spectrogram_data
 
 '''
@@ -378,7 +410,7 @@ Transform Class that resamples spectrograms to use the same axis and size
 '''
 class ResampleSpectrogram(object):
 
-    def __init__(self, num_delays_out, timestep_out, num_frequencies_out, start_frequency_out, end_frequency_out, type='wavelength'):
+    def __init__(self, num_delays_out, timestep_out, num_frequencies_out, start_frequency_out, end_frequency_out):
         '''
         Inputs:
             num_delays_out          -> Number of delay values the resampled spectrogram will have [int]
@@ -386,17 +418,15 @@ class ResampleSpectrogram(object):
             num_frequencies_out     -> Number of frequency values the resampled spectrogram will have [int]
             start_frequency_out     -> Lowest frequency value of the resampled spectrogram [nm] [int]
             end_frequency_out       -> Highest frequency value of the resampled spectrogram [nm] [int]
-            type                    -> input axis type ('wavelength' or 'frequency')
         '''
-        self.type = type
         self.c0 = 299792458
         self.output_number_rows = num_delays_out
         output_time_step = timestep_out
         self.output_number_cols = num_frequencies_out
         output_start_frequency = start_frequency_out   # the first element of the frequency output axis
         output_stop_frequency = end_frequency_out    # the last element of the frequency output axis 
-        output_start_time = -int(self.output_number_rows/2) * output_time_step     # calculate time at which the output time axis starts
-        output_end_time = output_start_time + (output_time_step * self.output_number_rows) - output_time_step    # calculate the last element of the output time axis 
+        output_start_time = -(self.output_number_rows // 2) * output_time_step     # calculate time at which the output time axis starts
+        output_end_time = output_start_time + (self.output_number_rows -1) * output_time_step    # calculate the last element of the output time axis 
 
         ######################## Used here to save time later
         ## Define output axis ##
@@ -412,32 +442,20 @@ class ResampleSpectrogram(object):
         '''
         Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
         Inputs:
-            spectrogram_data_freq   -> Original (not resampled) [spectrogram [tensor], time axis [tensor], wavelength/frequency axis [tensor] ]
+            spectrogram_data_freq   -> Original (not resampled) [spectrogram [tensor], header [Header]]
         Outputs:
             output_spectrogram      -> Resampled spectrogram [tensor]
             self.output_time        -> Resampled time axis [numpy array]
             self.output_freq        -> Resampled frequency axis [numpy array]
         '''
-
-        if self.type == 'wavelength':   # if input axis is wavelength
-            # get spectrogram and axis from spectrogram_data
-            spectrogram, input_time, input_wavelength = spectrogram_data
-            # Convert wavelength 
-            input_freq = (2* torch.pi * self.c0) / input_wavelength # convert wavelenght [nm] to frequency [Hz]
-
-        elif self.type == 'frequency':  # if input axis is frequency
-            spectrogram, input_time, input_freq = spectrogram_data
-
-        else:   # if unvalid type
-            logger.error(f"type='{self.type}' is not a valid type. Use 'wavelength' or 'frequency' instead!")
-            return
+        spectrogram, header = spectrogram_data
         device = spectrogram.device
         # ensure all tensors are of the same type (float32)
         spectrogram = spectrogram.float()
-        input_time = input_time.float().to(device)
-        input_freq = input_freq.float().to(device)
+        input_time = header.time_axis.float().to(device)
+        input_freq = header.freq_axis.float().to(device)
         
-         # get minimum and maximum values of the input_time and input_freq tensors
+        # get minimum and maximum values of the input_time and input_freq tensors
         input_time_min, input_time_max = input_time.min(), input_time.max()
         input_freq_min, input_freq_max = input_freq.min(), input_freq.max()
 
@@ -450,7 +468,7 @@ class ResampleSpectrogram(object):
                                               normalized_output_freq,
                                               indexing='ij')
         # grid sample needs the shape [H, W, 2]
-        grid = torch.stack((grid_time, grid_freq), dim=-1).unsqueeze(0)
+        grid = torch.stack((grid_freq, grid_time), dim=-1).unsqueeze(0)
         
         # reshape the spectrogram to [1, 1, H, W] for grid_sample
         spectrogram = spectrogram.unsqueeze(0).unsqueeze(0)
@@ -460,12 +478,13 @@ class ResampleSpectrogram(object):
                 grid.float(),
                 mode='bilinear',
                 padding_mode='zeros',
-                align_corners=True
+                align_corners=False
                 )
         # remove additional dimensions for shape [H, W]
+        output_spectrogram = min_max_normalize_spectrogram(output_spectrogram)
         output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
         
-        return spectrogram, input_time, input_freq, output_spectrogram, self.output_time, self.output_freq
+        return spectrogram, header, output_spectrogram, self.output_time, self.output_freq
 
 '''
 ReadLabelFromEs()
@@ -666,3 +685,13 @@ def removePhaseShiftAmbiguity(complex, index_center):
     complex = torch.complex(real_part, imag_part)
     
     return complex
+
+def min_max_normalize_spectrogram(spectrogram):
+    # calculate minimum value
+    min_val = torch.min(spectrogram)
+    # calculate maximum value
+    max_val = torch.max(spectrogram)
+    # normalize spectrogram
+    normalized_spectrogram = (spectrogram - min_val) / (max_val - min_val)
+
+    return normalized_spectrogram
