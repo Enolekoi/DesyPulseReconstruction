@@ -59,7 +59,6 @@ spec_resample = helper.ResampleSpectrogram(
     config.OUTPUT_NUM_FREQUENCIES,
     config.OUTPUT_START_FREQUENCY,
     config.OUTPUT_END_FREQUENCY,
-    type='wavelength'
     )
 spec_transform = transforms.Compose([spec_read, spec_resample])
 
@@ -153,11 +152,18 @@ logger.info(f"Starting training...")
 ########################
 # loss function
 # criterion = nn.MSELoss()
-criterion = loss.PulseRetrievalLossFunction(
-        penalty_factor=config.PENALTY_FACTOR,
-        threshold=config.PENALTY_THRESHOLD
+# criterion = loss.PulseRetrievalLossFunction(
+#         penalty_factor=config.PENALTY_FACTOR,
+#         threshold=config.PENALTY_THRESHOLD
+#         )
+criterion = loss.PulseRetrievalLossFunctionHilbertFrog(
+        pulse_threshold = 0.01,
+        real_weight = 1.0,
+        imag_weight = 1.0,
+        intensity_weight = 10.0,
+        phase_weight = 1.0,
+        frog_error_weight= 0.0
         )
-
 # optimizer used
 # optimizer = torch.optim.AdamW(model.parameters(), lr=config.LEARNING_RATE, weight_decay=1e-5)
 optimizer = torch.optim.Adam(
@@ -208,7 +214,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Forward pass
         outputs = model(spectrograms)   # [tensor]
         # loss = criterion(outputs, labels)   # [float]
-        loss = criterion(outputs, labels, spectrograms)   # [float]
+        loss = criterion(outputs, labels, spectrograms, header)   # [float]
 
         # Backward pass
         loss.backward()
@@ -261,7 +267,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             labels = labels.float().to(device)  # send label to device
 
             outputs = model(spectrograms)   # calculate prediction
-            validation_loss = criterion(outputs, labels, spectrograms)   # calcultate validation loss
+            validation_loss = criterion(outputs, labels, spectrograms, header)   # calcultate validation loss
             validation_losses.append(validation_loss.item())  # plave validation loss into list
 
         avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
@@ -304,7 +310,7 @@ with torch.no_grad():
         labels = labels.float().to(device)
 
         outputs = model(spectrograms)
-        test_loss = criterion(outputs, labels, spectrograms)
+        test_loss = criterion(outputs, labels, spectrograms, header)
         test_losses.append(test_loss.item())
 
     avg_test_loss = np.mean(test_losses)
