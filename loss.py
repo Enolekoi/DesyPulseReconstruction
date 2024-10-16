@@ -155,6 +155,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
             config.OUTPUT_START_FREQUENCY,
             config.OUTPUT_END_FREQUENCY,
             )
+        self.c0 = 299792458
 
     def forward(self, prediction, label, spectrogram, header):
         '''
@@ -212,9 +213,10 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                 # create new SHG Matrix
                 predicted_spectrogram = createSHGmat(
                         yta = prediction_analytical[i],
-                        Ts = prediction_header.delta_time[i],
-                        wCenter = prediction_header.center_freq[i]
+                        Ts = prediction_header[i][2],
+                        wCenter = 2*torch.pi * self.c0 / prediction_header[i][4]
                         )
+
                 # get FROG intensity from FROG amplitude
                 predicted_spectrogram = (torch.abs(predicted_spectrogram)**2).to(device)
                 predicted_spectrogram = helper.min_max_normalize_spectrogram(spectrogram)
