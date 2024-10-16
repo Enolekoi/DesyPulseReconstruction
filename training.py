@@ -140,6 +140,7 @@ train_data, validation_data, test_data = random_split(data, [train_size, validat
 # Data Loaders
 train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = config.BATCH_SIZE, shuffle=False)
+test_loader = DataLoader(test_data, batch_size = config.BATCH_SIZE, shuffle=False)
 logger.info("Finished loading data!")
 
 
@@ -262,7 +263,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
     with torch.no_grad():   # disable gradient computation for evaluation
-        for spectrograms, labels in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
+        for spectrograms, labels, header in validation_loader:  # iterate over all spectrograms and labels loaded by the validation loader
             spectrograms = spectrograms.float().to(device)  # send spectrogram to device
             labels = labels.float().to(device)  # send label to device
 
@@ -305,7 +306,7 @@ test_losses = []
 
 model.eval()
 with torch.no_grad():
-    for spectrograms, labels in test_loader:
+    for spectrograms, labels, header in test_loader:
         spectrograms = spectrograms.float().to(device)
         labels = labels.float().to(device)
 
