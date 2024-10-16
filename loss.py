@@ -70,7 +70,7 @@ class PulseRetrievalLossFunction(nn.Module):
             '''
             MSE Error
             '''
-            phase_mask = abs(label_intensity[i]) < 0.01
+            phase_mask = (abs(label_intensity[i]) < 0.01).to(device)
 
             # Create masks for all absolute values higher than the threshold
             mask_real_threshold = abs(label_real[i]) > self.threshold
