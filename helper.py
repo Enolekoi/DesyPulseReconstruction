@@ -232,7 +232,7 @@ class LoadDatasetReconstruction(Dataset):
 
         # place header information into tensor
         header_tensor = [
-            header.num_delay,
+            header.num_delays,
             header.num_wavelength,
             header.delta_time,
             header.delta_wavelength,
