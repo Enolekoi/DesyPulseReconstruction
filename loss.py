@@ -264,7 +264,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                 # determine the higher last significant index
                 last_significant_idx = max(last_significant_idx_real, last_significant_idx_imag)
                 # create the phase mask
-                phase_mask = torch.zeros(half_size)
+                phase_mask = torch.zeros(half_size).to(device)
                 phase_mask[first_significant_idx:last_significant_idx] = 1
 
                 # Calculate MSE for the real and imaginary part
