@@ -6,6 +6,7 @@ Script containing the training of the pulse reconstruction model
 import sys
 sys.path.append('./modules/')
 # Libraries used in this file
+import csv
 import numpy as np
 import torch
 import torch.nn as nn
@@ -144,6 +145,11 @@ train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=Tr
 validation_loader = DataLoader(validation_data, batch_size = config.BATCH_SIZE, shuffle=False)
 logger.info("Finished loading data!")
 
+if train_size % config.BATCH_SIZE  != 0:
+    NUM_STEPS = (train_size // config.BATCH_SIZE + 1) * config.NUM_EPOCHS
+else:
+    NUM_STEPS = (train_size // config.BATCH_SIZE) * config.NUM_EPOCHS
+print(f"Number of total steps: {NUM_STEPS}")
 
 '''
 Training 
@@ -188,12 +194,17 @@ optimizer = torch.optim.Adam(
 
 # scheduler for changing learning rate after each epoch
 # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
-scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 
-    mode='min', 
-    factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
-    patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
-    threshold=0.0001   # Threshold for measuring the new optimum.
+# scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    # optimizer, 
+    # mode='min', 
+    # factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
+    # patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
+    # threshold=0.0001   # Threshold for measuring the new optimum.
+    # )
+scheduler = torch.optim.lr_scheduler.OneCycleLR(
+    optimizer,
+    max_lr=1e-1,
+    total_steps=NUM_STEPS
     )
 
 # list containing all loss values
@@ -228,9 +239,16 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
         if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10e}")
+            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
         # Write loss into array
         training_losses.append(loss.item())
+        
+        scheduler.step()    # scheduler for OneCycleLR()
+        # write new learning rate in variable
+        new_lr = scheduler.get_last_lr()[0]
+        # save new learning_rate 
+        learning_rates.append(new_lr)
+
     # if (epoch < config.NUM_EPOCHS-1):
         # get new learning_rate
         # When using ExponentialLR
@@ -250,14 +268,14 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
             param.requires_grad = True
         
         # Update optimizer to include all parameters of the model
-        optimizer = optim.SGD(model.parameters(), lr=config.LEARNING_RATE)
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, 
-            mode='min', 
-            factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
-            patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
-            threshold=0.0001  # Threshold for measuring the new optimum.
-            )
+        # optimizer = optim.SGD(model.parameters(), lr=config.LEARNING_RATE)
+        # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            # optimizer, 
+            # mode='min', 
+            # factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
+            # patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
+            # threshold=0.0001  # Threshold for measuring the new optimum.
+            # )
         # When using ExponentialLR
         # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
 
@@ -276,12 +294,24 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     logger.info(f"Validation Loss: {avg_val_loss:.10e}")
     if epoch < config.NUM_EPOCHS-1:
         # When using ReduceLROnPlateau
-        scheduler.step(avg_val_loss)
+        # scheduler.step(avg_val_loss)
         # write new learning rate in variable
         new_lr = scheduler.get_last_lr()[0]
         # save new learning_rate 
         learning_rates.append(new_lr) 
         logger.info(f"New learning rate: {new_lr}")
+# save learning rate and losses to files
+# Save the list to a CSV file
+with open(config.learning_rate_filename, 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(learning_rates)  # Write rows of the list to the file
+with open(config.training_loss_filename, 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(training_losses)  # Write rows of the list to the file
+with open(config.validation_loss_filename, 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(validation_losses)  # Write rows of the list to the file
+
 
 # plot training loss
 vis.save_plot_training_loss(
