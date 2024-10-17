@@ -39,7 +39,7 @@ OUTPUT_END_FREQUENCY = (299792458 * 2 * torch.pi) / OUTPUT_END_WAVELENGTH       
 ModelPath = "./models/trained_model_7.pth"  # path of pretrained model used to initialize weights before training
 
 
-LogDirectory = "../logs/"
+LogDirectory = "./logs/"
 # LogDirectory = "./logs/"        # directory in which training logs get stored
 # ModelDirectory = "./models/"    # directory in which trained models get stored
 ModelFilename = "model.pth"
