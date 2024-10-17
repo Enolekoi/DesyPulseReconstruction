@@ -210,16 +210,7 @@ class LoadDatasetReconstruction(Dataset):
         if not isinstance(label, torch.Tensor):
             label = torch.tensor(label)
 
-        # place header information into tensor
-        header_tensor = [
-            header.num_delays,
-            header.num_wavelength,
-            header.delta_time,
-            header.delta_wavelength,
-            header.center_wavelength
-                ]
-
-        return output_spec, label, header_tensor
+        return output_spec, label, header
 
 '''
 LoadDatasetTBDrms()
@@ -363,7 +354,6 @@ class ResampleSpectrogram(object):
             start_frequency_out     -> Lowest frequency value of the resampled spectrogram [nm] [int]
             end_frequency_out       -> Highest frequency value of the resampled spectrogram [nm] [int]
         '''
-        self.c0 = 299792458
         self.output_number_rows = num_delays_out
         output_time_step = timestep_out
         self.output_number_cols = num_frequencies_out
@@ -396,12 +386,26 @@ class ResampleSpectrogram(object):
         device = spectrogram.device
         # ensure all tensors are of the same type (float32)
         spectrogram = spectrogram.float()
-        input_time = header.time_axis.float().to(device)
-        input_freq = header.freq_axis.float().to(device)
+
+        num_delays =        header[0]   # number of delay samples
+        time_step =         header[2]   # time step per delay [s]
         
+        # create time axis
+        # get half the size of the axis
+        half_num = num_delays // 2
+        # create the negative and the positive half of the axis
+        time_positive = torch.linspace(0, half_num * time_step, steps = half_num + 1)
+        time_negative = -time_positive[1:]
+        # create the axis
+        input_time = torch.cat((time_negative, time_positive))
+        
+        input_freq = frequency_axis_from_header(header)
+        min_freq = input_freq.min()
+        max_freq = input_freq.max()
+                
         # get minimum and maximum values of the input_time and input_freq tensors
         input_time_min, input_time_max = input_time.min(), input_time.max()
-        input_freq_min, input_freq_max = input_freq.min(), input_freq.max()
+        input_freq_min, input_freq_max = min_freq, max_freq
 
         # normalize the output time and frequencies to [-1,1]
         normalized_output_time = 2 * (self.output_time - input_time_min) / (input_time_max - input_time_min) - 1 
@@ -639,3 +643,40 @@ def min_max_normalize_spectrogram(spectrogram):
     normalized_spectrogram = (spectrogram - min_val) / (max_val - min_val)
 
     return normalized_spectrogram
+
+def frequency_axis_from_header(header):
+    # constants
+    c0 = 299792458
+    c2pi = c0 * 2 * torch.pi
+
+    # get header information
+    num_delays =        header[0]   # number of delay samples
+    num_wavelength =    header[1]   # number of wavelength samples
+    time_step =         header[2]   # time step per delay [s]
+    wavelength_step =   header[3]   # wavelength step per sample [m]
+    center_wavelength = header[4]   # center wavelength [m]
+    
+    # number of frequency samples are equal to number of wavelength samples
+    num_frequency = num_wavelength
+    half_num = num_frequency // 2
+
+    # Create the wavelength axis
+    wavelengths_positive = torch.linspace(
+            center_wavelength,
+            center_wavelength + half_num * wavelength_step,
+            steps=half_num + 1
+            )
+    wavelengths_negative = torch.linspace(
+            center_wavelength - half_num * wavelength_step,
+            center_wavelength,
+            steps=half_num
+            )
+    wavelength_axis = torch.cat((wavelengths_negative, wavelengths_positive[1:]))  # Avoid duplicate center
+
+    frequency_axis = c2pi / wavelength_axis
+    min_freq = frequency_axis.min()
+    max_freq = frequency_axis.max()
+    equidistant_frequency_axis = torch.linspace(min_freq, max_freq, steps=num_wavelength)
+
+    return equidistant_frequency_axis
+    

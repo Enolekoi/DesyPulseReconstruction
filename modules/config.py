@@ -10,7 +10,7 @@ import torch
 
 # Training Options
 
-NUM_EPOCHS = 20     # Number of epochs to train the model
+NUM_EPOCHS = 2     # Number of epochs to train the model
 DESCRIPTOR = f"Testing training using hilbert transform for imaginary part - with {NUM_EPOCHS} Epochs"
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
@@ -47,8 +47,9 @@ ModelFilename = "model.pth"
 LogFilename = "training.log"
 # PlotDirectory = "./plots/"        # directory in which training logs get stored
 LossPlotFilename = "loss.png"
-LossFilename = "loss.txt"
-LearningRateFilename = "learning_rate.txt"
+TrainingLossFilename = "training_loss.csv"
+ValidationLossFilename = "validation_loss.csv"
+LearningRateFilename = "learning_rate.csv"
 RandomPredictionFilename = "random_prediction.png"
 
 ModelName = "trained_model_"    # base name of trained models
@@ -205,7 +206,8 @@ def getFilepathIndex(model_directory, log_directory, plot_directory, model_base_
 list_filenames = [
         ModelFilename, 
         LogFilename, 
-        LossFilename, 
+        TrainingLossFilename, 
+        ValidationLossFilename,
         LossPlotFilename, 
         RandomPredictionFilename, 
         LearningRateFilename
@@ -217,7 +219,8 @@ list_filepaths = getFilepaths(root_directory=LogDirectory, list_files=list_filen
 # unpack the filepath list
 model_filepath,             \
 log_filepath,               \
-loss_filepath,              \
+training_loss_filepath,     \
+validation_loss_filepath,   \
 loss_plot_filepath,         \
 random_prediction_filepath, \
 learning_rate_filepath,     \
