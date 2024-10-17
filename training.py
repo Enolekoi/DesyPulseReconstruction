@@ -140,7 +140,6 @@ train_data, validation_data, test_data = random_split(data, [train_size, validat
 # Data Loaders
 train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)
 validation_loader = DataLoader(validation_data, batch_size = config.BATCH_SIZE, shuffle=False)
-test_loader = DataLoader(test_data, batch_size = config.BATCH_SIZE, shuffle=False)
 logger.info("Finished loading data!")
 
 
@@ -320,7 +319,7 @@ with torch.no_grad():
     if len(test_data) > 0:
         # get a random sample
         test_sample = random.choice(test_data)
-        spectrogram, label = test_sample
+        spectrogram, label, header = test_sample
         # adding an extra dimension to spectrogram and label to simulate a batch size of 1
         spectrogram = spectrogram.unsqueeze(0)
         label = label.unsqueeze(0)
@@ -331,7 +330,7 @@ with torch.no_grad():
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
         # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
-        vis.compareTimeDomainComplex(config.prediction_filepath, label, prediction)
+        vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
 logger.info("Test Step finished!")
 
