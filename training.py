@@ -203,7 +203,7 @@ optimizer = torch.optim.Adam(
     # )
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
-    max_lr=1e-1,
+    max_lr=1e-2,
     total_steps=NUM_STEPS
     )
 
