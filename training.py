@@ -3,6 +3,8 @@ training.py Script
 
 Script containing the training of the pulse reconstruction model
 '''
+import sys
+sys.path.append('./modules/')
 # Libraries used in this file
 import numpy as np
 import torch

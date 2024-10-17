@@ -1,3 +1,6 @@
+import sys
+sys.path.append('./modules/')
+
 import config
 import helper
 import visualize as vis
