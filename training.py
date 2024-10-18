@@ -145,11 +145,13 @@ train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=Tr
 validation_loader = DataLoader(validation_data, batch_size = config.BATCH_SIZE, shuffle=False)
 logger.info("Finished loading data!")
 
+# get the number of steps per epoch
 if train_size % config.BATCH_SIZE  != 0:
-    NUM_STEPS = (train_size // config.BATCH_SIZE + 1) * config.NUM_EPOCHS
+    NUM_STEPS_PER_EPOCH = (train_size // config.BATCH_SIZE + 1)
 else:
-    NUM_STEPS = (train_size // config.BATCH_SIZE) * config.NUM_EPOCHS
-print(f"Number of total steps: {NUM_STEPS}")
+    NUM_STEPS_PER_EPOCH = (train_size // config.BATCH_SIZE)
+# get the number of total steps 
+NUM_STEPS = NUM_STEPS_PER_EPOCH * config.NUM_EPOCHS
 
 '''
 Training 
@@ -238,7 +240,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
         # if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-        logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {NUM_STEPS}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
+        logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {NUM_STEPS_PER_EPOCH}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
         # Write loss into array
         training_losses.append(loss.item())
         
@@ -361,7 +363,7 @@ with torch.no_grad():
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
         prediction_analytical = loss_module.hilbert(prediction.squeeze())
-        prediction = torch.cat(prediction_analytical.real, prediction_analytical.imag)
+        prediction = torch.cat((prediction.real, prediction_analytical.imag))
         # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
