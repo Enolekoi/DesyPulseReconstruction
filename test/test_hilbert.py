@@ -4,7 +4,7 @@ test.py Script
 Script used for testing
 '''
 import sys
-sys.path.append('../modules/')
+sys.path.append('./modules/')
 import loss
 import config
 import helper
