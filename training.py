@@ -23,7 +23,7 @@ import logging
 from sklearn.model_selection import KFold
 # Classes, methods and functions from different files
 import helper
-import loss
+import loss as loss_module
 import visualize as vis
 import config
 
@@ -164,7 +164,7 @@ logger.info(f"Starting training...")
 #         penalty_factor=config.PENALTY_FACTOR,
 #         threshold=config.PENALTY_THRESHOLD
 #         )
-criterion = loss.PulseRetrievalLossFunctionHilbertFrog(
+criterion = loss_module.PulseRetrievalLossFunctionHilbertFrog(
         pulse_threshold = 0.01,
         real_weight = 1.0,
         imag_weight = 1.0,
@@ -230,7 +230,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         loss = criterion(outputs, labels, spectrograms, header)   # [float]
 
         # Backward pass
-        loss.backward()
+        criterion.backward()
 	# Gradient clipping torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         optimizer.zero_grad()
