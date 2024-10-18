@@ -360,9 +360,8 @@ with torch.no_grad():
         # send label and prediction to cpu, so that it can be plotted
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
-        print(prediction.squeeze().size(0))
-        prediction = loss_module.hilbert(prediction.squeeze())
-        print(prediction.squeeze().size(0))
+        prediction_analytical = loss_module.hilbert(prediction.squeeze())
+        prediction = torch.cat(prediction_analytical.real, prediction_analytical.imag)
         # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
