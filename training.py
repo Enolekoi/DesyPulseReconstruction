@@ -216,7 +216,9 @@ learning_rates = []
 
 # save initial learning_rate
 # learning_rates.append(config.LEARNING_RATE)
-
+'''
+Training Loop
+'''
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     model.train()       
     for i, (spectrograms, labels, header) in enumerate(train_loader): # iterate over spectrograms and labels of train_loader
@@ -233,13 +235,12 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
 
         # Backward pass
         loss.backward()
-	# Gradient clipping torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+	    # Gradient clipping 
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         optimizer.zero_grad()
 
-        # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
-        # if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
-            # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
+        # log information for current batch
         logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {NUM_STEPS_PER_EPOCH}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
         # Write loss into array
         training_losses.append(loss.item())
@@ -280,6 +281,9 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # When using ExponentialLR
         # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
 
+    '''
+    Validation loop
+    '''
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
     with torch.no_grad():   # disable gradient computation for evaluation
@@ -329,9 +333,9 @@ logger.info("Training finished!")
 torch.save(model.state_dict(), config.model_filepath)
 logger.info("Saved Model")
 
-# '''
-# Testing
-# '''
+'''
+Testing Loop
+'''
 logger.info("Starting Test Step...")
 test_loader = DataLoader(test_data, batch_size=config.BATCH_SIZE, shuffle=False)
 test_losses = []

@@ -10,7 +10,7 @@ import torch
 
 # Training Options
 
-NUM_EPOCHS = 1     # Number of epochs to train the model
+NUM_EPOCHS = 20     # Number of epochs to train the model
 DESCRIPTOR = f"Testing training using hilbert transform for imaginary part - with {NUM_EPOCHS} Epochs"
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
@@ -18,9 +18,8 @@ UNFREEZE_EPOCH = 70 # Epoch after which the whole model is trained (before that 
 LEARNING_RATE = 1e-7    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch
-TRAINING_LOG_STEP_SIZE = BATCH_SIZE
-TBDRMS_THRESHOLD = 0.27  # Only data with a TBDrms higher than this threshold is used for training
-# TBDRMS_THRESHOLD = 1.5  # Only data with a TBDrms higher than this threshold is used for training
+# TBDRMS_THRESHOLD = 0.27  # Only data with a TBDrms higher than this threshold is used for training
+TBDRMS_THRESHOLD = 1.5  # Only data with a TBDrms higher than this threshold is used for training
 
 PENALTY_FACTOR = 1
 PENALTY_THRESHOLD = 1
