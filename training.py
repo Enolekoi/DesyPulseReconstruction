@@ -296,10 +296,10 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         # When using ReduceLROnPlateau
         # scheduler.step(avg_val_loss)
         # write new learning rate in variable
-        new_lr = scheduler.get_last_lr()[0]
+        # new_lr = scheduler.get_last_lr()[0]
         # save new learning_rate 
-        learning_rates.append(new_lr) 
-        logger.info(f"New learning rate: {new_lr}")
+        # learning_rates.append(new_lr) 
+        # logger.info(f"New learning rate: {new_lr}")
 # save learning rate and losses to files
 # Save the list to a CSV file
 with open(config.learning_rate_filepath, 'w', newline='') as file:
