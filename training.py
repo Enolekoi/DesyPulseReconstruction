@@ -302,15 +302,15 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         logger.info(f"New learning rate: {new_lr}")
 # save learning rate and losses to files
 # Save the list to a CSV file
-with open(config.learning_rate_filepath, 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerows(learning_rates)  # Write rows of the list to the file
-with open(config.training_loss_filepath, 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerows(training_losses)  # Write rows of the list to the file
-with open(config.validation_loss_filepath, 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerows(validation_losses)  # Write rows of the list to the file
+with open(config.learning_rate_filepath, 'w', newline='') as file:
+    for item in learning_rates:
+        file.write(f"{item}\n")
+with open(config.training_loss_filepath, 'w', newline='') as file:
+    for item in training_losses:
+        file.write(f"{item}\n")
+with open(config.validation_loss_filepath, 'w', newline='') as file:
+    for item in validation_losses:
+        file.write(f"{item}\n")
 
 
 # plot training loss

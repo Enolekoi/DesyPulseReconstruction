@@ -95,7 +95,7 @@ frog_error = loss.calcFrogError(original_spectrogram, spec)
 print(max(sim_output_time.numpy() - spec_output_time.numpy()))
 print(max(sim_output_freq.numpy() - spec_output_freq.numpy()))
 # Plot
-fig, axs = plt.subplots(3, figsize=(10,16))
+fig, axs = plt.subplots(3, figsize=(10,14))
 # Simuliertes Spektrogram (original)
 ax = axs[0]
 cax0 = ax.pcolormesh(sim_output_time.numpy(), sim_output_freq.numpy(), original_spectrogram.numpy().T, shading='auto')
@@ -124,5 +124,5 @@ fig.colorbar(cax2, ax=ax)
 
 # Zeige die Plots an
 plt.savefig("comparison_spectrograms.png")
-plt.close()
-# plt.show()
+plt.show()
+# plt.close()
