@@ -213,7 +213,7 @@ validation_losses = []
 learning_rates = []
 
 # save initial learning_rate
-learning_rates.append(config.LEARNING_RATE)
+# learning_rates.append(config.LEARNING_RATE)
 
 for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
     model.train()       
