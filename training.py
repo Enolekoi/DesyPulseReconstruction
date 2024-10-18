@@ -363,7 +363,7 @@ with torch.no_grad():
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
         prediction_analytical = loss_module.hilbert(prediction.squeeze())
-        prediction = torch.cat((prediction.real, prediction_analytical.imag))
+        prediction = torch.cat((prediction_analytical.real, prediction_analytical.imag))
         # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
