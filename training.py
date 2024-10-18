@@ -237,9 +237,9 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
         optimizer.zero_grad()
 
         # Print information (every config.TRAINING_LOG_STEP_SIZE steps)
-        if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
+        # if (i+1) % config.TRAINING_LOG_STEP_SIZE == 0:
             # print(f'Epoch {epoch+1} / {NUM_EPOCHS}, Step {i+1} / {num_total_steps}, Loss = {loss.item():.10f}')
-            logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
+        logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {int(train_size/config.BATCH_SIZE)}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
         # Write loss into array
         training_losses.append(loss.item())
         
