@@ -69,7 +69,6 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
             learning_rates, 
             label='Learning Rate', 
             color='green', 
-            marker='o'
             )
     # ax1_learning_rate.set_ylabel('Learning Rate')
 
@@ -114,9 +113,9 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
             learning_rates, 
             label='Learning Rate', 
             color='green', 
-            marker='o'
             )
-    ax2_learning_rate.set_ylabel('Learning Rate')
+
+    # ax2_learning_rate.set_ylabel('Learning Rate')
 
     # Combine legends from both axes
     lines_1, labels_1 = ax2.get_legend_handles_labels()
