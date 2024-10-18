@@ -45,8 +45,12 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
             ax1.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
     
     # Epoch ticks
-    epoch_ticks = np.arange(steps_per_epoch, num_steps + 1, steps_per_epoch)
-    epoch_labels = [f'Epoch {i+1}' for i in range(num_epochs)]
+    if num_epochs <= 10:
+        epoch_ticks = range(1, num_epochs + 1)
+    else:
+        epoch_ticks = np.linspace(1, num_epochs, num=min(10, num_epochs), dtype=int)
+
+    epoch_labels = [f'Epoch {tick}' for tick in epoch_ticks]
     ax1.set_xticks(epoch_ticks)
     ax1.set_xticklabels(epoch_labels, rotation=45)
     
