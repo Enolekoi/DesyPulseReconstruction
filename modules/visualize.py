@@ -307,7 +307,6 @@ def compareTimeDomainComplex(filepath, label, prediction):
         prediction = prediction.numpy()
     label = np.squeeze(label)
     prediction = np.squeeze(prediction)
-    prediction = loss.hilbert(prediction)
     
     length_label = len(label)
     if not (length_label == len(prediction)):
