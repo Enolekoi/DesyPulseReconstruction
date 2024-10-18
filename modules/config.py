@@ -19,7 +19,7 @@ LEARNING_RATE = 1e-7    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch
 TRAINING_LOG_STEP_SIZE = BATCH_SIZE
-TBDRMS_THRESHOLD = 0.25  # Only data with a TBDrms higher than this threshold is used for training
+TBDRMS_THRESHOLD = 0.27  # Only data with a TBDrms higher than this threshold is used for training
 # TBDRMS_THRESHOLD = 1.5  # Only data with a TBDrms higher than this threshold is used for training
 
 PENALTY_FACTOR = 1
