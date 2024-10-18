@@ -1,0 +1,192 @@
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Testing training using hilbert transform for imaginary part - with 1 Epochs
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Writing into log file: ./logs/training_011/training.log
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v3/
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Spectrograms used: as_gn00.dat
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Size of output tensor: 512 elements
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Batch size: 10 elements
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Number of epochs: 1
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Initial learning rate: 1e-07
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 0.3 are used!
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Loading Model...
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Freezing early layers!
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Loading Model finished!
+18-10-2024 09:48:54 - __main__ - <module> - INFO: Loading Data...
+18-10-2024 09:48:55 - __main__ - <module> - INFO: Size of dataset: 2029
+18-10-2024 09:48:55 - __main__ - <module> - INFO: Size of training data:   1625
+18-10-2024 09:48:55 - __main__ - <module> - INFO: Size of validation data: 202
+18-10-2024 09:48:55 - __main__ - <module> - INFO: Size of test data:       202
+18-10-2024 09:48:55 - __main__ - <module> - INFO: Finished loading data!
+18-10-2024 09:48:55 - __main__ - <module> - INFO: Starting training...
+18-10-2024 09:48:56 - __main__ - <module> - INFO: Epoch 1 / 1, Step 1 / 162, Loss = 1.2995914221e+00, LR = 2.0000e-03
+18-10-2024 09:48:56 - __main__ - <module> - INFO: Epoch 1 / 1, Step 2 / 162, Loss = 2.5043010712e+00, LR = 2.0516e-03
+18-10-2024 09:48:57 - __main__ - <module> - INFO: Epoch 1 / 1, Step 3 / 162, Loss = 1.2954192162e+00, LR = 2.2062e-03
+18-10-2024 09:48:57 - __main__ - <module> - INFO: Epoch 1 / 1, Step 4 / 162, Loss = 8.8269865513e-01, LR = 2.4631e-03
+18-10-2024 09:48:58 - __main__ - <module> - INFO: Epoch 1 / 1, Step 5 / 162, Loss = 8.8263827562e-01, LR = 2.8212e-03
+18-10-2024 09:48:59 - __main__ - <module> - INFO: Epoch 1 / 1, Step 6 / 162, Loss = 8.1497716904e-01, LR = 3.2790e-03
+18-10-2024 09:48:59 - __main__ - <module> - INFO: Epoch 1 / 1, Step 7 / 162, Loss = 6.8328088522e-01, LR = 3.8344e-03
+18-10-2024 09:49:00 - __main__ - <module> - INFO: Epoch 1 / 1, Step 8 / 162, Loss = 6.8611842394e-01, LR = 4.4852e-03
+18-10-2024 09:49:00 - __main__ - <module> - INFO: Epoch 1 / 1, Step 9 / 162, Loss = 6.5702146292e-01, LR = 5.2285e-03
+18-10-2024 09:49:01 - __main__ - <module> - INFO: Epoch 1 / 1, Step 10 / 162, Loss = 6.2580531836e-01, LR = 6.0611e-03
+18-10-2024 09:49:01 - __main__ - <module> - INFO: Epoch 1 / 1, Step 11 / 162, Loss = 5.7900351286e-01, LR = 6.9795e-03
+18-10-2024 09:49:02 - __main__ - <module> - INFO: Epoch 1 / 1, Step 12 / 162, Loss = 6.8249005079e-01, LR = 7.9796e-03
+18-10-2024 09:49:03 - __main__ - <module> - INFO: Epoch 1 / 1, Step 13 / 162, Loss = 5.6678479910e-01, LR = 9.0573e-03
+18-10-2024 09:49:03 - __main__ - <module> - INFO: Epoch 1 / 1, Step 14 / 162, Loss = 6.4290487766e-01, LR = 1.0208e-02
+18-10-2024 09:49:04 - __main__ - <module> - INFO: Epoch 1 / 1, Step 15 / 162, Loss = 5.5170124769e-01, LR = 1.1426e-02
+18-10-2024 09:49:04 - __main__ - <module> - INFO: Epoch 1 / 1, Step 16 / 162, Loss = 7.2930330038e-01, LR = 1.2707e-02
+18-10-2024 09:49:05 - __main__ - <module> - INFO: Epoch 1 / 1, Step 17 / 162, Loss = 6.7684924603e-01, LR = 1.4045e-02
+18-10-2024 09:49:06 - __main__ - <module> - INFO: Epoch 1 / 1, Step 18 / 162, Loss = 7.8906196356e-01, LR = 1.5435e-02
+18-10-2024 09:49:06 - __main__ - <module> - INFO: Epoch 1 / 1, Step 19 / 162, Loss = 7.4240410328e-01, LR = 1.6870e-02
+18-10-2024 09:49:07 - __main__ - <module> - INFO: Epoch 1 / 1, Step 20 / 162, Loss = 6.6090828180e-01, LR = 1.8344e-02
+18-10-2024 09:49:07 - __main__ - <module> - INFO: Epoch 1 / 1, Step 21 / 162, Loss = 9.1382372379e-01, LR = 1.9852e-02
+18-10-2024 09:49:08 - __main__ - <module> - INFO: Epoch 1 / 1, Step 22 / 162, Loss = 6.4088577032e-01, LR = 2.1385e-02
+18-10-2024 09:49:09 - __main__ - <module> - INFO: Epoch 1 / 1, Step 23 / 162, Loss = 5.2920323610e-01, LR = 2.2939e-02
+18-10-2024 09:49:09 - __main__ - <module> - INFO: Epoch 1 / 1, Step 24 / 162, Loss = 5.4549962282e-01, LR = 2.4506e-02
+18-10-2024 09:49:10 - __main__ - <module> - INFO: Epoch 1 / 1, Step 25 / 162, Loss = 6.3606733084e-01, LR = 2.6079e-02
+18-10-2024 09:49:10 - __main__ - <module> - INFO: Epoch 1 / 1, Step 26 / 162, Loss = 5.2091360092e-01, LR = 2.7651e-02
+18-10-2024 09:49:11 - __main__ - <module> - INFO: Epoch 1 / 1, Step 27 / 162, Loss = 5.7156318426e-01, LR = 2.9217e-02
+18-10-2024 09:49:12 - __main__ - <module> - INFO: Epoch 1 / 1, Step 28 / 162, Loss = 6.1580717564e-01, LR = 3.0769e-02
+18-10-2024 09:49:12 - __main__ - <module> - INFO: Epoch 1 / 1, Step 29 / 162, Loss = 5.0584715605e-01, LR = 3.2300e-02
+18-10-2024 09:49:13 - __main__ - <module> - INFO: Epoch 1 / 1, Step 30 / 162, Loss = 7.0110607147e-01, LR = 3.3805e-02
+18-10-2024 09:49:13 - __main__ - <module> - INFO: Epoch 1 / 1, Step 31 / 162, Loss = 5.8675515652e-01, LR = 3.5275e-02
+18-10-2024 09:49:14 - __main__ - <module> - INFO: Epoch 1 / 1, Step 32 / 162, Loss = 6.2663447857e-01, LR = 3.6706e-02
+18-10-2024 09:49:14 - __main__ - <module> - INFO: Epoch 1 / 1, Step 33 / 162, Loss = 5.1719635725e-01, LR = 3.8091e-02
+18-10-2024 09:49:15 - __main__ - <module> - INFO: Epoch 1 / 1, Step 34 / 162, Loss = 6.0386246443e-01, LR = 3.9424e-02
+18-10-2024 09:49:16 - __main__ - <module> - INFO: Epoch 1 / 1, Step 35 / 162, Loss = 5.1892012358e-01, LR = 4.0699e-02
+18-10-2024 09:49:16 - __main__ - <module> - INFO: Epoch 1 / 1, Step 36 / 162, Loss = 5.0142878294e-01, LR = 4.1910e-02
+18-10-2024 09:49:17 - __main__ - <module> - INFO: Epoch 1 / 1, Step 37 / 162, Loss = 5.2910572290e-01, LR = 4.3054e-02
+18-10-2024 09:49:17 - __main__ - <module> - INFO: Epoch 1 / 1, Step 38 / 162, Loss = 1.4291046858e+00, LR = 4.4124e-02
+18-10-2024 09:49:18 - __main__ - <module> - INFO: Epoch 1 / 1, Step 39 / 162, Loss = 4.5240148902e-01, LR = 4.5116e-02
+18-10-2024 09:49:19 - __main__ - <module> - INFO: Epoch 1 / 1, Step 40 / 162, Loss = 5.7114809752e-01, LR = 4.6026e-02
+18-10-2024 09:49:19 - __main__ - <module> - INFO: Epoch 1 / 1, Step 41 / 162, Loss = 7.2040114403e+00, LR = 4.6850e-02
+18-10-2024 09:49:20 - __main__ - <module> - INFO: Epoch 1 / 1, Step 42 / 162, Loss = 1.5561023951e+00, LR = 4.7584e-02
+18-10-2024 09:49:20 - __main__ - <module> - INFO: Epoch 1 / 1, Step 43 / 162, Loss = 4.8666736484e-01, LR = 4.8225e-02
+18-10-2024 09:49:21 - __main__ - <module> - INFO: Epoch 1 / 1, Step 44 / 162, Loss = 1.9355798960e+00, LR = 4.8771e-02
+18-10-2024 09:49:22 - __main__ - <module> - INFO: Epoch 1 / 1, Step 45 / 162, Loss = 9.9703016281e+00, LR = 4.9219e-02
+18-10-2024 09:49:22 - __main__ - <module> - INFO: Epoch 1 / 1, Step 46 / 162, Loss = 3.5852794647e+00, LR = 4.9567e-02
+18-10-2024 09:49:23 - __main__ - <module> - INFO: Epoch 1 / 1, Step 47 / 162, Loss = 3.5398850441e+00, LR = 4.9814e-02
+18-10-2024 09:49:23 - __main__ - <module> - INFO: Epoch 1 / 1, Step 48 / 162, Loss = 4.1662594676e-01, LR = 4.9958e-02
+18-10-2024 09:49:24 - __main__ - <module> - INFO: Epoch 1 / 1, Step 49 / 162, Loss = 2.5546336174e+00, LR = 5.0000e-02
+18-10-2024 09:49:25 - __main__ - <module> - INFO: Epoch 1 / 1, Step 50 / 162, Loss = 4.2693963051e+00, LR = 4.9989e-02
+18-10-2024 09:49:25 - __main__ - <module> - INFO: Epoch 1 / 1, Step 51 / 162, Loss = 4.9913755059e-01, LR = 4.9958e-02
+18-10-2024 09:49:26 - __main__ - <module> - INFO: Epoch 1 / 1, Step 52 / 162, Loss = 4.2721486092e-01, LR = 4.9909e-02
+18-10-2024 09:49:26 - __main__ - <module> - INFO: Epoch 1 / 1, Step 53 / 162, Loss = 4.0810948610e-01, LR = 4.9841e-02
+18-10-2024 09:49:27 - __main__ - <module> - INFO: Epoch 1 / 1, Step 54 / 162, Loss = 1.9686826468e+00, LR = 4.9754e-02
+18-10-2024 09:49:27 - __main__ - <module> - INFO: Epoch 1 / 1, Step 55 / 162, Loss = 5.5782613754e+00, LR = 4.9648e-02
+18-10-2024 09:49:28 - __main__ - <module> - INFO: Epoch 1 / 1, Step 56 / 162, Loss = 5.0945029259e+00, LR = 4.9524e-02
+18-10-2024 09:49:29 - __main__ - <module> - INFO: Epoch 1 / 1, Step 57 / 162, Loss = 4.6255466342e-01, LR = 4.9381e-02
+18-10-2024 09:49:29 - __main__ - <module> - INFO: Epoch 1 / 1, Step 58 / 162, Loss = 2.5524213314e+00, LR = 4.9219e-02
+18-10-2024 09:49:30 - __main__ - <module> - INFO: Epoch 1 / 1, Step 59 / 162, Loss = 4.9428720474e+00, LR = 4.9040e-02
+18-10-2024 09:49:30 - __main__ - <module> - INFO: Epoch 1 / 1, Step 60 / 162, Loss = 4.7303691506e-01, LR = 4.8841e-02
+18-10-2024 09:49:31 - __main__ - <module> - INFO: Epoch 1 / 1, Step 61 / 162, Loss = 4.7757196426e-01, LR = 4.8625e-02
+18-10-2024 09:49:32 - __main__ - <module> - INFO: Epoch 1 / 1, Step 62 / 162, Loss = 8.9490146637e+00, LR = 4.8391e-02
+18-10-2024 09:49:32 - __main__ - <module> - INFO: Epoch 1 / 1, Step 63 / 162, Loss = 5.2046241760e+00, LR = 4.8140e-02
+18-10-2024 09:49:33 - __main__ - <module> - INFO: Epoch 1 / 1, Step 64 / 162, Loss = 4.1769695282e-01, LR = 4.7870e-02
+18-10-2024 09:49:33 - __main__ - <module> - INFO: Epoch 1 / 1, Step 65 / 162, Loss = 3.9603877068e-01, LR = 4.7584e-02
+18-10-2024 09:49:34 - __main__ - <module> - INFO: Epoch 1 / 1, Step 66 / 162, Loss = 3.6223742366e-01, LR = 4.7280e-02
+18-10-2024 09:49:35 - __main__ - <module> - INFO: Epoch 1 / 1, Step 67 / 162, Loss = 3.7328037620e-01, LR = 4.6959e-02
+18-10-2024 09:49:35 - __main__ - <module> - INFO: Epoch 1 / 1, Step 68 / 162, Loss = 7.1398067474e-01, LR = 4.6622e-02
+18-10-2024 09:49:36 - __main__ - <module> - INFO: Epoch 1 / 1, Step 69 / 162, Loss = 4.5932728052e-01, LR = 4.6268e-02
+18-10-2024 09:49:36 - __main__ - <module> - INFO: Epoch 1 / 1, Step 70 / 162, Loss = 4.3619447947e-01, LR = 4.5898e-02
+18-10-2024 09:49:37 - __main__ - <module> - INFO: Epoch 1 / 1, Step 71 / 162, Loss = 4.9899083376e-01, LR = 4.5513e-02
+18-10-2024 09:49:38 - __main__ - <module> - INFO: Epoch 1 / 1, Step 72 / 162, Loss = 4.8568198085e-01, LR = 4.5112e-02
+18-10-2024 09:49:38 - __main__ - <module> - INFO: Epoch 1 / 1, Step 73 / 162, Loss = 4.7369962931e-01, LR = 4.4695e-02
+18-10-2024 09:49:39 - __main__ - <module> - INFO: Epoch 1 / 1, Step 74 / 162, Loss = 8.1535702944e-01, LR = 4.4264e-02
+18-10-2024 09:49:39 - __main__ - <module> - INFO: Epoch 1 / 1, Step 75 / 162, Loss = 3.5274457932e-01, LR = 4.3818e-02
+18-10-2024 09:49:40 - __main__ - <module> - INFO: Epoch 1 / 1, Step 76 / 162, Loss = 2.0703663826e+00, LR = 4.3358e-02
+18-10-2024 09:49:40 - __main__ - <module> - INFO: Epoch 1 / 1, Step 77 / 162, Loss = 4.5581027865e-01, LR = 4.2883e-02
+18-10-2024 09:49:41 - __main__ - <module> - INFO: Epoch 1 / 1, Step 78 / 162, Loss = 4.0542578697e-01, LR = 4.2396e-02
+18-10-2024 09:49:42 - __main__ - <module> - INFO: Epoch 1 / 1, Step 79 / 162, Loss = 1.1188369989e+00, LR = 4.1895e-02
+18-10-2024 09:49:42 - __main__ - <module> - INFO: Epoch 1 / 1, Step 80 / 162, Loss = 4.0612527728e-01, LR = 4.1381e-02
+18-10-2024 09:49:43 - __main__ - <module> - INFO: Epoch 1 / 1, Step 81 / 162, Loss = 4.5848956704e-01, LR = 4.0855e-02
+18-10-2024 09:49:43 - __main__ - <module> - INFO: Epoch 1 / 1, Step 82 / 162, Loss = 4.2194041610e-01, LR = 4.0317e-02
+18-10-2024 09:49:44 - __main__ - <module> - INFO: Epoch 1 / 1, Step 83 / 162, Loss = 6.3645881414e-01, LR = 3.9767e-02
+18-10-2024 09:49:45 - __main__ - <module> - INFO: Epoch 1 / 1, Step 84 / 162, Loss = 4.5672804117e-01, LR = 3.9206e-02
+18-10-2024 09:49:45 - __main__ - <module> - INFO: Epoch 1 / 1, Step 85 / 162, Loss = 4.2439675331e-01, LR = 3.8634e-02
+18-10-2024 09:49:46 - __main__ - <module> - INFO: Epoch 1 / 1, Step 86 / 162, Loss = 4.3707522750e-01, LR = 3.8052e-02
+18-10-2024 09:49:46 - __main__ - <module> - INFO: Epoch 1 / 1, Step 87 / 162, Loss = 5.3264993429e-01, LR = 3.7460e-02
+18-10-2024 09:49:47 - __main__ - <module> - INFO: Epoch 1 / 1, Step 88 / 162, Loss = 4.3409943581e-01, LR = 3.6859e-02
+18-10-2024 09:49:48 - __main__ - <module> - INFO: Epoch 1 / 1, Step 89 / 162, Loss = 1.3583186865e+00, LR = 3.6249e-02
+18-10-2024 09:49:48 - __main__ - <module> - INFO: Epoch 1 / 1, Step 90 / 162, Loss = 4.3486919999e-01, LR = 3.5630e-02
+18-10-2024 09:49:49 - __main__ - <module> - INFO: Epoch 1 / 1, Step 91 / 162, Loss = 4.5572182536e-01, LR = 3.5003e-02
+18-10-2024 09:49:49 - __main__ - <module> - INFO: Epoch 1 / 1, Step 92 / 162, Loss = 4.3505236506e-01, LR = 3.4368e-02
+18-10-2024 09:49:50 - __main__ - <module> - INFO: Epoch 1 / 1, Step 93 / 162, Loss = 3.9283281565e-01, LR = 3.3726e-02
+18-10-2024 09:49:51 - __main__ - <module> - INFO: Epoch 1 / 1, Step 94 / 162, Loss = 4.3833151460e-01, LR = 3.3078e-02
+18-10-2024 09:49:51 - __main__ - <module> - INFO: Epoch 1 / 1, Step 95 / 162, Loss = 4.9814063311e-01, LR = 3.2424e-02
+18-10-2024 09:49:52 - __main__ - <module> - INFO: Epoch 1 / 1, Step 96 / 162, Loss = 3.3076444268e-01, LR = 3.1764e-02
+18-10-2024 09:49:52 - __main__ - <module> - INFO: Epoch 1 / 1, Step 97 / 162, Loss = 4.4802746177e-01, LR = 3.1099e-02
+18-10-2024 09:49:53 - __main__ - <module> - INFO: Epoch 1 / 1, Step 98 / 162, Loss = 4.1411334276e-01, LR = 3.0429e-02
+18-10-2024 09:49:54 - __main__ - <module> - INFO: Epoch 1 / 1, Step 99 / 162, Loss = 4.0629038215e-01, LR = 2.9755e-02
+18-10-2024 09:49:54 - __main__ - <module> - INFO: Epoch 1 / 1, Step 100 / 162, Loss = 3.6527934670e-01, LR = 2.9077e-02
+18-10-2024 09:49:55 - __main__ - <module> - INFO: Epoch 1 / 1, Step 101 / 162, Loss = 3.7556838989e-01, LR = 2.8397e-02
+18-10-2024 09:49:55 - __main__ - <module> - INFO: Epoch 1 / 1, Step 102 / 162, Loss = 4.7800284624e-01, LR = 2.7714e-02
+18-10-2024 09:49:56 - __main__ - <module> - INFO: Epoch 1 / 1, Step 103 / 162, Loss = 3.3987590671e-01, LR = 2.7028e-02
+18-10-2024 09:49:56 - __main__ - <module> - INFO: Epoch 1 / 1, Step 104 / 162, Loss = 4.9596261978e-01, LR = 2.6342e-02
+18-10-2024 09:49:57 - __main__ - <module> - INFO: Epoch 1 / 1, Step 105 / 162, Loss = 4.7469407320e-01, LR = 2.5654e-02
+18-10-2024 09:49:58 - __main__ - <module> - INFO: Epoch 1 / 1, Step 106 / 162, Loss = 4.0929493308e-01, LR = 2.4966e-02
+18-10-2024 09:49:58 - __main__ - <module> - INFO: Epoch 1 / 1, Step 107 / 162, Loss = 3.6358398199e-01, LR = 2.4277e-02
+18-10-2024 09:49:59 - __main__ - <module> - INFO: Epoch 1 / 1, Step 108 / 162, Loss = 5.0247108936e-01, LR = 2.3590e-02
+18-10-2024 09:49:59 - __main__ - <module> - INFO: Epoch 1 / 1, Step 109 / 162, Loss = 3.8579019904e-01, LR = 2.2903e-02
+18-10-2024 09:50:00 - __main__ - <module> - INFO: Epoch 1 / 1, Step 110 / 162, Loss = 3.8325244188e-01, LR = 2.2218e-02
+18-10-2024 09:50:01 - __main__ - <module> - INFO: Epoch 1 / 1, Step 111 / 162, Loss = 3.6761173606e-01, LR = 2.1535e-02
+18-10-2024 09:50:01 - __main__ - <module> - INFO: Epoch 1 / 1, Step 112 / 162, Loss = 4.0607973933e-01, LR = 2.0855e-02
+18-10-2024 09:50:02 - __main__ - <module> - INFO: Epoch 1 / 1, Step 113 / 162, Loss = 5.0354003906e-01, LR = 2.0178e-02
+18-10-2024 09:50:02 - __main__ - <module> - INFO: Epoch 1 / 1, Step 114 / 162, Loss = 3.9531600475e-01, LR = 1.9504e-02
+18-10-2024 09:50:03 - __main__ - <module> - INFO: Epoch 1 / 1, Step 115 / 162, Loss = 4.2480203509e-01, LR = 1.8835e-02
+18-10-2024 09:50:04 - __main__ - <module> - INFO: Epoch 1 / 1, Step 116 / 162, Loss = 1.3544372320e+00, LR = 1.8170e-02
+18-10-2024 09:50:04 - __main__ - <module> - INFO: Epoch 1 / 1, Step 117 / 162, Loss = 3.6323437095e-01, LR = 1.7511e-02
+18-10-2024 09:50:05 - __main__ - <module> - INFO: Epoch 1 / 1, Step 118 / 162, Loss = 4.8698124290e-01, LR = 1.6857e-02
+18-10-2024 09:50:05 - __main__ - <module> - INFO: Epoch 1 / 1, Step 119 / 162, Loss = 3.5878401995e-01, LR = 1.6209e-02
+18-10-2024 09:50:06 - __main__ - <module> - INFO: Epoch 1 / 1, Step 120 / 162, Loss = 3.4258553386e-01, LR = 1.5568e-02
+18-10-2024 09:50:07 - __main__ - <module> - INFO: Epoch 1 / 1, Step 121 / 162, Loss = 3.8464012742e-01, LR = 1.4935e-02
+18-10-2024 09:50:07 - __main__ - <module> - INFO: Epoch 1 / 1, Step 122 / 162, Loss = 4.3528833985e-01, LR = 1.4308e-02
+18-10-2024 09:50:08 - __main__ - <module> - INFO: Epoch 1 / 1, Step 123 / 162, Loss = 3.2297202945e-01, LR = 1.3690e-02
+18-10-2024 09:50:08 - __main__ - <module> - INFO: Epoch 1 / 1, Step 124 / 162, Loss = 3.6583837867e-01, LR = 1.3081e-02
+18-10-2024 09:50:09 - __main__ - <module> - INFO: Epoch 1 / 1, Step 125 / 162, Loss = 4.2874988914e-01, LR = 1.2480e-02
+18-10-2024 09:50:09 - __main__ - <module> - INFO: Epoch 1 / 1, Step 126 / 162, Loss = 4.3051472306e-01, LR = 1.1889e-02
+18-10-2024 09:50:10 - __main__ - <module> - INFO: Epoch 1 / 1, Step 127 / 162, Loss = 4.6944531798e-01, LR = 1.1308e-02
+18-10-2024 09:50:11 - __main__ - <module> - INFO: Epoch 1 / 1, Step 128 / 162, Loss = 4.1495344043e-01, LR = 1.0738e-02
+18-10-2024 09:50:11 - __main__ - <module> - INFO: Epoch 1 / 1, Step 129 / 162, Loss = 3.4944936633e-01, LR = 1.0178e-02
+18-10-2024 09:50:12 - __main__ - <module> - INFO: Epoch 1 / 1, Step 130 / 162, Loss = 3.6015507579e-01, LR = 9.6291e-03
+18-10-2024 09:50:12 - __main__ - <module> - INFO: Epoch 1 / 1, Step 131 / 162, Loss = 4.1093865037e-01, LR = 9.0922e-03
+18-10-2024 09:50:13 - __main__ - <module> - INFO: Epoch 1 / 1, Step 132 / 162, Loss = 4.2990431190e-01, LR = 8.5673e-03
+18-10-2024 09:50:14 - __main__ - <module> - INFO: Epoch 1 / 1, Step 133 / 162, Loss = 4.4331118464e-01, LR = 8.0548e-03
+18-10-2024 09:50:14 - __main__ - <module> - INFO: Epoch 1 / 1, Step 134 / 162, Loss = 4.4536167383e-01, LR = 7.5552e-03
+18-10-2024 09:50:15 - __main__ - <module> - INFO: Epoch 1 / 1, Step 135 / 162, Loss = 4.5897752047e-01, LR = 7.0688e-03
+18-10-2024 09:50:15 - __main__ - <module> - INFO: Epoch 1 / 1, Step 136 / 162, Loss = 4.5184302330e-01, LR = 6.5960e-03
+18-10-2024 09:50:16 - __main__ - <module> - INFO: Epoch 1 / 1, Step 137 / 162, Loss = 4.1731896996e-01, LR = 6.1372e-03
+18-10-2024 09:50:17 - __main__ - <module> - INFO: Epoch 1 / 1, Step 138 / 162, Loss = 4.0306144953e-01, LR = 5.6927e-03
+18-10-2024 09:50:17 - __main__ - <module> - INFO: Epoch 1 / 1, Step 139 / 162, Loss = 3.6460027099e-01, LR = 5.2628e-03
+18-10-2024 09:50:18 - __main__ - <module> - INFO: Epoch 1 / 1, Step 140 / 162, Loss = 3.9970508218e-01, LR = 4.8478e-03
+18-10-2024 09:50:18 - __main__ - <module> - INFO: Epoch 1 / 1, Step 141 / 162, Loss = 4.2169290781e-01, LR = 4.4482e-03
+18-10-2024 09:50:19 - __main__ - <module> - INFO: Epoch 1 / 1, Step 142 / 162, Loss = 3.7643632293e-01, LR = 4.0641e-03
+18-10-2024 09:50:20 - __main__ - <module> - INFO: Epoch 1 / 1, Step 143 / 162, Loss = 4.2565670609e-01, LR = 3.6959e-03
+18-10-2024 09:50:20 - __main__ - <module> - INFO: Epoch 1 / 1, Step 144 / 162, Loss = 4.1014862061e-01, LR = 3.3438e-03
+18-10-2024 09:50:21 - __main__ - <module> - INFO: Epoch 1 / 1, Step 145 / 162, Loss = 4.1369095445e-01, LR = 3.0082e-03
+18-10-2024 09:50:21 - __main__ - <module> - INFO: Epoch 1 / 1, Step 146 / 162, Loss = 4.5229408145e-01, LR = 2.6892e-03
+18-10-2024 09:50:22 - __main__ - <module> - INFO: Epoch 1 / 1, Step 147 / 162, Loss = 4.5181724429e-01, LR = 2.3871e-03
+18-10-2024 09:50:23 - __main__ - <module> - INFO: Epoch 1 / 1, Step 148 / 162, Loss = 3.6002552509e-01, LR = 2.1022e-03
+18-10-2024 09:50:23 - __main__ - <module> - INFO: Epoch 1 / 1, Step 149 / 162, Loss = 3.3662185073e-01, LR = 1.8347e-03
+18-10-2024 09:50:24 - __main__ - <module> - INFO: Epoch 1 / 1, Step 150 / 162, Loss = 4.2577058077e-01, LR = 1.5847e-03
+18-10-2024 09:50:24 - __main__ - <module> - INFO: Epoch 1 / 1, Step 151 / 162, Loss = 3.7421751022e-01, LR = 1.3524e-03
+18-10-2024 09:50:25 - __main__ - <module> - INFO: Epoch 1 / 1, Step 152 / 162, Loss = 3.4945628047e-01, LR = 1.1381e-03
+18-10-2024 09:50:25 - __main__ - <module> - INFO: Epoch 1 / 1, Step 153 / 162, Loss = 3.8160642982e-01, LR = 9.4185e-04
+18-10-2024 09:50:26 - __main__ - <module> - INFO: Epoch 1 / 1, Step 154 / 162, Loss = 3.4169313312e-01, LR = 7.6386e-04
+18-10-2024 09:50:27 - __main__ - <module> - INFO: Epoch 1 / 1, Step 155 / 162, Loss = 3.9937376976e-01, LR = 6.0423e-04
+18-10-2024 09:50:27 - __main__ - <module> - INFO: Epoch 1 / 1, Step 156 / 162, Loss = 3.8793671131e-01, LR = 4.6310e-04
+18-10-2024 09:50:28 - __main__ - <module> - INFO: Epoch 1 / 1, Step 157 / 162, Loss = 4.5458728075e-01, LR = 3.4057e-04
+18-10-2024 09:50:28 - __main__ - <module> - INFO: Epoch 1 / 1, Step 158 / 162, Loss = 3.7264487147e-01, LR = 2.3673e-04
+18-10-2024 09:50:29 - __main__ - <module> - INFO: Epoch 1 / 1, Step 159 / 162, Loss = 4.5085024834e-01, LR = 1.5167e-04
+18-10-2024 09:50:30 - __main__ - <module> - INFO: Epoch 1 / 1, Step 160 / 162, Loss = 4.1875132918e-01, LR = 8.5438e-05
+18-10-2024 09:50:30 - __main__ - <module> - INFO: Epoch 1 / 1, Step 161 / 162, Loss = 4.3462082744e-01, LR = 3.8095e-05
+18-10-2024 09:50:31 - __main__ - <module> - INFO: Epoch 1 / 1, Step 162 / 162, Loss = 4.5693945885e-01, LR = 9.6757e-06
+18-10-2024 09:50:31 - __main__ - <module> - INFO: Epoch 1 / 1, Step 163 / 162, Loss = 2.6779302955e-01, LR = 2.0000e-07
+18-10-2024 09:50:31 - __main__ - <module> - INFO: Starting Validation for epoch 1 / 1
+18-10-2024 09:50:43 - __main__ - <module> - INFO: Validation Loss: 4.0696994676e-01
+18-10-2024 09:50:43 - visualize - save_plot_training_loss - INFO: Plot writen to ./logs/training_011/loss.png
+18-10-2024 09:50:43 - __main__ - <module> - INFO: Training finished!
+18-10-2024 09:50:43 - __main__ - <module> - INFO: Saved Model
+18-10-2024 09:50:43 - __main__ - <module> - INFO: Starting Test Step...
+18-10-2024 09:50:55 - __main__ - <module> - INFO: Test Loss: 3.9421309637e-01
+18-10-2024 09:50:55 - visualize - compareTimeDomainComplex - ERROR: Label and prediction don't have the same size
+18-10-2024 09:50:55 - __main__ - <module> - INFO: Test Step finished!
