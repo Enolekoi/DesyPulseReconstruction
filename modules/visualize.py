@@ -110,7 +110,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     # Plot learning rates
     ax2_learning_rate = ax2.twinx()
     ax2_learning_rate.plot(
-            np.arange(steps_per_epoch, num_steps+1, steps_per_epoch), 
+            steps,
             learning_rates, 
             label='Learning Rate', 
             color='green', 
