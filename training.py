@@ -231,8 +231,7 @@ for epoch in range(config.NUM_EPOCHS):     # iterate over epochs
 
         # Backward pass
         loss.backward()
-	# Gradient clipping
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+	# Gradient clipping torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         optimizer.zero_grad()
 
@@ -361,6 +360,7 @@ with torch.no_grad():
         # send label and prediction to cpu, so that it can be plotted
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
+        prediction = loss.hilbert(prediction)
         # vis.compareTimeDomain("./random_test_prediction.png", label, prediction)
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
