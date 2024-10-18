@@ -6,6 +6,7 @@ Module containing functions used for plotting or visualizing data
 import matplotlib.pyplot as plt
 import numpy as np
 import logging
+import loss
 
 logger = logging.getLogger(__name__)
 
@@ -306,10 +307,13 @@ def compareTimeDomainComplex(filepath, label, prediction):
         prediction = prediction.numpy()
     label = np.squeeze(label)
     prediction = np.squeeze(prediction)
+    prediction = loss.hilbert(prediction)
     
     length_label = len(label)
     if not (length_label == len(prediction)):
         logger.error("Label and prediction don't have the same size")
+        logger.error(f"Label length:      {len(label)}")
+        logger.error(f"Prediction length: {len(prediction)}")
         return
     half_size = int(length_label //2)
     orig_real = label[:half_size]
