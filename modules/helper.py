@@ -372,8 +372,13 @@ class ResampleSpectrogram(object):
         self.output_time = self.output_time.float()
         self.output_freq = self.output_freq.float()
         # initialize normalization
-        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        self.repeat_channel = transforms.Grayscale(num_output_channels=3)
+        # self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        self.normalize = transforms.Compose(
+                [transforms.Grayscale(num_output_channels=3),
+                 transforms.Normalize(mean=[0.485, 0.485, 0.485], std=[0.229, 0.229, 0.229])
+                ])
+
+        # self.repeat_channel = transforms.Grayscale(num_output_channels=3)
 
     def __call__(self, spectrogram_data):
         '''
@@ -432,8 +437,8 @@ class ResampleSpectrogram(object):
                 align_corners=False
                 )
         # normalize
-        output_spectrogram = self.repeat_channel(output_spectrogram)
-        print(f"Shape spectrogram before normalization = {output_spectrogram.shape}")
+        # output_spectrogram = self.repeat_channel(output_spectrogram)
+        # print(f"Shape spectrogram before normalization = {output_spectrogram.shape}")
         output_spectrogram = self.normalize(output_spectrogram)
         # remove additional dimensions for shape [H, W]
         # output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
