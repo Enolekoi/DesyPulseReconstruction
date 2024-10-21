@@ -97,7 +97,9 @@ def calcFWHM(yd, tt):
 def generateAxis(N, resolution, center=0.0):
     # generate indicies
     index = torch.arange(-(N // 2), ((N - 1) // 2))
-    print(len(index))
+    print(f"Length of index = {len(index)}")
+    print(f"Min index = {torch.min(index)}")
+    print(f"Max index = {torch.max(index)}")
     
     # ensure the length is N
     assert len(index) == N
@@ -115,13 +117,14 @@ def generateAxes(header):
     # extract header information
     num_delays          = header[0] # number of delay samples
     num_wavelength      = header[1] # number of wavelength samples time_step           = header[2] # time step between delays [s]
+    delay_step          = header[1] # number of wavelength samples time_step           = header[2] # time step between delays [s]
     wavelength_step     = header[3] # distance between wavelength samples [m]
     center_wavelength   = header[4] # center wavelength in [m]
 
     # create the delay axis
     delay_axis = generateAxis(
             N = num_delays, 
-            resolution = time_step,
+            resolution = delay_step,
             center = 0.0
             )
 
