@@ -10,6 +10,7 @@ import torch
 import config
 import helper
 import loss
+import preprocessing
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,7 +19,7 @@ PathSpec = "./additional/samples/as_gn00.dat"
 PathLabel = "./additional/samples/Es.dat"
 
 # Constants
-SPEED_OF_LIGHT = 299792458
+c0 = 299792458
 
 # Initialize Resampler
 spec_reader = helper.ReadSpectrogram()
@@ -49,51 +50,59 @@ label_analytical = torch.complex(label_real, label_imag)
 spec_data_file = spec_reader(PathSpec)
 sim_spec, header, sim_output_spec, sim_output_time, sim_output_freq = spec_transform(spec_data_file)
 
-prediction_header_freq_axis = helper.frequency_axis_from_header(header) / 2
-prediction_center_freq = (prediction_header_freq_axis.min() + prediction_header_freq_axis.max()) / 2
-prediction_center_freq = prediction_header_freq_axis[prediction_header_freq_axis.size(0)//2]
-print(f"prediction min    freq = {prediction_header_freq_axis.min():.4e}")
-print(f"prediction max    freq = {prediction_header_freq_axis.max():.4e}")
-print(f"prediction center freq = {prediction_center_freq:.4e}")
-prediction_time_step = header[2]
+# get frequency axis from header
+freq_axis = helper.frequency_axis_from_header(header)
+
+# get center frequency
+num_wavelength = header[1]   # number of wavelength samples
+center_index = num_wavelength // 2
+prediction_center_freq = freq_axis[center_index]
+
+# get \tau and delay_axis
+num_delays = header[2]   # time step per delay [s] (\tau)
+prediction_time_step = header[2]   # time step per delay [s] (\tau)
+delay_axis = preprocessing.generateAxis(N=num_delays, resolution=prediction_time_step, center=0.0)
 
 # calculate SHG Matrix from analytical signal
 spec = loss.createSHGmat(label_analytical, prediction_time_step, prediction_center_freq)
 spec = torch.abs(spec)**2
+
+# calculate \tau_{p}^{FWHM} and \nu_{p}^{FWHM}
+# \tau_{p}^{FWHM}
+mean_delay_profile = torch.mean(spec, dim=1)
+fwhm_delay = preprocessing.calcFWHM(mean_delay_profile, delay_axis)
+
+# \nu_{p}^{FWHM}
+mean_freq_profile = torch.mean(spec, dim=0)
+fwhm_freq = preprocessing.calcFWHM(mean_freq_profile, freq_axis)
+
+# calculate M (Trebino 215)
+# using freq
+M = torch.sqrt(fwhm_delay * fwhm_freq * N)
+# using wavelength
+# get center wavelength 
+center_wavelength = header[4]
+M = torch.sqrt(fwhm_delay * fwhm_wavelength * N * c0 / center_wavelength**2)
+
+# get delta frequency (delta_nu)
+delta_tau = fwhm_delay / M
+delta_nu = M/N * (1 / fwhm_delay)
+
+# construct new frequency axis
+freq_axis = preprocessing.generateAxis(N=num_wavelength, resolution=delta_nu, center=prediction_center_freq)
+
+# convert to wavelength
+preprocessing.
+# resample
+
 # resample SHG Matrix
 spec_data = [spec, header]
 sim, prediction_header, spec, spec_output_time, spec_output_freq = spec_transform(spec_data)
-# print(f"owStart = {spec_output_freq.min():.4e}")
-# print(f"owEnd = {spec_output_freq.max():.4e}")
-# print(f"otStart = {spec_output_time.min():.4e}")
-# print(f"otEnd = {spec_output_time.max():.4e}")
 
 # get original spectrogram (without 3 identical channels)
 original_spectrogram = sim_output_spec
-# print(f"original spectrogram weigth:  {torch.argmax(original_spectrogram)}")
-# print(f"predicted spectrogram weigth:  {torch.argmax(spec)}")
-# print(f"original time index with largest values:       {torch.argmax(torch.sum(original_spectrogram, dim=1))}")
-# print(f"predicted time index with largest values:      {torch.argmax(torch.sum(spec, dim=1))}")
-freq_index_orig = torch.argmax(torch.sum(original_spectrogram, dim=0))
-freq_index_pred = torch.argmax(torch.sum(spec, dim=0))
-# print(f"\noriginal frequency index with largest values:  {freq_index_orig}")
-# print(f"frequency at index {freq_index_orig} = {spec_output_freq[freq_index_orig]:.4e}")
-# print(f"center Frequenfy = {header.center_freq:.4e}")
-# print(f"\npredicted frequency index with largest values: {freq_index_pred}")
-# print(f"frequency at index {freq_index_pred} = {spec_output_freq[freq_index_pred]:.4e}")
-# print(f"center Frequenfy = {prediction_header.center_freq:.4e}")
+# frog_error = loss.calcFrogError(original_spectrogram, spec)
 
-# print(f"\ntotal difference (sum): {torch.sum(original_spectrogram-spec):.4e}")
-
-# print(f"original start frequency = {torch.min(header.freq_axis):.4e}")
-# print(f"original end frequency   = {torch.max(header.freq_axis):.4e}")
-
-# print(f"predicted start frequency = {torch.min(prediction_header.freq_axis):.4e}")
-# print(f"predicted end frequency   = {torch.max(prediction_header.freq_axis):.4e}")
-frog_error = loss.calcFrogError(original_spectrogram, spec)
-
-print(max(sim_output_time.numpy() - spec_output_time.numpy()))
-print(max(sim_output_freq.numpy() - spec_output_freq.numpy()))
 # Plot
 fig, axs = plt.subplots(3, figsize=(10,14))
 # Simuliertes Spektrogram (original)
