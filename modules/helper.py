@@ -367,11 +367,11 @@ class ResampleSpectrogram(object):
         ## Define output axis ##
         ########################
         self.output_delay = torch.linspace(output_start_delay, output_end_delay, self.output_number_rows )  # create array that corresponds to the output time axis
-        self.output_freq = torch.linspace(output_start_wavelength, output_stop_wavelength, self.output_number_cols)    # create array that corresponds tot the output wavelength axis
+        self.output_wavelength = torch.linspace(output_start_wavelength, output_stop_wavelength, self.output_number_cols)    # create array that corresponds tot the output wavelength axis
 
         # ensure all tensors have the same type (float32)
-        self.output_time = self.output_time.float()
-        self.output_freq = self.output_freq.float()
+        self.output_delay = self.output_delay.float()
+        self.output_wavelength = self.output_wavelength.float()
         # initialize normalization
         self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
@@ -408,7 +408,7 @@ class ResampleSpectrogram(object):
 
         # normalize the output delay and frequencies to [-1,1]
         normalized_output_delay      = 2 * (self.output_delay - input_delay_min) / (input_delay_max - input_delay_min) - 1 
-        normalized_output_wavelength = 2 * (self.output_freq - input_wavelength_min) / (input_wavelength_max - input_wavelength_min) - 1
+        normalized_output_wavelength = 2 * (self.output_wavelength - input_wavelength_min) / (input_wavelength_max - input_wavelength_min) - 1
         
         # create meshgrid for output delay and wavelength
         grid_delay, grid_wavelength = torch.meshgrid(normalized_output_delay,
@@ -438,7 +438,7 @@ class ResampleSpectrogram(object):
         # normalize
         output_spectrogram = self.normalize(output_spectrogram)
         
-        return spectrogram, header, output_spectrogram, self.output_time, self.output_freq
+        return spectrogram, header, output_spectrogram, self.output_delay, self.output_wavelength
 
 '''
 ReadLabelFromEs()
