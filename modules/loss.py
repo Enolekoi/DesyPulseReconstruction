@@ -260,9 +260,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                     last_significant_idx_imag = half_size - 1
 
                 # determine the lower first significant index
-                first_significant_idx = min(first_significant_idx_real, first_significant_idx_imag)
-                # determine the higher last significant index
-                last_significant_idx = max(last_significant_idx_real, last_significant_idx_imag)
+                first_significant_idx = min(first_significant_idx_real, first_significant_idx_imag) # determine the higher last significant index last_significant_idx = max(last_significant_idx_real, last_significant_idx_imag)
                 # create the phase mask
                 phase_mask = torch.zeros(half_size).to(device)
                 phase_mask[first_significant_idx:last_significant_idx] = 1
@@ -292,7 +290,6 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
 
         return loss
 
-
 def getCenterFreq(yta, time_step):
     device = yta.device
     n = yta.size(0)
@@ -311,7 +308,6 @@ def getCenterFreq(yta, time_step):
     # Calculate center frequency (weighted average of the frequency bins)
     wCenter = torch.sum(positive_frequencies * positive_power_spectrum) / torch.sum(positive_power_spectrum)
     return 2*torch.pi *wCenter
-
 
 def createSHGmat(yta, Ts, wCenter):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

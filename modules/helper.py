@@ -15,6 +15,7 @@ import torch    # Dataloader,
 import torch.nn.functional as F
 from torch.utils.data import Dataset    # Dataloader,
 import torchvision.models as models     # Custom DenseNet
+from torchvision.models import transforms     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
 import logging
 
@@ -370,6 +371,8 @@ class ResampleSpectrogram(object):
         # ensure all tensors have the same type (float32)
         self.output_time = self.output_time.float()
         self.output_freq = self.output_freq.float()
+        # initialize normalization
+        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     def __call__(self, spectrogram_data):
         '''
@@ -428,7 +431,7 @@ class ResampleSpectrogram(object):
                 align_corners=False
                 )
         # remove additional dimensions for shape [H, W]
-        output_spectrogram = min_max_normalize_spectrogram(output_spectrogram)
+        output_spectrogram = self.normalize(output_spectrogram)
         output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
         
         return spectrogram, header, output_spectrogram, self.output_time, self.output_freq
@@ -633,15 +636,7 @@ def removePhaseShiftAmbiguity(complex, index_center):
     
     return complex
 
-def min_max_normalize_spectrogram(spectrogram):
-    # calculate minimum value
-    min_val = torch.min(spectrogram)
-    # calculate maximum value
-    max_val = torch.max(spectrogram)
-    # normalize spectrogram
-    normalized_spectrogram = (spectrogram - min_val) / (max_val - min_val)
 
-    return normalized_spectrogram
 
 def frequency_axis_from_header(header):
     # constants
@@ -678,4 +673,3 @@ def frequency_axis_from_header(header):
     equidistant_frequency_axis = torch.linspace(min_freq, max_freq, steps=num_wavelength)
 
     return equidistant_frequency_axis
-    
