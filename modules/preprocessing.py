@@ -96,7 +96,7 @@ def calcFWHM(yd, tt):
 
 def generateAxis(N, resolution, center=0.0):
     # generate indicies
-    index = torch.arange((N // 2), ((N - 1) // 2))
+    index = torch.arange(-(N // 2), ((N - 1) // 2))
     
     # ensure the length is N
     assert len(index) == N
