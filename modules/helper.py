@@ -269,8 +269,8 @@ class LoadDatasetTBDrms(Dataset):
             output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values, dtype=torch.half).unsqueeze(0)
 
         # create a spectrogram with 3 identical channels
-        output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
-        output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
+        # output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
+        # output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
 
         # ensure correct output data type
         if not isinstance(output_spec, torch.Tensor):
@@ -373,6 +373,7 @@ class ResampleSpectrogram(object):
         self.output_freq = self.output_freq.float()
         # initialize normalization
         self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        self.repeat_channel = transforms.Grayscale(num_output_channels=3)
 
     def __call__(self, spectrogram_data):
         '''
@@ -430,9 +431,11 @@ class ResampleSpectrogram(object):
                 padding_mode='zeros',
                 align_corners=False
                 )
-        # remove additional dimensions for shape [H, W]
+        # normalize
+        output_spectrogram = self.repeat_channel(output_spectrogram)
         output_spectrogram = self.normalize(output_spectrogram)
-        output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
+        # remove additional dimensions for shape [H, W]
+        # output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
         
         return spectrogram, header, output_spectrogram, self.output_time, self.output_freq
 
