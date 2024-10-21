@@ -442,6 +442,7 @@ class ResampleSpectrogram(object):
         output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
         output_spectrogram = output_spectrogram.unsqueeze(0)  # add another dimension to the tensor
         output_spectrogram = output_spectrogram.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
+        output_spectrogram = output_spectrogram.unsqueeze(0)           # Add batch dimension back
 
         output_spectrogram = self.normalize(output_spectrogram)
         # remove additional dimensions for shape [H, W]
