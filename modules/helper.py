@@ -436,19 +436,16 @@ class ResampleSpectrogram(object):
                 padding_mode='zeros',
                 align_corners=False
                 )
-        # normalize
-        # output_spectrogram = self.repeat_channel(output_spectrogram)
-        print(f"Shape spectrogram before normalization = {output_spectrogram.shape}")
-        output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
-        print(f"Shape spectrogram before normalization = {output_spectrogram.shape}")
-        output_spectrogram = output_spectrogram.unsqueeze(0)  # add another dimension to the tensor
-        print(f"Shape spectrogram before normalization = {output_spectrogram.shape}")
-        output_spectrogram = output_spectrogram.repeat([3,1,1]) # repeat the spectrogram 3 times (3,h,w)
-        # output_spectrogram = output_spectrogram.unsqueeze(0)           # Add batch dimension back
 
+        # get shape [H,W]
+        output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
+        # get shape [channel, H,W]
+        output_spectrogram = output_spectrogram.unsqueeze(0)  # add another dimension to the tensor
+        # repeat for 3 channels
+        output_spectrogram = output_spectrogram.repeat([3,1,1]) # repeat the spectrogram 3 times (3,h,w)
+
+        # normalize
         output_spectrogram = self.normalize(output_spectrogram)
-        # remove additional dimensions for shape [H, W]
-        # output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
         
         return spectrogram, header, output_spectrogram, self.output_time, self.output_freq
 
