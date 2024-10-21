@@ -167,10 +167,10 @@ logger.info(f"Starting training...")
 #         threshold=config.PENALTY_THRESHOLD
 #         )
 criterion = loss_module.PulseRetrievalLossFunctionHilbertFrog(
-        pulse_threshold = 0.01,
-        real_weight = 1.0,
+        pulse_threshold = 0.001,
+        real_weight = 5.0,
         imag_weight = 1.0,
-        intensity_weight = 10.0,
+        intensity_weight = 20.0,
         phase_weight = 1.0,
         frog_error_weight= 0.0
         )
