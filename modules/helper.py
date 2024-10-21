@@ -374,7 +374,7 @@ class ResampleSpectrogram(object):
         # initialize normalization
         # self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         self.normalize = transforms.Compose(
-                [transforms.Grayscale(num_output_channels=3),
+                [ 
                  transforms.Normalize(mean=[0.485, 0.485, 0.485], std=[0.229, 0.229, 0.229])
                 ])
 
@@ -439,6 +439,10 @@ class ResampleSpectrogram(object):
         # normalize
         # output_spectrogram = self.repeat_channel(output_spectrogram)
         # print(f"Shape spectrogram before normalization = {output_spectrogram.shape}")
+        output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
+        output_spectrogram = output_spectrogram.unsqueeze(0)  # add another dimension to the tensor
+        output_spectrogram = output_spectrogram.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
+
         output_spectrogram = self.normalize(output_spectrogram)
         # remove additional dimensions for shape [H, W]
         # output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
