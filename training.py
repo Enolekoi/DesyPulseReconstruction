@@ -63,7 +63,6 @@ spec_resample = helper.ResampleSpectrogram(
     config.OUTPUT_START_FREQUENCY,
     config.OUTPUT_END_FREQUENCY,
     )
-spec_normalize = helper.NormalizeSpectrogram()
 spec_transform = transforms.Compose([spec_read, spec_resample])
 
 # Transforms (Labels)
