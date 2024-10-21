@@ -139,7 +139,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
             frog_error_weight   -> weight used for FROG-Error [float] 
             
         '''
-        super(PulseRetrievalLossFunctionHilbertFrog, self).__init__()
+        super(PulseRetrievalLossFunctionHilbertFrog, self).__init__() 
         self.pulse_threshold = pulse_threshold
         self.real_weight = real_weight
         self.imag_weight = imag_weight
