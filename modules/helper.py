@@ -20,6 +20,7 @@ import torch.nn as nn   # Custom DenseNet
 import logging
 
 import config
+import preprocessing
 logger = logging.getLogger(__name__)
 
 # TODO:
@@ -345,40 +346,34 @@ Transform Class that resamples spectrograms to use the same axis and size
 '''
 class ResampleSpectrogram(object):
 
-    def __init__(self, num_delays_out, timestep_out, num_frequencies_out, start_frequency_out, end_frequency_out):
+    def __init__(self, num_delays_out, delay_step_out, num_wavelength_out, start_wavelength_out, end_wavelength_out):
         '''
         Inputs:
             num_delays_out          -> Number of delay values the resampled spectrogram will have [int]
-            timestep_out            -> Length of time between delays [fs] [int]
-            num_frequencies_out     -> Number of frequency values the resampled spectrogram will have [int]
-            start_frequency_out     -> Lowest frequency value of the resampled spectrogram [nm] [int]
-            end_frequency_out       -> Highest frequency value of the resampled spectrogram [nm] [int]
+            delay_step_out            -> Length of time between delays [fs] [int]
+            num_wavelength_out     -> Number of frequency values the resampled spectrogram will have [int]
+            start_wavelength_out     -> Lowest wavelength value of the resampled spectrogram [nm] [int]
+            end_wavelength_out       -> Highest wavelength value of the resampled spectrogram [nm] [int]
         '''
         self.output_number_rows = num_delays_out
-        output_time_step = timestep_out
-        self.output_number_cols = num_frequencies_out
-        output_start_frequency = start_frequency_out   # the first element of the frequency output axis
-        output_stop_frequency = end_frequency_out    # the last element of the frequency output axis 
-        output_start_time = -(self.output_number_rows // 2) * output_time_step     # calculate time at which the output time axis starts
-        output_end_time = output_start_time + (self.output_number_rows -1) * output_time_step    # calculate the last element of the output time axis 
+        output_delay_step = delay_step_out
+        self.output_number_cols = num_wavelength_out
+        output_start_wavelength = start_wavelength_out # the first element of the frequency output axis
+        output_stop_wavelength = end_wavelength_out # the last element of the frequency output axis 
+        output_start_delay = -(self.output_number_rows // 2) * output_delay_step # calculate time at which the output time axis starts
+        output_end_delay = output_start_delay + (self.output_number_rows -1) * output_delay_step # calculate the last element of the output time axis 
 
         ######################## Used here to save time later
         ## Define output axis ##
         ########################
-        self.output_time = torch.linspace(output_start_time, output_end_time, self.output_number_rows )  # create array that corresponds to the output time axis
-        self.output_freq = torch.linspace(output_start_frequency, output_stop_frequency, self.output_number_cols)    # create array that corresponds tot the output wavelength axis
+        self.output_delay = torch.linspace(output_start_delay, output_end_delay, self.output_number_rows )  # create array that corresponds to the output time axis
+        self.output_freq = torch.linspace(output_start_wavelength, output_stop_wavelength, self.output_number_cols)    # create array that corresponds tot the output wavelength axis
 
         # ensure all tensors have the same type (float32)
         self.output_time = self.output_time.float()
         self.output_freq = self.output_freq.float()
         # initialize normalization
-        # self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        self.normalize = transforms.Compose(
-                [ 
-                 transforms.Normalize(mean=[0.485, 0.485, 0.485], std=[0.229, 0.229, 0.229])
-                ])
-
-        # self.repeat_channel = transforms.Grayscale(num_output_channels=3)
+        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     def __call__(self, spectrogram_data):
         '''
@@ -387,44 +382,40 @@ class ResampleSpectrogram(object):
             spectrogram_data_freq   -> Original (not resampled) [spectrogram [tensor], header [list]]
         Outputs:
             output_spectrogram      -> Resampled spectrogram [tensor]
-            self.output_time        -> Resampled time axis [numpy array]
-            self.output_freq        -> Resampled frequency axis [numpy array]
+            self.output_delay       -> Resampled delay axis [numpy array]
+            self.output_wavelength  -> Resampled wavelength axis [numpy array]
         '''
         spectrogram, header = spectrogram_data
         device = spectrogram.device
         # ensure all tensors are of the same type (float32)
         spectrogram = spectrogram.float()
 
-        num_delays =        header[0]   # number of delay samples
-        time_step =         header[2]   # time step per delay [s]
-        
-        # create time axis
-        # get half the size of the axis
-        half_num = num_delays // 2
-        # create the negative and the positive half of the axis
-        time_positive = torch.linspace(0, half_num * time_step, steps = half_num + 1)
-        time_negative = -time_positive[1:]
-        # create the axis
-        input_time = torch.cat((time_negative, time_positive))
-        
-        input_freq = frequency_axis_from_header(header)
-        min_freq = input_freq.min()
-        max_freq = input_freq.max()
-                
-        # get minimum and maximum values of the input_time and input_freq tensors
-        input_time_min, input_time_max = input_time.min(), input_time.max()
-        input_freq_min, input_freq_max = min_freq, max_freq
+        num_delays =            header[0]
+        num_wavelength =        header[1]
+        delay_step =            header[2]
+        wavelength_step =       header[3]
+        center_wavelength =     header[4]
 
-        # normalize the output time and frequencies to [-1,1]
-        normalized_output_time = 2 * (self.output_time - input_time_min) / (input_time_max - input_time_min) - 1 
-        normalized_output_freq = 2 * (self.output_freq - input_freq_min) / (input_freq_max - input_freq_min) - 1
+        # create input_delay_axis and input_wavelength_axis
+        input_delay_axis = preprocessing.generateAxis(N=num_delays, resolution = delay_step, center=0.0)
+        input_wavelength = preprocessing.generateAxis(N=num_wavelength, resolution = wavelength_step, center = center_wavelength)
         
-        # create meshgrid for output time and frequency
-        grid_time, grid_freq = torch.meshgrid(normalized_output_time,
-                                              normalized_output_freq,
+        # get minimum and maximum values of the input_delay and input_wavelength tensors
+        input_wavelength_min = input_wavelength.min()
+        input_wavelength_max = input_wavelength.max()
+        input_delay_min = input_delay_axis.min()
+        input_delay_max = input_delay_axis.max()
+
+        # normalize the output delay and frequencies to [-1,1]
+        normalized_output_delay      = 2 * (self.output_delay - input_delay_min) / (input_delay_max - input_delay_min) - 1 
+        normalized_output_wavelength = 2 * (self.output_freq - input_wavelength_min) / (input_wavelength_max - input_wavelength_min) - 1
+        
+        # create meshgrid for output delay and wavelength
+        grid_delay, grid_wavelength = torch.meshgrid(normalized_output_delay,
+                                              normalized_output_wavelength,
                                               indexing='ij')
         # grid sample needs the shape [H, W, 2]
-        grid = torch.stack((grid_freq, grid_time), dim=-1).unsqueeze(0)
+        grid = torch.stack((grid_wavelength, grid_delay), dim=-1).unsqueeze(0)
         
         # reshape the spectrogram to [1, 1, H, W] for grid_sample
         spectrogram = spectrogram.unsqueeze(0).unsqueeze(0)
