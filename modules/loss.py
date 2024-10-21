@@ -265,13 +265,19 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                 # create the phase mask
                 phase_mask = torch.zeros(half_size).to(device)
                 phase_mask[first_significant_idx:last_significant_idx] = 1
+                # create the intensity_mse mask
+                pulse_mask = torch.ones(half_size).to(device)
+                pulse_mask[first_significant_idx:last_significant_idx] = 1000
 
                 # Calculate MSE for the real and imaginary part
                 mse_real = (prediction_real[i] - label_real[i]) ** 2
+                mse_real = mse_real * pulse_mask
                 mse_imag = (prediction_imag[i] - label_imag[i]) ** 2
-                
+                mse_imag = mse_imag * pulse_mask
+
                 # Calculate MSE for the intensity and phase
                 mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
+                mse_intensity = mse_intensity * pulse_mask
                 mse_phase = (prediction_phase[i] - label_phase[i]) ** 2 
                 # Use the phase mask for phase blanking
                 mse_phase = mse_phase * phase_mask
