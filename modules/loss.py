@@ -260,7 +260,8 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                     last_significant_idx_imag = half_size - 1
 
                 # determine the lower first significant index
-                first_significant_idx = min(first_significant_idx_real, first_significant_idx_imag) # determine the higher last significant index last_significant_idx = max(last_significant_idx_real, last_significant_idx_imag)
+                first_significant_idx = min(first_significant_idx_real, first_significant_idx_imag) # determine the higher last significant index 
+                last_significant_idx = max(last_significant_idx_real, last_significant_idx_imag)
                 # create the phase mask
                 phase_mask = torch.zeros(half_size).to(device)
                 phase_mask[first_significant_idx:last_significant_idx] = 1
