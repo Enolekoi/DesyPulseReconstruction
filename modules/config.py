@@ -27,7 +27,8 @@ MAX_REAL = 1    # The highest possible value the real part of the signal can be
 MAX_IMAG = 1    # The highest possible value the imaginary part of the signal can be
 
 OUTPUT_NUM_DELAYS = 512         # Number of delays the spectrograms get resampled to
-OUTPUT_NUM_FREQUENCIES = 512    # Number of frequency points the spectrograms get resampled to
+OUTPUT_NUM_WAVELENGTH = 512         # Number of delays the spectrograms get resampled to
+OUTPUT_NUM_FREQUENCIES = OUTPUT_NUM_WAVELENGTH
 OUTPUT_TIMESTEP = 1.5e-15           # Size of timestep between delays [fs]
 OUTPUT_START_WAVELENGTH = 226e-9  # Smallest wavelength in the dataset [nm]
 # OUTPUT_START_WAVELENGTH = 504   # [nm]
