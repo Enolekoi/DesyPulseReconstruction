@@ -200,8 +200,8 @@ class LoadDatasetReconstruction(Dataset):
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
     
         # create a spectrogram with 3 identical channels
-        output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
-        output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
+        # output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
+        # output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
 
         # ensure correct output data type
         if not isinstance(output_spec, torch.Tensor):
