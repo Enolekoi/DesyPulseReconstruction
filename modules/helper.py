@@ -433,6 +433,7 @@ class ResampleSpectrogram(object):
                 )
         # normalize
         output_spectrogram = self.repeat_channel(output_spectrogram)
+        print(f"Shape spectrogram before normalization = {output_spectrogram.shape}")
         output_spectrogram = self.normalize(output_spectrogram)
         # remove additional dimensions for shape [H, W]
         # output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
