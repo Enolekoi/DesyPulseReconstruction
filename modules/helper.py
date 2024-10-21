@@ -15,7 +15,7 @@ import torch    # Dataloader,
 import torch.nn.functional as F
 from torch.utils.data import Dataset    # Dataloader,
 import torchvision.models as models     # Custom DenseNet
-from torchvision.models import transforms     # Custom DenseNet
+from torchvision.models import Transforms     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
 import logging
 
