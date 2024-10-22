@@ -174,6 +174,7 @@ logger.info(f"Starting training...")
 # criterion = nn.MSELoss()
 criterion = loss_module.PulseRetrievalLossFunctionHilbertFrog(
         pulse_threshold = 0.001,
+        penalty = 100.0,
         real_weight = 5.0,
         imag_weight = 1.0,
         intensity_weight = 20.0,
