@@ -10,7 +10,7 @@ import torch
 
 # Training Options
 
-NUM_EPOCHS = 20     # Number of epochs to train the model
+NUM_EPOCHS = 50     # Number of epochs to train the model
 DESCRIPTOR = f"Testing training using hilbert transform for imaginary part - with {NUM_EPOCHS} Epochs"
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be 2*OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of spectrograms trained at each step
