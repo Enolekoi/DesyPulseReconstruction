@@ -122,6 +122,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
     def __init__(
             self, 
             pulse_threshold = 0.01,
+            penalty = 10.0,
             real_weight = 1.0,
             imag_weight = 1.0,
             intensity_weight = 1.0,
@@ -141,6 +142,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
         '''
         super(PulseRetrievalLossFunctionHilbertFrog, self).__init__() 
         self.pulse_threshold = pulse_threshold
+        self.penalty = penalty
         self.real_weight = real_weight
         self.imag_weight = imag_weight
         self.intensity_weight = intensity_weight
@@ -196,6 +198,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
         loss = 0.0
         mse_loss = 0.0
         frog_error = 0.0
+
         # initialize some values for SHG-trace creation
         prediction_header = header
 
@@ -267,7 +270,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                 phase_mask[first_significant_idx:last_significant_idx] = 1
                 # create the intensity_mse mask
                 pulse_mask = torch.ones(half_size).to(device)
-                pulse_mask[first_significant_idx:last_significant_idx] = 1000
+                pulse_mask[first_significant_idx:last_significant_idx] = self.penalty
 
                 # Calculate MSE for the real and imaginary part
                 mse_real = (prediction_real[i] - label_real[i]) ** 2
