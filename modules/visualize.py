@@ -19,6 +19,8 @@ Inputs:
     filepath        -> File to write plot to
 '''
 def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
+    max_ticks = 10
+
     num_steps = train_size * num_epochs
     if num_steps != len(training_loss):
         num_steps = len(training_loss)
@@ -28,7 +30,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     steps_per_epoch = num_steps // num_epochs
 
     # Create a subplot
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14,14))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16,16))
 
     #############################
     ## Linear Scale Plot (ax1) ##
@@ -46,10 +48,11 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
             ax1.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
     
     # Epoch ticks
-    if num_epochs <= 10:
-        epoch_ticks = range(1, num_epochs + 1)
+    if num_epochs <= max_ticks:
+        epoch_ticks = np.arange(1, num_epochs + 1)
     else:
-        epoch_ticks = np.linspace(1, num_epochs, num=min(10, num_epochs), dtype=int)
+        step = num_epochs // max_ticks
+        epoch_ticks = np.arange(1, num_epochs + 1, step)
 
     epoch_labels = [f'Epoch {tick}' for tick in epoch_ticks]
     ax1.set_xticks(epoch_ticks)
@@ -71,7 +74,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
             label='Learning Rate', 
             color='green', 
             )
-    # ax1_learning_rate.set_ylabel('Learning Rate')
+    ax1_learning_rate.set_ylabel('Learning Rate')
 
     # Combine legends from both axes
     lines_1, labels_1 = ax1.get_legend_handles_labels()
@@ -116,7 +119,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
             color='green', 
             )
 
-    # ax2_learning_rate.set_ylabel('Learning Rate')
+    ax2_learning_rate.set_ylabel('Learning Rate')
 
     # Combine legends from both axes
     lines_1, labels_1 = ax2.get_legend_handles_labels()
