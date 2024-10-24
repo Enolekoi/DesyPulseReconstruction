@@ -96,9 +96,13 @@ def calcFWHM(yd, tt):
 
 def generateAxis(N, resolution, center=0.0):
     # generate indicies
-    start = -(N // 2)
-    end = (N // 2) - 1
-    index = torch.arange(start, end+1)
+    if N % 2 == 0:
+        start = -(N // 2)
+        end = (N // 2) - 1
+    else:
+        start = -(N//2)
+        end = N // 2 
+    index = torch.arange(start, end + 1)
     
     # ensure the length is N
     assert len(index) == N
@@ -108,8 +112,7 @@ def generateAxis(N, resolution, center=0.0):
 
     return axis
 
-'''
-generateAxes()
+''' generateAxes()
 Generate time and wavelength Axes from the header of a spectrogram
 '''
 def generateAxes(header):
@@ -230,3 +233,53 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     noise = torch.cat((spectrogrm_matrix[:, :3].flatten(), spectrogrm_matrix[:, -3:].flatten()))
     resampled_matrix = torch.std(noise) * torch.randn(nTarget, nTarget) + torch.mean(noise)
 
+def piecewise_linear_interpolation(x, y, x_new):
+    y_new = torch.zeros_like(x_new)
+
+    for i in range(len(x) -1):
+        # find indicies in x_new that fall within the range [x[i], x[i+1]]
+        mask = (x_new >= x[i]) & (x_new <= x[i+1])
+
+        if mask.any():
+            # calculate the slope (m) between two points
+            delta_x = x[i+1] - x[i]
+            delta_y = y[i+1] - y[i]
+            m = delta_y / delta_x
+            # interpolate
+            y_new[mask] = y[i] + m * (x_new[mask] - x[i])
+
+    return y_new
+
+def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
+    c0 = 299792458
+    c2p = c0 * 2 * torch.pi
+
+    length = len(frequency_axis)
+    # print(f"length = {length}")
+    assert length == freq_intensity_matrix.size(1)
+
+    # initialize output matrix with zeros in the shape of the input matrix
+    wavelength_intensity_matrix = torch.zeros_like(freq_intensity_matrix)
+
+    # calculate the wavelength_axis and flip it for decending order
+    wavelength_axis = c2p / frequency_axis.flip(0) 
+    # get the equidistant wavelength axis
+    wavelength_min = wavelength_axis[0]
+    wavelength_max = wavelength_axis[-1]
+    wavelength_axis_equidistant = torch.linspace(wavelength_min, wavelength_max, length)
+    
+    # calculate wavelength intensity matrix (2.17 Trebino)
+    # itterate over each row 
+    for i, Sw in enumerate(freq_intensity_matrix):
+        # Element wise operation (Sw .* wavelength_axis.^2 / c2p)
+        Sl = torch.flip(Sw * (frequency_axis ** 2) / c2p, dims=[0])
+        # Reshape Sl to a 3D tensor for interpolation (batch size, channel_size, original length)
+        # Sl = Sl.unsqueeze(0).unsqueeze(0)
+
+        # perform linear interpolation
+        interpolated = piecewise_linear_interpolation(wavelength_axis, Sl, wavelength_axis_equidistant)
+
+        # assign interpolated values to freq_intensity_matrix
+        wavelength_intensity_matrix[i, :] = interpolated
+
+    return wavelength_axis_equidistant, wavelength_intensity_matrix

@@ -19,8 +19,8 @@ from torchvision import transforms     # Custom DenseNet
 import torch.nn as nn   # Custom DenseNet
 import logging
 
-import config
-import preprocessing
+from modules import config
+from modules import preprocessing
 logger = logging.getLogger(__name__)
 
 # TODO:
@@ -399,23 +399,38 @@ class ResampleSpectrogram(object):
         # create input_delay_axis and input_wavelength_axis
         input_delay_axis = preprocessing.generateAxis(N=num_delays, resolution = delay_step, center=0.0)
         input_wavelength = preprocessing.generateAxis(N=num_wavelength, resolution = wavelength_step, center = center_wavelength)
-        
         # get minimum and maximum values of the input_delay and input_wavelength tensors
         input_wavelength_min = input_wavelength.min()
         input_wavelength_max = input_wavelength.max()
+        output_wavelength_min = self.output_wavelength.min()
+        output_wavelength_max = self.output_wavelength.max()
+        # print(f"input  wavelength min = {input_wavelength_min}")
+        # print(f"input  wavelength max = {input_wavelength_max}")
+        # print(f"output wavelength min = {self.output_wavelength.min()}")
+        # print(f"output wavelength max = {self.output_wavelength.max()}")
         input_delay_min = input_delay_axis.min()
         input_delay_max = input_delay_axis.max()
+        output_delay_min = self.output_delay.min()
+        output_delay_max = self.output_delay.max()
+        # print(f"input  delay min = {input_delay_min}")
+        # print(f"input  delay max = {input_delay_max}")
+        # print(f"output delay min = {self.output_delay.min()}")
+        # print(f"output delay max = {self.output_delay.max()}")
 
         # normalize the output delay and frequencies to [-1,1]
-        normalized_output_delay      = 2 * (self.output_delay - input_delay_min) / (input_delay_max - input_delay_min) - 1 
-        normalized_output_wavelength = 2 * (self.output_wavelength - input_wavelength_min) / (input_wavelength_max - input_wavelength_min) - 1
-        
+        normalized_output_delay      = 2 * (self.output_delay - output_delay_min) / (output_delay_max - output_delay_min) - 1 
+        normalized_output_wavelength = 2 * (self.output_wavelength - output_wavelength_min) / (output_wavelength_max - output_wavelength_min) - 1  
+        # print(f"normalized output delay min = {normalized_output_delay.min()}")
+        # print(f"normalized output delay max = {normalized_output_delay.max()}")
+        # print(f"normalized output wavelength min = {normalized_output_wavelength.min()}")
+        # print(f"normalized output wavelength max = {normalized_output_wavelength.max()}")
         # create meshgrid for output delay and wavelength
         grid_delay, grid_wavelength = torch.meshgrid(normalized_output_delay,
                                               normalized_output_wavelength,
                                               indexing='ij')
         # grid sample needs the shape [H, W, 2]
         grid = torch.stack((grid_wavelength, grid_delay), dim=-1).unsqueeze(0)
+        # print(f"grid shape {grid.shape}")
         
         # reshape the spectrogram to [1, 1, H, W] for grid_sample
         spectrogram = spectrogram.unsqueeze(0).unsqueeze(0)
@@ -640,8 +655,6 @@ def removePhaseShiftAmbiguity(complex, index_center):
     
     return complex
 
-
-
 def frequency_axis_from_header(header):
     # constants
     c0 = 299792458
@@ -656,24 +669,30 @@ def frequency_axis_from_header(header):
     
     # number of frequency samples are equal to number of wavelength samples
     num_frequency = num_wavelength
-    half_num = num_frequency // 2
 
     # Create the wavelength axis
-    wavelengths_positive = torch.linspace(
-            center_wavelength,
-            center_wavelength + half_num * wavelength_step,
-            steps=half_num + 1
+    wavelength_axis = preprocessing.generateAxis(
+            N = num_wavelength,
+            resolution = wavelength_step,
+            center = center_wavelength
             )
-    wavelengths_negative = torch.linspace(
-            center_wavelength - half_num * wavelength_step,
-            center_wavelength,
-            steps=half_num
-            )
-    wavelength_axis = torch.cat((wavelengths_negative, wavelengths_positive[1:]))  # Avoid duplicate center
 
     frequency_axis = c2pi / wavelength_axis
     min_freq = frequency_axis.min()
     max_freq = frequency_axis.max()
-    equidistant_frequency_axis = torch.linspace(min_freq, max_freq, steps=num_wavelength)
+    equidistant_frequency_axis = torch.linspace(min_freq, max_freq, steps=num_frequency)
 
     return equidistant_frequency_axis
+
+def getCenterOfAxis(axis):
+    length_axis = axis.size(0)
+    # if the axis has an even number of elements
+    if length_axis % 2 == 0: 
+        center_index = length_axis // 2 + 1
+    # if the axis has an odd number of elements
+    else:
+        center_index = length_axis // 2
+    # get the center element
+    center_element =  axis[center_index]
+    return center_element
+
