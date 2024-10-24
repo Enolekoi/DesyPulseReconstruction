@@ -8,8 +8,8 @@ import torch
 import torch.nn as nn 
 import torch.nn.functional as F
 import torch.fft as trafo 
-import config
-import helper
+from modules import config
+from modules import helper
 
 import matplotlib.pyplot as plt
 
@@ -340,7 +340,7 @@ def createSHGmat(yta, Ts, wCenter):
     shiftFactor = torch.exp(-1j * 2 * wCenter * Ts * delayIdxVec).to(device)
     # print(f"Shift factor = {shiftFactor}")
 
-    shgMat = torch.zeros((N, N), dtype=torch.complex64)
+    shgMat = torch.zeros((N, N), dtype=torch.complex128)
 
     def fftshift(x):
         return torch.fft.fftshift(x)

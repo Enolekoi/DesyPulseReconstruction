@@ -3,11 +3,9 @@ test.py Script
 
 Script used for testing
 '''
-import sys
-sys.path.append('./modules/')
-import loss
-import config
-import helper
+from modules import loss
+from modules import config
+from modules import helper
 
 import torch
 import matplotlib.pyplot as plt

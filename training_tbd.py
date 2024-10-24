@@ -3,8 +3,6 @@ training.py Script
 
 Script containing the training of the pulse reconstruction model
 '''
-import sys
-sys.path.append('./modules/')
 # Libraries used in this file
 import numpy as np
 import torch
@@ -21,10 +19,10 @@ import logging
 
 from sklearn.model_selection import KFold
 # Classes, methods and functions from different files
-import helper
-import loss
-import visualize as vis
-import config
+from modules import helper
+from modules import loss
+from modules import visualize as vis
+from modules import config
 
 '''
 Variables and settings

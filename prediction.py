@@ -1,9 +1,6 @@
-import sys
-sys.path.append('./modules/')
-
-import config
-import helper
-import visualize as vis
+from .modules import config
+from .modules import helper
+from .modules import visualize as vis
 
 import torch
 import torchvision.transforms as transforms

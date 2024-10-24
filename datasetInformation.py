@@ -3,8 +3,6 @@ datasetInformation.py Script
  
 Script to get dataset information
 '''
-import sys
-sys.path.append('./modules/')
 import os
 import csv
 import logging
