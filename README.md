@@ -14,6 +14,8 @@ To train the model execute:
 Most parameters for training can be changed in `./config.py`.
 
 ## Files
+The labview and additional directories contain not up to date files, that will be replaced later.
+
 Some test scripts are placed inside the `./test/` directory. They can be called by `python -m test.module_name`
 
 Python modules are placed inside the `./modules/` directory.
