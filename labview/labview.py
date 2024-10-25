@@ -6,8 +6,10 @@ Module containing functions to be integrated into the labview programm
 import matplotlib.pyplot as plt
 import torch
 import sys
-from ... import modules.constants as c
-from ... import modules.preprocessing
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from modules import constants as c
+from modules import preprocessing
 
 '''
 plotSpectrogram
