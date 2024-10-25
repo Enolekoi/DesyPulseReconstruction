@@ -33,7 +33,7 @@ def predictTimeDomain(header_string, shg_matrix):
     # convert shg_matrix to tensor
     shg_matrix = torch.tensor(shg_matrix)
     # convert shg_matrix to numpy array for plotting
-    shg_matrix = shg_matrix.numpy()
+    shg_matrix = shg_matrix
 
     plt.ioff()    
     # Plot the spectrogram
