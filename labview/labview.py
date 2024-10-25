@@ -5,6 +5,7 @@ Module containing functions to be integrated into the labview programm
 '''
 import matplotlib.pyplot as plt
 import torch
+import numpy as np
 import sys
 import os
 # add path of parent directory, so that modules from the modules package can be used from labview
