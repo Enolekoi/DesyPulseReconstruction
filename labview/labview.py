@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import torch
 import sys
 import os
-sys.path.append('../')
+sys.path.insert(0, '..')
 from modules import constants as c
 from modules import preprocessing
 
