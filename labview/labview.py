@@ -69,7 +69,7 @@ def getHeaderFromString(header_string):
     header_list = [
             int(header_list[0]),
             int(header_list[1]),
-            float(header_list[2]), 
+            float(header_list[2]) * c.femto, 
             float(header_list[3]) * c.nano,
             float(header_list[4]) * c.nano
             ]
