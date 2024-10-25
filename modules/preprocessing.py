@@ -118,22 +118,22 @@ Generate time and wavelength Axes from the header of a spectrogram
 def generateAxes(header):
     # extract header information
     num_delays          = header[0] # number of delay samples
-    num_wavelength      = header[1] # number of wavelength samples time_step           = header[2] # time step between delays [s]
-    delay_step          = header[1] # number of wavelength samples time_step           = header[2] # time step between delays [s]
-    wavelength_step     = header[3] # distance between wavelength samples [m]
+    num_wavelength      = header[1] # number of wavelength samples
+    delta_tau           = header[2] # time step between delays [s]
+    delta_lambda        = header[3] # distance between wavelength samples [m]
     center_wavelength   = header[4] # center wavelength in [m]
 
     # create the delay axis
     delay_axis = generateAxis(
             N = num_delays, 
-            resolution = delay_step,
+            resolution = delta_tau,
             center = 0.0
             )
 
      # create the wavelength axis
     wavelength_axis = generateAxis(
             N = num_wavelength, 
-            resolution = wavelength_step,
+            resolution = delta_lambda,
             center = center_wavelength
             )
 
