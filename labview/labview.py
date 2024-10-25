@@ -38,6 +38,8 @@ def predictTimeDomain(header_string, shg_matrix):
     plt.ioff()    
     # Plot the spectrogram
     plt.figure(figsize=(10, 6))
+    plt.ticklabel_format(axis="x", style="sci", scilimits=(0,0))
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
     # plt.imshow(spectrogram, aspect='auto', origin='lower', extent=[t.min(), t.max(), f.min(), f.max()], cmap='viridis')
     plt.pcolormesh(
             delay_axis.numpy(),
