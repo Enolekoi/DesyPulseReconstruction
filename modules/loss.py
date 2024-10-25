@@ -3,16 +3,19 @@ loss.py Module
 
 Module containing functions used for loss functions
 '''
-
+#############
+## Imports ##
+#############
 import torch
 import torch.nn as nn 
 import torch.nn.functional as F
 import torch.fft as trafo 
+import matplotlib.pyplot as plt
+
 from modules import config
 from modules import helper
 from modules import constants as c
 
-import matplotlib.pyplot as plt
 
 '''
 PulseRetrievalLossFunction():

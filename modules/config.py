@@ -3,6 +3,9 @@ config.py Module
 
 Module used for changing training parameters
 '''
+#############
+## Imports ##
+#############
 import os
 import logging
 
@@ -27,10 +30,19 @@ Loss function options
 
 Options that configure how the loss function is used
 '''
-# Loss function
-PENALTY_FACTOR = 1
-PENALTY_THRESHOLD = 1
+PULSE_THRESHOLD = 0.001     # The Pulse is considered to be between the first and last value over the threshold
+PENALTY_FACTOR = 100.0      # Values outside the pulse are surpressed, by weighing their error with this factor
+WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
+WEIGTH_IMAG_PART = 1.0      # Weight used for MSE of the imaginary part
+WEIGTH_INTENSITY = 20.0     # Weight used for MSE of the intensity
+WEIGTH_PHASE = 5.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
+WEIGTH_FROG_ERROR = 0.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
+'''
+Scaling Options
+
+Options for scaling of labels, etc.
+'''
 MAX_REAL = 1    # The highest possible value the real part of the signal can be
 MAX_IMAG = 1    # The highest possible value the imaginary part of the signal can be
 
@@ -39,7 +51,6 @@ Resampled Matrix configuration
 
 Options that configure how the resampled spectrograms are created
 '''
-# Output Matrix information
 OUTPUT_NUM_DELAYS = 512                         # Number of delays the spectrograms get resampled to
 OUTPUT_NUM_WAVELENGTH = 512                     # Number of delays the spectrograms get resampled to
 OUTPUT_NUM_FREQUENCIES = OUTPUT_NUM_WAVELENGTH  # Number of frequencies the spectrograms get resampled to

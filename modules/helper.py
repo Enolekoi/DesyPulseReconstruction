@@ -6,18 +6,17 @@ Module containing various helper functions
 #############
 ## Imports ##
 #############
+import logging
+import os
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
-import matplotlib.pyplot as plt
-import os   # Dataloader, 
-import torch    # Dataloader,
+import torch
+import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset    # Dataloader,
-import torchvision.models as models     # Custom DenseNet
-from torchvision import transforms     # Custom DenseNet
-import torch.nn as nn   # Custom DenseNet
-import logging
+from torch.utils.data import Dataset
+import torchvision.models as models
+from torchvision import transforms
 
 from modules import config
 from modules import preprocessing

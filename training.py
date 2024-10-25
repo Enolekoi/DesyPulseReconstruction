@@ -3,7 +3,9 @@ training.py Script
 
 Script containing the training of the pulse reconstruction model
 '''
-# Libraries used in this file
+#############
+## Imports ##
+#############
 import random
 import logging
 import matplotlib 
@@ -164,13 +166,13 @@ logger.info(f"Starting training...")
 # define and configure the loss function
 # criterion = nn.MSELoss()
 criterion = loss_module.PulseRetrievalLossFunctionHilbertFrog(
-        pulse_threshold = 0.001,
-        penalty = 100.0,
-        real_weight = 5.0,
-        imag_weight = 1.0,
-        intensity_weight = 20.0,
-        phase_weight = 1.0,
-        frog_error_weight= 0.0
+        pulse_threshold = config.PULSE_THRESHOLD,
+        penalty = config.PENALTY_FACTOR,
+        real_weight = config.WEIGTH_REAL_PART,
+        imag_weight = config.WEIGTH_IMAG_PART,
+        intensity_weight = config.WEIGTH_INTENSITY,
+        phase_weight = config.WEIGTH_PHASE,
+        frog_error_weight= config.WEIGTH_FROG_ERROR
         )
 
 # define and configure the optimizer used
