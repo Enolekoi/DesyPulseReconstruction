@@ -39,7 +39,12 @@ def predictTimeDomain(header_string, shg_matrix):
     # Plot the spectrogram
     plt.figure(figsize=(10, 6))
     # plt.imshow(spectrogram, aspect='auto', origin='lower', extent=[t.min(), t.max(), f.min(), f.max()], cmap='viridis')
-    plt.imshow(delay_axis, wavelength_axis, shg_matrix.T, aspect='auto', origin='lower')
+    plt.pcolormesh(
+            delay_axis.numpy(),
+            wavelength_axis.numpy(),
+            shg_matrix.numpy().T,
+            shading='auto'
+            )
 
     # Add labels and title
     plt.colorbar(label='Intensity')  # or the appropriate unit for your data
