@@ -49,7 +49,7 @@ def predictTimeDomain(header_string, shg_matrix):
     # Add labels and title
     plt.colorbar(label='Intensity')  # or the appropriate unit for your data
     plt.ylabel("Wavelength [nm]")
-    plt.xlabel(f"Time [fs]; min ={delay_axis.min()}, max={delay_axis.max()}")
+    plt.xlabel(f"Time [fs]; min ={delay_axis.min():.4e}, max={delay_axis.max():.4e}")
     plt.title("SHG Matrix")
 
     # Show the plot
