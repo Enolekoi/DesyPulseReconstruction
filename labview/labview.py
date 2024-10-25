@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import torch
 import sys
 import os
+# add path of parent directory, so that modules from the modules package can be used from labview
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from modules import constants as c
 from modules import preprocessing
@@ -24,8 +25,14 @@ def predictTimeDomain(header_string, shg_matrix):
     Outputs:
         finished        -> Variable containing information if function is finished [boolean]
     '''
+    # get the header and create axes
     header = getHeaderFromString(header_string)
     delay_axis, wavelength_axis = preprocessing.generateAxes(header)
+    
+    # convert shg_matrix to tensor
+    shg_matrix = torch.tensor(shg_matrix)
+    # convert shg_matrix to numpy array for plotting
+    shg_matrix = shg_matrix.numpy()
 
     plt.ioff()    
     # Plot the spectrogram
