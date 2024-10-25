@@ -3,14 +3,17 @@ visualize.py Module
 
 Module containing functions used for plotting or visualizing data
 '''
+#############
+## Imports ##
+#############
+import logging
 import matplotlib.pyplot as plt
 import numpy as np
-import logging
+
 from modules import loss
 
 logger = logging.getLogger(__name__)
 
-# TODO:
 '''
 save_plot_training_loss()
 Plot the training loss ( Currently UNUSED )

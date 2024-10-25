@@ -1,3 +1,9 @@
+'''
+Preprocessing
+'''
+#############
+## Imports ##
+#############
 import matplotlib.pyplot as plt
 import os   # Dataloader, 
 import torch    # Dataloader,
@@ -8,6 +14,7 @@ import torch.nn as nn   # Custom DenseNet
 import logging
 import numpy as np
 
+from modules import constants as c
 '''
 zeroCrossings()
 Get the zero crossings of array y
@@ -81,7 +88,7 @@ def calcFWHM(yd, tt):
     index_m = np.argmax(yd)
 
     # substract the half of the maximum from yd
-    yd_half_maximum = yd - xm / 2
+    yd_half_maximum = yd - x_m / 2
     # get the zero crossings relative to half its maximum
     xz = zeroCrossings(tt, yd_half_maximum)
 
@@ -141,14 +148,13 @@ def generateAxes(header):
     return delay_axis, wavelength_axis
 
 def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
+    # TODO: Window function to minimize trails at the maxima of the time axis
     # extract header information
     num_delays          = header[0] # number of delay samples
     num_wavelength      = header[1] # number of wavelength samples
     time_step           = header[2] # time step between delays [s]
     wavelength_step     = header[3] # distance between wavelength samples [m]
     center_wavelength   = header[4] # center wavelength in [m]
-
-    c0 = 299792458
 
     # if nTarget is not even
     if nTarget % 2 !=0:
@@ -215,7 +221,7 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
         raise ValueError("fwhm_wavelength could not be calculated")
 
     # Trebino Formula 10.8
-    M = np.sqrt(fwhm_delay * fwhm_wavelength * nTarget * c0 / center_wavelength**2)
+    M = np.sqrt(fwhm_delay * fwhm_wavelength * nTarget * c.c0 / center_wavelength**2)
     opt_delay = fwhm_delay / M
     opt_wavelength = fwhm_wavelength / M
 
@@ -251,9 +257,6 @@ def piecewise_linear_interpolation(x, y, x_new):
     return y_new
 
 def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
-    c0 = 299792458
-    c2p = c0 * 2 * torch.pi
-
     length = len(frequency_axis)
     # print(f"length = {length}")
     assert length == freq_intensity_matrix.size(1)
@@ -262,7 +265,7 @@ def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
     wavelength_intensity_matrix = torch.zeros_like(freq_intensity_matrix)
 
     # calculate the wavelength_axis and flip it for decending order
-    wavelength_axis = c2p / frequency_axis.flip(0) 
+    wavelength_axis = c.c2p / frequency_axis.flip(0) 
     # get the equidistant wavelength axis
     wavelength_min = wavelength_axis[0]
     wavelength_max = wavelength_axis[-1]
@@ -272,7 +275,7 @@ def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
     # itterate over each row 
     for i, Sw in enumerate(freq_intensity_matrix):
         # Element wise operation (Sw .* wavelength_axis.^2 / c2p)
-        Sl = torch.flip(Sw * (frequency_axis ** 2) / c2p, dims=[0])
+        Sl = torch.flip(Sw * (frequency_axis ** 2) / c.c2p, dims=[0])
         # Reshape Sl to a 3D tensor for interpolation (batch size, channel_size, original length)
         # Sl = Sl.unsqueeze(0).unsqueeze(0)
 

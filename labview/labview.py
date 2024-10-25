@@ -14,17 +14,15 @@ from modules import constants as c
 from modules import preprocessing
 
 '''
-plotSpectrogram
+predictTimeDomain
 
-Plot a spectrogram using matplotlib
+Preprocess a spectrogram from labview and then predict a time domain pulse using a trained model
 '''
 def predictTimeDomain(header_string, shg_matrix):
     '''
     Inputs:
         header_string   -> header of the spectrogram as a string
         shg_matrix      -> Matrix containing spectrogram to be plotted 
-    Outputs:
-        finished        -> Variable containing information if function is finished [boolean]
     '''
     # get the header and create axes
     header = getHeaderFromString(header_string)
@@ -36,11 +34,12 @@ def predictTimeDomain(header_string, shg_matrix):
     shg_matrix = shg_matrix
 
     plt.ioff()    
-    # Plot the spectrogram
+    # Create a figure
     plt.figure(figsize=(10, 6))
-    plt.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))
-    # plt.imshow(spectrogram, aspect='auto', origin='lower', extent=[t.min(), t.max(), f.min(), f.max()], cmap='viridis')
+    # fix the axes to a specific exponent representation
+    plt.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # Plot the spectrogram
     plt.pcolormesh(
             delay_axis.numpy(),
             wavelength_axis.numpy(),
@@ -49,17 +48,13 @@ def predictTimeDomain(header_string, shg_matrix):
             )
 
     # Add labels and title
-    plt.colorbar(label='Intensity')  # or the appropriate unit for your data
-    plt.ylabel("Wavelength [nm]")
-    plt.xlabel(f"Time [fs]; min ={delay_axis.min():.4e}, max={delay_axis.max():.4e}, delta_tau = {header[2]:.4e}")
+    plt.colorbar(label='Intensity')
+    plt.ylabel("Wavelength [m]")
+    plt.xlabel("Time [s]")
     plt.title("SHG Matrix")
 
     # Show the plot
     plt.show()
-    
-    finished = True
-
-    return finished
 
 def getHeaderFromString(header_string):
     # split the string into a list

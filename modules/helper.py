@@ -21,6 +21,7 @@ import logging
 
 from modules import config
 from modules import preprocessing
+from modules import constants as c
 logger = logging.getLogger(__name__)
 
 # TODO:
@@ -326,9 +327,9 @@ class ReadSpectrogram(object):
         spectrogram_header = [
                 int(header[0]),             # number of delay samples
                 int(header[1]),             # number of wavelength samples
-                float(header[2]) * 1e-15,   # time step per delay [s]
-                float(header[3]) * 1e-9,    # wavelength step per sample [m]
-                float(header[4]) * 1e-9     # center wavelength [m]
+                float(header[2]) * c.femto, # time step per delay [s]
+                float(header[3]) * c.nano,  # wavelength step per sample [m]
+                float(header[4]) * c.nano   # center wavelength [m]
                 ]
         ######################
         ## Read Spectrogram ##
@@ -656,10 +657,6 @@ def removePhaseShiftAmbiguity(complex, index_center):
     return complex
 
 def frequency_axis_from_header(header):
-    # constants
-    c0 = 299792458
-    c2pi = c0 * 2 * torch.pi
-
     # get header information
     num_delays =        header[0]   # number of delay samples
     num_wavelength =    header[1]   # number of wavelength samples
@@ -677,7 +674,7 @@ def frequency_axis_from_header(header):
             center = center_wavelength
             )
 
-    frequency_axis = c2pi / wavelength_axis
+    frequency_axis = c.c2pi / wavelength_axis
     min_freq = frequency_axis.min()
     max_freq = frequency_axis.max()
     equidistant_frequency_axis = torch.linspace(min_freq, max_freq, steps=num_frequency)
@@ -695,4 +692,3 @@ def getCenterOfAxis(axis):
     # get the center element
     center_element =  axis[center_index]
     return center_element
-

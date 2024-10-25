@@ -10,6 +10,7 @@ import torch.nn.functional as F
 import torch.fft as trafo 
 from modules import config
 from modules import helper
+from modules import constants as c
 
 import matplotlib.pyplot as plt
 
@@ -157,7 +158,6 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
             config.OUTPUT_START_FREQUENCY,
             config.OUTPUT_END_FREQUENCY,
             )
-        self.c0 = 299792458
 
     def forward(self, prediction, label, spectrogram, header):
         '''
@@ -217,7 +217,7 @@ class PulseRetrievalLossFunctionHilbertFrog(nn.Module):
                 predicted_spectrogram = createSHGmat(
                         yta = prediction_analytical[i],
                         Ts = prediction_header[i][2],
-                        wCenter = 2*torch.pi * self.c0 / prediction_header[i][4]
+                        wCenter = c.c2pi / prediction_header[i][4]
                         )
 
                 # get FROG intensity from FROG amplitude
@@ -317,7 +317,8 @@ def getCenterFreq(yta, time_step):
 
     # Calculate center frequency (weighted average of the frequency bins)
     wCenter = torch.sum(positive_frequencies * positive_power_spectrum) / torch.sum(positive_power_spectrum)
-    return 2*torch.pi *wCenter
+    wCenter = wCenter * 2 * c.pi
+    return wCenter
 
 def createSHGmat(yta, Ts, wCenter):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

@@ -1,6 +1,7 @@
 import torch
 
 c0 = 299792458
+pi = torch.pi
 c2pi = 2 * torch.pi * c0
 
 kilo    = 1e3
