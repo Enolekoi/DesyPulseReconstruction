@@ -37,5 +37,3 @@ def predict_time_domain(header, shg_matrix):
     finished = True
 
     return finished
-
-plotResampledSpectrogram(spectrogram, header) 
