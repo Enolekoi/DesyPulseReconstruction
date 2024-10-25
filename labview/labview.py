@@ -5,9 +5,11 @@ Module containing functions to be integrated into the labview programm
 '''
 import matplotlib.pyplot as plt
 import torch
-
-import ..modules.constants as c
-import ..modules.preprocessing
+import sys
+import os
+sys.path.append('../')
+from modules import constants as c
+from modules import preprocessing
 
 '''
 plotSpectrogram
