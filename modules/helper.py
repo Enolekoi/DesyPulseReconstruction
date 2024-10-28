@@ -152,11 +152,9 @@ Outputs:
 '''
 def frequencyAxisFromHeader(header):
     # get header information
-    _, \
-    num_wavelength,\
-    _, \
-    delta_lambda, \
-    center_wavelength = header
+    num_wavelength      = header[1]
+    delta_lambda        = header[3]
+    center_wavelength   = header[4]
     
     # number of frequency samples are equal to number of wavelength samples
     num_frequency = num_wavelength
