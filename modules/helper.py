@@ -215,6 +215,50 @@ def normalizeSHGmatrix(shg_matrix):
     return shg_matrix_normalized
 
 '''
+batchPiecewiseLinearInterpolation()
+
+Description:
+    Interpolate signal
+Inputs:
+    x       -> [tensor] x-values of the signal
+    y       -> [tensor] y-values of the signal
+    x_new   -> [tensor] new x-values the y-Values are being interpolated to
+Outputs:
+    y_new   -> [tensor] interpolated y-values
+'''
+def batchPiecewiseLinearInterpolation(x, y, x_new):
+    x, y, x_new = x.float(), y.float(), x_new.float()
+
+    # find indicies for the intervals where each new x_new belongs
+    indices = torch.searchsorted(x, x_new, right=True) -1 # https://pytorch.org/docs/stable/generated/torch.searchsorted.html
+    indices = torch.clamp(indices, 0, len(x) -2)
+
+    # get x0, x1, y0, y1 for each interval
+    x0, x1 = x[indices], x[indices + 1]
+    y0, y1 = y[..., indices], y[..., indices + 1]
+
+    # compute linear interpolation weights
+    weights = (x_new - x0) / (x1 - x0)
+
+    # Interpolate
+    y_new = y0 + weights * (y1 - y0)
+    y_new = torch.zeros_like(x_new)
+
+    for i in range(len(x) -1):
+        # find indicies in x_new that fall within the range [x[i], x[i+1]]
+        mask = (x_new >= x[i]) & (x_new <= x[i+1])
+
+        if mask.any():
+            # calculate the slope (m) between two points
+            delta_x = x[i+1] - x[i]
+            delta_y = y[i+1] - y[i]
+            m = delta_y / delta_x
+            # interpolate
+            y_new[mask] = y[i] + m * (x_new[mask] - x[i])
+
+    return y_new
+
+'''
 piecewiseLinearInterpolation()
 
 Description:
