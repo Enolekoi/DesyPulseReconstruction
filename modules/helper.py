@@ -306,7 +306,7 @@ Outputs:
 '''
 def generateAxis(N, resolution, center=0.0):
     # generate indicies
-    if (N % 2 == 0).all():
+    if N % 2 == 0:
         start = -(N // 2)
         end = (N // 2) - 1
     else:
