@@ -115,7 +115,7 @@ class PulseRetrievalLossFunction(nn.Module):
                 
                 predicted_shg, new_header = createSHGmatFromAnalytical(
                         analytical_signal= prediction_analytical[i],
-                        header=prediction_header[i]
+                        header=prediction_header
                         )
                 # resample to correct size
                 predicted_shg_data = [predicted_shg, header[i]]
@@ -315,7 +315,7 @@ def calcFrogError(t_ref, t_meas):
     device = t_ref.device
     t_meas.to(device)
     # print(f"Max value of Tmeas = {torch.max(Tmeas)}")
-    print(t_meas.shape)
+    # print(t_meas.shape)
     M, N = t_meas.shape
     # print(f"M = {M}")
     # print(f"N = {N}")
