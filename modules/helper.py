@@ -268,10 +268,14 @@ Outputs:
     y_new   -> [tensor] interpolated y-values
 '''
 def piecewiseLinearInterpolation(x, y, x_new):
-    y_new = torch.zeros_like(x_new)
+    device = y.device
+    print(f"y device = {device}")
+    x = x.to(device)
+    x_new = x_new.to(device)
+    y_new = torch.zeros_like(x_new).to(device)
 
-    indices = torch.searchsorted(x, x_new)
-    indices = torch.clamp(indices, 1, len(x) -1)
+    indices = torch.searchsorted(x, x_new).to(device)
+    indices = torch.clamp(indices, 1, len(x) -1).to(device)
 
     lower_indices = indices - 1
     upper_indices = indices
