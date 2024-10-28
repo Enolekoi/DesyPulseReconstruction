@@ -216,7 +216,7 @@ def createSHGmat(analytical_signal, delta_tau, wCenter):
     shift_factor = torch.exp(-1j * 2 * wCenter * delta_tau * delay_index_vector).to(device)
     
     # initialize empty SHG-matrix
-    shg_matrix = torch.zeros((N, N), dtype=torch.complex128)
+    shg_matrix = torch.zeros((N, N), dtype=torch.complex128).to(device)
     
     def fftshift(x):
         return torch.fft.fftshift(x)
@@ -246,6 +246,7 @@ Outputs:
     new_header          -> [list] header of the newly created SHG-matrix
 '''
 def createSHGmatFromAnalytical(analytical_signal, header):
+    device = analytical_signal.device()
     # get information from header
     num_delays      = header[0]
     num_wavelength  = header[1]
