@@ -1,6 +1,131 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from modules import constants as c
+
+def getCenterFreq(yta, time_step):
+    device = yta.device
+    n = yta.size(0)
+    # Calculate the fft of the analytical signal
+    yta_fft = trafo.fft(yta)
+    # Calculate the frequencies that correspond to the fourier coefficients (frequency bins)
+    frequencies = trafo.fftfreq(n, d=time_step).to(device)
+    print(frequencies)
+
+    # Calculate the power spectrum
+    power_spectrum = (torch.abs(yta_fft)**2).to(device)
+
+    positive_frequencies = frequencies[frequencies >= 0]
+    positive_power_spectrum = power_spectrum[frequencies >= 0]
+
+    # Calculate center frequency (weighted average of the frequency bins)
+    wCenter = torch.sum(positive_frequencies * positive_power_spectrum) / torch.sum(positive_power_spectrum)
+    wCenter = wCenter * 2 * c.pi
+    return wCenter
+
+'''
+PulseRetrievalLossFunction()
+
+Description:
+    Loss function for pulse retrieval
+'''
+class PulseRetrievalLossFunction(nn.Module):
+    def __init__(self, penalty_factor=2.0, threshold=0.01):
+        '''
+        Inputs:
+            weight_factor   -> Factor by which the loss is multiplied, when the label is greater than the threshold [float]
+            threshold       -> Label value over which the higher weights get multiplied with the loss [float]
+        '''
+        super(PulseRetrievalLossFunction, self).__init__()
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.penalty_factor = penalty_factor
+        self.threshold = threshold
+        self.spec_transform = helper.ResampleSpectrogram(
+            config.OUTPUT_NUM_DELAYS, 
+            config.OUTPUT_TIMESTEP, 
+            config.OUTPUT_NUM_FREQUENCIES,
+            config.OUTPUT_START_FREQUENCY,
+            config.OUTPUT_END_FREQUENCY,
+            )
+
+    def forward(self, prediction, label, spectrogram):
+        device = spectrogram.device
+        # print(f"prediction size = {predictions}")
+        # print(f"label size = {labels}")
+        
+        # get the number of batches, as well as the shape of the labels
+        batch_size, num_elements = label.shape
+        # get half of elements
+        half_size = num_elements // 2
+        # get real and imaginary parts of labels and predictions
+        label_real = label[:, :half_size].to(device)
+        label_imag = label[:, half_size:].to(device)
+
+        prediction_real = prediction[:, :half_size].to(device)
+        prediction_imag = prediction[:, half_size:].to(device)
+
+        label_phase =      torch.atan2(label_imag, label_real)
+        prediction_phase = torch.atan2(prediction_imag, prediction_real)
+
+        label_intensity = label_real**2 + label_imag**2
+        prediction_intensity = prediction_real**2 + prediction_imag**2
+
+        label_analytical = torch.complex(label_real, label_imag).to(device)
+        prediction_analytical = torch.complex(prediction_real, prediction_imag).to(device)
+
+        # initialize loss
+        loss = 0.0
+
+        # Loop over each batch
+        for i in range(batch_size):
+            '''
+            MSE Error
+            '''
+            phase_mask = (abs(label_intensity[i]) < 0.01).to(device)
+
+            # Create masks for all absolute values higher than the threshold
+            mask_real_threshold = abs(label_real[i]) > self.threshold
+            mask_imag_threshold = abs(label_imag[i]) > self.threshold
+            
+            # if any real value is greater than the threshold
+            if torch.any(mask_real_threshold):
+                # get the first and last index, where a value is greater than the threshold
+                first_significant_idx_real = torch.nonzero(mask_real_threshold).min().item()
+                last_significant_idx_real = torch.nonzero(mask_real_threshold).max().item()
+            else:
+                first_significant_idx_real = 0
+                last_significant_idx_real = half_size - 1
+
+            # if any imaginary value is greater than the threshold
+            if torch.any(mask_imag_threshold):
+                # get the first and last index, where a value is greater than the threshold
+                first_significant_idx_imag = torch.nonzero(mask_imag_threshold).min().item()
+                last_significant_idx_imag = torch.nonzero(mask_imag_threshold).max().item()
+            else:
+                first_significant_idx_imag = 0
+                last_significant_idx_imag = half_size - 1
+
+            # Calculate MSE for the real and imaginary part
+            mse_real = (prediction_real[i] - label_real[i]) ** 2
+            mse_imag = (prediction_imag[i] - label_imag[i]) ** 2
+
+            # Apply penalty for values before the first significant index and after the last
+            mse_real[:first_significant_idx_real] *= self.penalty_factor
+            mse_real[last_significant_idx_real + 1:] *= self.penalty_factor
+            mse_imag[:first_significant_idx_imag] *= self.penalty_factor
+            mse_imag[last_significant_idx_imag + 1:] *= self.penalty_factor
+            
+            mse_intensity = (prediction_intensity[i] - label_intensity[i]) ** 2
+            mse_phase = (prediction_phase[i] - label_phase[i]) ** 2
+            mse_phase[phase_mask] = 0
+            # Add to total loss
+            loss += mse_real.mean() + mse_imag.mean() + 10*mse_intensity.mean() + 5*mse_phase.mean()
+        # devide by batch size 
+        loss = loss / batch_size
+
+        return loss
+
+
 '''
 ScaleLabel()
 Scales Labels to range [-1,1]

@@ -15,23 +15,26 @@ import logging
 import numpy as np
 
 from modules import constants as c
+
 '''
 zeroCrossings()
-Get the zero crossings of array y
+
+Description:
+    Get the zero crossings of tensor y
 Inputs:
-    x           -> x-values of the array
-    y           -> y-values of the array
-    tollerance  -> absolute y-values smaller than this will be considered 0
+    x           -> [tensor] x-values of the tensor
+    y           -> [tensor] y-values of the tensor
+    tollerance  -> [float] absolute y-values smaller than this will be considered 0
 Outputs:
-    x_zero      -> x-values where y = 0
+    x_zero      -> [tensor] x-values where y = 0
 '''
 def zeroCrossings(x, y, tollerance=1e-12):
+
     N = len(x)
+    x_zero = []
     # check if y and x have the same length
     if len(y) != N:
         raise ValueError("arguments x and y need to have the same length")
-
-    x_zero = []
 
     # check if first element of y is close to zero (smaller than +-tollerance)
     if abs(y[0]) < tollerance:
@@ -39,7 +42,6 @@ def zeroCrossings(x, y, tollerance=1e-12):
         x_zero.append(x[0])
     
     for n in range(1, N):
-
         # check if element is close to zero (smaller than +-tollerance)
         if abs(y[n]) < tollerance:
             # add value to zero crossings
@@ -50,24 +52,25 @@ def zeroCrossings(x, y, tollerance=1e-12):
         # this is the case when y[n] * y[n-1] is negative and y[n-1] isn't inside the tollerance considered zero
         if y[n] * y[n-1] < 0 and abs(y[n-1]) > tollerance:
             # calculate the difference between x[n] and x[n-1]
-            Dx = x[n] - x[n-1]
-            if not (Dx > 0):
+            delta_x = x[n] - x[n-1]
+            if not (delta_x > 0):
                 raise ValueError("Difference between x-values needs to be > 0")
 
             # calculate the difference between y[n] and y[n-1]
-            Dy = y[n] - y[n-1]
+            delta_y = y[n] - y[n-1]
+
             # calculate the slope
-            m = Dy / Dx
-            assert abs(m) > 0 # check that slope is not 0
+            slope = delta_y / delta_x
+            assert abs(slope) > 0 # check that slope is not 0
             
             # calculate intercepts
-            b1 = y[n-1] - m * x[n-1]
-            b2 = y[n] - m * x[n]
+            intercept_1 = y[n-1] - slope * x[n-1]
+            intercept_2 = y[n] - slope * x[n]
             # mean intercept
-            b = (b1 + b2) / 2
+            mean_intercept = (intercept_1 + intercept_2) / 2
             
             # calculate zero
-            zero = -b / m
+            zero = -mean_intercept / slope
             
             x_zero.append(zero)
 
@@ -75,17 +78,19 @@ def zeroCrossings(x, y, tollerance=1e-12):
 
 '''
 calcFWHM()
-calculate Full Width Half Maximum value
+
+Description:
+    Calculate Full Width Half Maximum value
 Inputs:
-    yd      ->
-    tt      ->
+    yd      -> [tensor] Signal of which the FWHM is to be calculated
+    tt      -> [tensor] Axis of the signal
 Outputs:
-    fwhm    -> full width half maximum
+    fwhm    -> [float] full width half maximum
 '''
 def calcFWHM(yd, tt):
     # find the maximum value and its index of yd
     x_m = np.max(yd)
-    index_m = np.argmax(yd)
+    # index_m = np.argmax(yd)
 
     # substract the half of the maximum from yd
     yd_half_maximum = yd - x_m / 2
@@ -101,6 +106,18 @@ def calcFWHM(yd, tt):
         fwhm = np.max(xz) - np.min(xz)
         return fwhm
 
+'''
+generateAxis()
+
+Description:
+    Generates Axis based on given parameters
+Inputs:
+    N           -> [int] length of the axis
+    resolution  -> [float] value between samples of the axis
+    center      -> [float] value around which the axis is centered
+Outputs:
+    axis        -> [tensor] Axis
+'''
 def generateAxis(N, resolution, center=0.0):
     # generate indicies
     if N % 2 == 0:
@@ -109,18 +126,27 @@ def generateAxis(N, resolution, center=0.0):
     else:
         start = -(N//2)
         end = N // 2 
+    # generate indices
     index = torch.arange(start, end + 1)
     
     # ensure the length is N
     assert len(index) == N
 
-    # create axis by scaling with resolution and adding center
+    # create axis by scaling indices with the resolution and adding center
     axis = index * resolution + center
 
     return axis
 
-''' generateAxes()
-Generate time and wavelength Axes from the header of a spectrogram
+''' 
+generateAxes()
+
+Description:
+    Generate time and wavelength Axes from the header of a SHG-matrix
+Inputs:
+    header              -> [list] header of a SHG-matrix
+Outputs:
+    delay_axis          -> [tensor] delay axis
+    wavelength_axis     -> [tensor] wavelength axis
 '''
 def generateAxes(header):
     # extract header information
@@ -147,6 +173,15 @@ def generateAxes(header):
     # return axes
     return delay_axis, wavelength_axis
 
+'''
+preprocessRawShgMatrix()
+
+Description:
+    Preprocess experimental SHG-matrixes
+Inputs:
+
+Outputs:
+'''
 def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     # TODO: Window function to minimize trails at the maxima of the time axis
     # extract header information
@@ -239,7 +274,19 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     noise = torch.cat((spectrogrm_matrix[:, :3].flatten(), spectrogrm_matrix[:, -3:].flatten()))
     resampled_matrix = torch.std(noise) * torch.randn(nTarget, nTarget) + torch.mean(noise)
 
-def piecewise_linear_interpolation(x, y, x_new):
+'''
+piecewiseLinearInterpolation()
+
+Description:
+    Interpolate signal
+Inputs:
+    x       -> [tensor] x-values of the signal
+    y       -> [tensor] y-values of the signal
+    x_new   -> [tensor] new x-values the y-Values are being interpolated to
+Outputs:
+    y_new   -> [tensor] interpolated y-values
+'''
+def piecewiseLinearInterpolation(x, y, x_new):
     y_new = torch.zeros_like(x_new)
 
     for i in range(len(x) -1):
@@ -256,6 +303,18 @@ def piecewise_linear_interpolation(x, y, x_new):
 
     return y_new
 
+'''
+intensityMatrixFreq2Wavelength()
+
+Description:
+    Convert an intensity SHG-matrix from frequency to wavelength
+Inputs:
+    frequency_axis                  -> [tensor] frequency axis of the intensity SHG-matrix
+    freq_intensity_matrix           -> [tensor] intensity SHG-matrix (frequency)
+Outputs:
+    wavelength_axis_equidistant     -> [tensor] wavelength axis of the new intensity SHG-matrix
+    wavelength_intensity_matrix     -> [tensor] intensity SHG-matrix (wavelength)
+'''
 def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
     length = len(frequency_axis)
     # print(f"length = {length}")
@@ -265,7 +324,7 @@ def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
     wavelength_intensity_matrix = torch.zeros_like(freq_intensity_matrix)
 
     # calculate the wavelength_axis and flip it for decending order
-    wavelength_axis = c.c2p / frequency_axis.flip(0) 
+    wavelength_axis = c.c2pi / frequency_axis.flip(0) 
     # get the equidistant wavelength axis
     wavelength_min = wavelength_axis[0]
     wavelength_max = wavelength_axis[-1]
@@ -275,12 +334,12 @@ def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
     # itterate over each row 
     for i, Sw in enumerate(freq_intensity_matrix):
         # Element wise operation (Sw .* wavelength_axis.^2 / c2p)
-        Sl = torch.flip(Sw * (frequency_axis ** 2) / c.c2p, dims=[0])
+        Sl = torch.flip(Sw * (frequency_axis ** 2) / c.c2pi, dims=[0])
         # Reshape Sl to a 3D tensor for interpolation (batch size, channel_size, original length)
         # Sl = Sl.unsqueeze(0).unsqueeze(0)
 
         # perform linear interpolation
-        interpolated = piecewise_linear_interpolation(wavelength_axis, Sl, wavelength_axis_equidistant)
+        interpolated = piecewiseLinearInterpolation(wavelength_axis, Sl, wavelength_axis_equidistant)
 
         # assign interpolated values to freq_intensity_matrix
         wavelength_intensity_matrix[i, :] = interpolated

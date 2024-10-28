@@ -10,6 +10,7 @@ import logging
 import os
 import pandas as pd
 import numpy as np
+from pandas.core import resample
 from scipy.interpolate import interp1d
 import torch
 import torch.nn as nn
@@ -23,17 +24,16 @@ from modules import preprocessing
 from modules import constants as c
 logger = logging.getLogger(__name__)
 
-# TODO:
-# Implement own MSE loss function that considers ambiguities in phase retrieval (Trebino, p. 63)
 '''
 CustomDenseNetReconstruction()
-Custom DenseNet class for reconstructiong the time domain pulse from spectrogram
+Description:
+    Custom DenseNet class for reconstructiong the time domain pulse from SHG-matrix
 '''
 class CustomDenseNetReconstruction(nn.Module):
     def __init__(self, num_outputs=512):
         '''
         Inputs:
-            num_outputs     -> Number of outputs of the DenseNet [int]
+            num_outputs -> [int] Number of outputs of the DenseNet
         '''
         super(CustomDenseNetReconstruction, self).__init__()
         # Load pretrained DenseNet
@@ -54,17 +54,16 @@ class CustomDenseNetReconstruction(nn.Module):
         nn.init.xavier_normal_(self.fc2.weight) # useful before tanh
         nn.init.zeros_(self.fc2.bias)  # Initialize biases to zero
 
-    def forward(self, spectrogram):
+    def forward(self, shg_matrix):
         '''
         Forward pass through the DenseNet
         Input:
-            spectrogram     -> input spectrogram [tensor]
+            shg_matrix      -> [tensor] SHG-matrix
         Output:
-            x   -> predicted output [tensor]
+            x               -> [tensor] predicted output
         '''
-        # half_size = int(self.num_outputs //2)
         # get the output of the densenet
-        x = self.densenet(spectrogram)
+        x = self.densenet(shg_matrix)
         x = torch.relu(x)
         x = self.fc1(x)
         x = torch.relu(x)
@@ -76,79 +75,32 @@ class CustomDenseNetReconstruction(nn.Module):
         return x
 
 '''
-CustomDenseNetTBDrms()
-Custom DenseNet class for predictiong the time bandwith product from spectrogram
-'''
-class CustomDenseNetTBDrms(nn.Module):
-    def __init__(self):
-        '''
-        Inputs:
-            num_outputs     -> Number of outputs of the DenseNet [int]
-        '''
-        super(CustomDenseNetTBDrms, self).__init__()
-        # Load pretrained DenseNet
-        self.densenet = models.densenet121(weights=models.DenseNet121_Weights.DEFAULT)
-        # self.densenet = models.densenet161(weights=models.DenseNet161_Weights.DEFAULT)
-        # Get the number of features before the last layer
-        num_features = self.densenet.classifier.in_features
-        # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
-        self.densenet.classifier = nn.Linear(num_features, 512)
-        self.fc1 = nn.Linear(512, 128)
-        self.fc2 = nn.Linear(128, 1)
-        # self.densenet.classifier = nn.Linear(num_features, num_outputs)
-
-        # initialize weights
-        nn.init.kaiming_normal_(self.fc1.weight, mode='fan_out', nonlinearity='relu') # useful before relu
-        nn.init.zeros_(self.fc1.bias)  # Initialize biases to zero
-        nn.init.xavier_normal_(self.fc2.weight) # useful before tanh
-        nn.init.zeros_(self.fc2.bias)  # Initialize biases to zero
-
-    def forward(self, spectrogram):
-        '''
-        Forward pass through the DenseNet
-        Input:
-            spectrogram     -> input spectrogram [tensor]
-        Output:
-            x   -> predicted output [tensor]
-        '''
-        # half_size = int(self.num_outputs //2)
-        # get the output of the densenet
-        x = self.densenet(spectrogram)
-        x = torch.relu(x)
-        x = self.fc1(x)
-        x = torch.relu(x)
-        x = self.fc2(x)
-        # x = torch.relu(x)
-        
-        # use sigmoid activation function for output to be between 0 and 1 -> then scale with 20 for larger TBDrms values
-        x = torch.sigmoid(x) * 15
-        return x
-
-'''
 LoadDatasetReconstruction()
-Custom Dataloader Class
+
+Description:
+    Custom Dataloader Class
 '''
 class LoadDatasetReconstruction(Dataset):
-    def __init__(self, path, label_filename, spec_filename, tbdrms_file, tbdrms_threshold, transform=None, target_transform=None):
+    def __init__(self, path, label_filename, shg_filename, tbdrms_file, tbdrms_threshold, transform=None, target_transform=None):
         '''
         Inputs:
-            path                -> root directory containing all data subdirectories [string]
-            label_filename      -> file name in which labels are stored [string]
-            spec_filename       -> file name in which spectrograms are stored [string] 
-            tbdrms_file         -> path to the CSV file containing subdirectory names and TBDrms values [string]
-            tbdrms_threshold    -> maximum allowed TBDrms value [float]
-            transform           -> transform used on spectrograms 
+            path                -> [string] root directory containing all data subdirectories
+            label_filename      -> [string] file name in which labels are stored
+            shg_filename        -> [string] file name in which SHG-matrixes are stored
+            tbdrms_file         -> [string] path to the CSV file containing subdirectory names and TBDrms values
+            tbdrms_threshold    -> [float] maximum allowed TBDrms value
+            transform           -> transform used on the SHG-Matrix
             target_transform    -> transforms used on labels
         '''
-        self.path = path    # root directory containing all data subdirectories
-        self.label_filename = label_filename      # file name in which labels are stored
-        self.spec_filename = spec_filename        # file name in which spectrograms are stored
+        self.path = path                            # root directory containing all data subdirectories
+        self.label_filename = label_filename        # file name in which labels are stored
+        self.shg_filename = shg_filename            # file name in which SHG-matrix are stored
         self.target_transform = target_transform    # transforms used on labels
-        self.tbdrms_threshold = tbdrms_threshold   # max allowed TBDrms value
-        self.transform = transform              # transform used on spectrograms
+        self.tbdrms_threshold = tbdrms_threshold    # max allowed TBDrms value
+        self.transform = transform                  # transform used on SHG-matrixes
         self.target_transform = target_transform    # transforms used on labels
 
-        self.data_dirs = os.listdir(self.path)  # list all subdirectories in the root directory
+        self.data_dirs = os.listdir(self.path)      # list all subdirectories in the root directory
         
         # Load the TBDrms file
         tbdrms_data = pd.read_csv(tbdrms_file)
@@ -171,126 +123,66 @@ class LoadDatasetReconstruction(Dataset):
         
     def __len__(self):
         '''
-        Returns the number of data subdirectories (number of spectrograms) [int]
+        Description:
+            Returns the number of data subdirectories (number of SHG-matrixes) [int]
         '''
         return len(self.data_dirs)              # return the number of data subdirectories
 
     def __getitem__(self, index):
         '''
-        Returns spectrogram and label of given index
+        Description:
+            Returns SHG-matrix and label of given index
         Inputs:
-            index   -> Index of spectrogram/label to be returned [int]
+            index           -> [int] Index of SHG-matrix/label to be returned
         Outputs:
-            output_spec     -> Spectrogram of given index [tensor]
-            label           -> Label of given index [tensor]
+            output_spec     -> [tensor] SHG-matrix of given index
+            label           -> [tensor] Label of given index
         '''
         data_dir = self.data_dirs[index]    # get the subdirectory for the given index
         label_path = os.path.join(self.path, data_dir, self.label_filename) # construct the full path to the label file
-        spec_path = os.path.join(self.path, data_dir, self.spec_filename)   # construct the full path to the spectrogram file
+        shg_path = os.path.join(self.path, data_dir, self.shg_filename)     # construct the full path to the SHG-matrix file
 
         if self.transform:
-            spec, header, output_spec, output_time, output_wavelength = self.transform(spec_path)
-            # output_spec = torch.tensor(output_spec, dtype=torch.float64)
+            _, header, output_shg, _, _ = self.transform(shg_path)
         else:
-            output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values, dtype=torch.half).unsqueeze(0)
+            output_shg = torch.tensor(pd.read_csv(shg_path, header=None, engine='python').values, dtype=torch.half).unsqueeze(0)
+            header = []
 
         if self.target_transform:
             label = self.target_transform(label_path)
-            # label = torch.from_numpy(label)
         else:
             label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
     
-        # create a spectrogram with 3 identical channels
-        # output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
-        # output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
+        # create a SHG-matrix with 3 identical channels
+        # output_shg = output_shg.unsqueeze(0)  # add another dimension to the tensor
+        # output_shg = output_shg.repeat(3,1,1) # repeat the SHG-matrix 3 times (3,h,w)
 
         # ensure correct output data type
-        if not isinstance(output_spec, torch.Tensor):
-            output_spec = torch.tensor(output_spec)
+        if not isinstance(output_shg, torch.Tensor):
+            output_shg = torch.tensor(output_shg)
 
         if not isinstance(label, torch.Tensor):
             label = torch.tensor(label)
 
-        return output_spec, label, header
+        return output_shg, label, header
 
 '''
-LoadDatasetTBDrms()
-Custom Dataloader Class
+ReadShgMatrix()
+
+Description:
+    Read the SHG-matrix and it's header from a given path
 '''
-class LoadDatasetTBDrms(Dataset):
-    def __init__(self, path, tbd_filename, spec_filename, transform=None, target_transform=None):
-        '''
-        Inputs:
-            path                -> root directory containing all data subdirectories [string]
-            tbd_filename        -> file name in which tbd_rms values are stored [string]
-            spec_filename       -> file name in which spectrograms are stored [string] 
-            transform           -> transform used on spectrograms 
-            target_transform    -> transforms used on labels
-        '''
-        self.path = path    # root directory containing all data subdirectories
-        self.spec_filename = spec_filename        # file name in which spectrograms are stored
-        self.target_transform = target_transform    # transforms used on labels
-        self.transform = transform              # transform used on spectrograms
-        self.target_transform = target_transform    # transforms used on labels
-
-        self.data_dirs = os.listdir(self.path)  # list all subdirectories in the root directory
-        
-        # Load the TBDrms file
-        tbdrms_data = pd.read_csv(tbd_filename)
-        print(tbdrms_data.shape)
-        tbdrms_data['index'] = tbdrms_data['Directory'].str[1].astype(int)
-        tbdrms_data = tbdrms_data.sort_values('index')
-        tbdrms_data = tbdrms_data.drop('index', axis=1)
-        self.tbdrms_values = tbdrms_data['TBDrms']
-
-    def __len__(self):
-        '''
-        Returns the number of data subdirectories (number of spectrograms) [int]
-        '''
-        return len(self.data_dirs)              # return the number of data subdirectories
-
-    def __getitem__(self, index):
-        '''
-        Returns spectrogram and label of given index
-        Inputs:
-            index   -> Index of spectrogram/label to be returned [int]
-        Outputs:
-            output_spec     -> Spectrogram of given index [tensor]
-            label           -> Label of given index [tensor]
-        '''
-        INDEX_TBD_COLUMN = 3
-        data_dir = self.data_dirs[index]    # get the subdirectory for the given index
-        spec_path = os.path.join(self.path, data_dir, self.spec_filename)   # construct the full path to the spectrogram file
-        label = self.tbdrms_values.iloc[index].squeeze(0)
-
-        if self.transform:
-            spec, input_time, input_wavelength, output_spec, output_time, output_wavelength = self.transform(spec_path)
-            # output_spec = torch.tensor(output_spec, dtype=torch.float64)
-        else:
-            output_spec = torch.tensor(pd.read_csv(spec_path, header=None, engine='python').values, dtype=torch.half).unsqueeze(0)
-
-        # create a spectrogram with 3 identical channels
-        # output_spec = output_spec.unsqueeze(0)  # add another dimension to the tensor
-        # output_spec = output_spec.repeat(3,1,1) # repeat the spectrogram 3 times (3,h,w)
-
-        # ensure correct output data type
-        if not isinstance(output_spec, torch.Tensor):
-            output_spec = torch.tensor(output_spec)
-
-        if not isinstance(label, torch.Tensor):
-            label = torch.tensor(label)
-
-        return output_spec, label
-
-'''
-ReadSpectrogram()
-Read the spectrogram from a given path
-'''
-class ReadSpectrogram(object):
+class ReadSHGmatrix(object):
     def __init__(self):
         pass
 
     def __call__(self, path):
+        '''
+        Inputs: 
+            path        -> [string] path to the shg_matrix
+        Outputs:
+            shg_data    -> [shg_matrix [tensor], header [list]] Original (not resampled) SHG-Matrix and Header 
+        '''
         # Constants 
         NUM_HEADER_ELEMENTS = 5
 
@@ -310,50 +202,49 @@ class ReadSpectrogram(object):
             if(first_line_len != NUM_HEADER_ELEMENTS):
                 # the file has the wrong format
                 logger.error(f"Number of Header Elements != {NUM_HEADER_ELEMENTS}")
-                # print(f'Error: Number of Header Elements != {NUM_HEADER_ELEMENTS}')
                 return
             else:
                 # fist line has 5 Elements -> write into header
                 header = first_line.split()
                 num_rows_skipped = 1 # header is in first row
-                # print("Header is in 1 rows")    # for debugging
         else:
             # first 2 lines have 5 Elements in total -> write into header
             header = first_line.split() + second_line.split()
             num_rows_skipped = 2 # header is in first 2 rows
-            # print("Header is in 2 rows")    # for debugging
         
-        spectrogram_header = [
+        shg_header = [
                 int(header[0]),             # number of delay samples
                 int(header[1]),             # number of wavelength samples
                 float(header[2]) * c.femto, # time step per delay [s]
                 float(header[3]) * c.nano,  # wavelength step per sample [m]
                 float(header[4]) * c.nano   # center wavelength [m]
                 ]
-        ######################
-        ## Read Spectrogram ##
-        ######################
-        spectrogram_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None, engine='python')
-        spectrogram = spectrogram_df.to_numpy()     # convert to numpy array 
-        spectrogram = torch.from_numpy(spectrogram)     # convert to tensor
+        #####################
+        ## Read SHG-matrix ##
+        #####################
+        shg_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None, engine='python')
+        shg_matrix = shg_df.to_numpy()              # convert to numpy array 
+        shg_matrix = torch.from_numpy(shg_matrix)   # convert to tensor
 
-        spectrogram_data = [spectrogram, spectrogram_header]
-        return spectrogram_data
+        shg_data = [shg_matrix, shg_header]
+        return shg_data
 
 '''
-ResampleSpectrogram()
-Transform Class that resamples spectrograms to use the same axis and size
+ResampleSHGmat()
+
+Description:
+    Transform Class that resamples SHG-matrix to use the same axis and size
 '''
-class ResampleSpectrogram(object):
+class ResampleSHGmatrix(object):
 
     def __init__(self, num_delays_out, delay_step_out, num_wavelength_out, start_wavelength_out, end_wavelength_out):
         '''
         Inputs:
-            num_delays_out          -> Number of delay values the resampled spectrogram will have [int]
-            delay_step_out            -> Length of time between delays [fs] [int]
-            num_wavelength_out     -> Number of frequency values the resampled spectrogram will have [int]
-            start_wavelength_out     -> Lowest wavelength value of the resampled spectrogram [nm] [int]
-            end_wavelength_out       -> Highest wavelength value of the resampled spectrogram [nm] [int]
+            num_delays_out          -> [int] Number of delay values the resampled SHG-matrix will have
+            delay_step_out          -> [float] Length of time between delays [s]
+            num_wavelength_out      -> [int] Number of frequency values the resampled SHG-matrix will have
+            start_wavelength_out    -> [float] Lowest wavelength value of the resampled SHG-matrix [m]
+            end_wavelength_out      -> [float] Highest wavelength value of the resampled SHG-matrix [m]
         '''
         self.output_number_rows = num_delays_out
         output_delay_step = delay_step_out
@@ -375,20 +266,21 @@ class ResampleSpectrogram(object):
         # initialize normalization
         self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
-    def __call__(self, spectrogram_data):
+    def __call__(self, shg_data):
         '''
-        Takes path of spectrogram and resamples it to the configured size and range of time/wavelength 
+        Description:
+            Takes path of a SHG-matrix and resamples it to the configured size and range of time/wavelength 
         Inputs:
-            spectrogram_data_freq   -> Original (not resampled) [spectrogram [tensor], header [list]]
+            shg_data                -> [shg_matrix [tensor], header [list]] Original (not resampled) SHG-Matrix and Header 
         Outputs:
-            output_spectrogram      -> Resampled spectrogram [tensor]
-            self.output_delay       -> Resampled delay axis [numpy array]
-            self.output_wavelength  -> Resampled wavelength axis [numpy array]
+            shg_resampled           -> [tensor] Resampled SHG-matrix 
+            self.output_delay       -> [tensor] Resampled delay axis
+            self.output_wavelength  -> [tensor] Resampled wavelength axis
         '''
-        spectrogram, header = spectrogram_data
-        device = spectrogram.device
+        shg_original, header = shg_data
+        device = shg_original.device
         # ensure all tensors are of the same type (float32)
-        spectrogram = spectrogram.float()
+        shg_original = shg_original.float()
 
         num_delays =            header[0]
         num_wavelength =        header[1]
@@ -399,44 +291,29 @@ class ResampleSpectrogram(object):
         # create input_delay_axis and input_wavelength_axis
         input_delay_axis = preprocessing.generateAxis(N=num_delays, resolution = delay_step, center=0.0)
         input_wavelength = preprocessing.generateAxis(N=num_wavelength, resolution = wavelength_step, center = center_wavelength)
-        # get minimum and maximum values of the input_delay and input_wavelength tensors
-        input_wavelength_min = input_wavelength.min()
-        input_wavelength_max = input_wavelength.max()
+
+        # get minimum and maximum values of the output_delay and output_wavelength tensors
         output_wavelength_min = self.output_wavelength.min()
         output_wavelength_max = self.output_wavelength.max()
-        # print(f"input  wavelength min = {input_wavelength_min}")
-        # print(f"input  wavelength max = {input_wavelength_max}")
-        # print(f"output wavelength min = {self.output_wavelength.min()}")
-        # print(f"output wavelength max = {self.output_wavelength.max()}")
-        input_delay_min = input_delay_axis.min()
-        input_delay_max = input_delay_axis.max()
+
         output_delay_min = self.output_delay.min()
         output_delay_max = self.output_delay.max()
-        # print(f"input  delay min = {input_delay_min}")
-        # print(f"input  delay max = {input_delay_max}")
-        # print(f"output delay min = {self.output_delay.min()}")
-        # print(f"output delay max = {self.output_delay.max()}")
 
         # normalize the output delay and frequencies to [-1,1]
         normalized_output_delay      = 2 * (self.output_delay - output_delay_min) / (output_delay_max - output_delay_min) - 1 
         normalized_output_wavelength = 2 * (self.output_wavelength - output_wavelength_min) / (output_wavelength_max - output_wavelength_min) - 1  
-        # print(f"normalized output delay min = {normalized_output_delay.min()}")
-        # print(f"normalized output delay max = {normalized_output_delay.max()}")
-        # print(f"normalized output wavelength min = {normalized_output_wavelength.min()}")
-        # print(f"normalized output wavelength max = {normalized_output_wavelength.max()}")
         # create meshgrid for output delay and wavelength
         grid_delay, grid_wavelength = torch.meshgrid(normalized_output_delay,
                                               normalized_output_wavelength,
                                               indexing='ij')
         # grid sample needs the shape [H, W, 2]
         grid = torch.stack((grid_wavelength, grid_delay), dim=-1).unsqueeze(0)
-        # print(f"grid shape {grid.shape}")
         
-        # reshape the spectrogram to [1, 1, H, W] for grid_sample
-        spectrogram = spectrogram.unsqueeze(0).unsqueeze(0)
+        # reshape the SHG-matrix  to [1, 1, H, W] for grid_sample
+        original_shg = original_shg.unsqueeze(0).unsqueeze(0)
         
-        output_spectrogram = F.grid_sample(
-                spectrogram.float(),
+        resampled_shg = F.grid_sample(
+                original_shg.float(),
                 grid.float(),
                 mode='bilinear',
                 padding_mode='zeros',
@@ -444,26 +321,28 @@ class ResampleSpectrogram(object):
                 )
 
         # get shape [H,W]
-        output_spectrogram = output_spectrogram.squeeze(0).squeeze(0)
+        resampled_shg = resampled_shg.squeeze(0).squeeze(0)
         # get shape [channel, H,W]
-        output_spectrogram = output_spectrogram.unsqueeze(0)  # add another dimension to the tensor
+        resampled_shg = resampled_shg.unsqueeze(0)  # add another dimension to the tensor
         # repeat for 3 channels
-        output_spectrogram = output_spectrogram.repeat([3,1,1]) # repeat the spectrogram 3 times (3,h,w)
+        resampled_shg = resampled_shg.repeat([3,1,1]) # repeat the SHG-matrix 3 times (3,h,w)
 
         # normalize
-        output_spectrogram = self.normalize(output_spectrogram)
+        resampled_shg = self.normalize(resampled_shg)
         
-        return spectrogram, header, output_spectrogram, self.output_delay, self.output_wavelength
+        return original_shg, header, resampled_shg, self.output_delay, self.output_wavelength
 
 '''
 ReadLabelFromEs()
-Read labels (real and imag part) from Es.dat
+
+Description:
+    Read labels (real and imag part) from Es.dat
 '''
 class ReadLabelFromEs(object):
     def __init__(self, number_elements):
         '''
         Inputs:
-            number_elements     -> Number of elements in the real and imaginary part array each [int]
+            number_elements -> [int] Number of elements in the real and imaginary part array each
         '''
         self.number_elements = number_elements
 
@@ -471,39 +350,32 @@ class ReadLabelFromEs(object):
         '''
         Read Ek.dat file and place columns in arrays
         Inputs:
-            Path -> Path to Ek.dat [string]
+            path    -> [string] path to Ek.dat
         Outputs:
-            label -> List of arrays containing real and imag part of time signal [tensor]
+            label   -> [tensor] list of arrays containing real and imag part of time signal
             [
-                time_axis   -> Array containing time axis of time signal [numpy array]
-                intensity   -> Array containing intensity of time signal (squared amplitude) [numpy array]
-                phase       -> Array containing phase of time signal [numpy array]
-                real_part   -> Array containing real part of time signal [numpy array]
-                imag_part   -> Array containing imaginary part of time signal [numpy array]
+                real_part   -> [tensor] Array containing real part of time signal
+                imag_part   -> [tensor] Array containing imaginary part of time signal
             ]
         '''
         # read the dataframe
         dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
-        
-        time_axis = dataframe[0].to_numpy()
-        intensity = dataframe[1].to_numpy()
-        phase = dataframe[2].to_numpy()
-        real = dataframe[3].to_numpy()
-        imag = dataframe[4].to_numpy()
+ 
+        # get real and imaginary part from dataframe
+        _, _, _, real, imag = dataframe
+        real = real.to_numpy()
+        imag = imag.to_numpy()
 
         # Resample to fit correct number of elements
-        # intensity = intensity.reshape(self.number_elements,2).mean(axis=1)
-        # phase = phase.reshape(self.number_elements,2).mean(axis=1)
-        original_indicies = np.linspace(0, len(real) - 1, num=len(real))
-        new_indicies = np.linspace(0, len(real) - 1, num=self.number_elements)
-        interpolation_func_real = interp1d(original_indicies, real, kind='linear')
-        interpolation_func_imag = interp1d(original_indicies, imag, kind='linear')
-        real = interpolation_func_real(new_indicies)
-        imag = interpolation_func_imag(new_indicies)
-        # real = real.reshape(self.number_elements,2).mean(axis=1)
-        # imag = imag.reshape(self.number_elements,2).mean(axis=1)
-
-        # label = np.concatenate( (intensity, phase), axis=0)
+        if ( len(real) + len(imag) ) != self.number_elements:
+            original_indicies = np.linspace(0, len(real) - 1, num=len(real))
+            new_indicies = np.linspace(0, len(real) - 1, num=self.number_elements)
+            interpolationFuncReal = interp1d(original_indicies, real, kind='linear')
+            interpolationFuncImag = interp1d(original_indicies, imag, kind='linear')
+            real = interpolationFuncReal(new_indicies)
+            imag = interpolationFuncImag(new_indicies)
+        
+        # create a tensor from real and imaginary parts
         label = np.concatenate( (real, imag), axis=0)
         label = torch.from_numpy(label)
         return label
@@ -516,19 +388,19 @@ class RemoveAmbiguitiesFromLabel(object):
     def __init__(self, number_elements):
         '''
         Inputs:
-            number_elements     -> Number of elements in the intensity and phase array each [int]
+            number_elements -> [int] Number of elements in the intensity and phase array each
         '''
         self.number_elements = number_elements
         # get the center index of each half
-        self.index_center = number_elements // 2
+        self.center_index = number_elements // 2
 
     def __call__(self, label):    
         '''
         Read Ek.dat file and place columns in arrays
         Inputs:
-            label -> List of arrays containing real and imag part of time signal [tensor]
+            label           -> [tensor] List of arrays containing real and imag part of time signal
         Outputs:
-            output_label -> List of arrays containing real and imag part of time signal, without ambiguities [tensor]
+            output_label    -> [tensor] List of arrays containing real and imag part of time signal, without ambiguities
         '''
         real_part = label[:self.number_elements]
         imag_part = label[self.number_elements:]
@@ -536,11 +408,11 @@ class RemoveAmbiguitiesFromLabel(object):
         complex_signal = torch.complex(real_part, imag_part)
 
         # remove translation ambiguity Eamb(t) = E(t-t0)
-        complex_signal = removeTranslationAmbiguity(complex_signal, self.index_center)
+        complex_signal = removeTranslationAmbiguity(complex_signal, self.center_index)
         # remove mirrored complex conjugate ambiguity Eamb(t) = E*(-t)
-        complex_signal = removeKonjugationAmbiguity(complex_signal, self.index_center)
+        complex_signal = removeConjugationAmbiguity(complex_signal, self.center_index)
         # remove absolute phase shift ambiguity Eamb(t) = E(t)*exp(j\phi0)
-        complex_signal = removePhaseShiftAmbiguity(complex_signal, self.index_center)
+        complex_signal = removePhaseShiftAmbiguity(complex_signal, self.center_index)
 
         real = complex_signal.real
         imag = complex_signal.imag
@@ -548,13 +420,17 @@ class RemoveAmbiguitiesFromLabel(object):
         output_label = torch.cat([real, imag])
         return output_label
 
+'''
+Scaler()
+
+'''
 class Scaler(object):
     def __init__(self, number_elements, max_real, max_imag):
         '''
         Inputs:
-            number_elements -> Number of elements in each the real and imaginary part of the array [int]
-            max_intensity   -> >= maximum real part in dataset [float]
-            max_phase       -> >= maximum imag part in dataset [float]
+            number_elements -> [int] Number of elements in each the real and imaginary part of the array
+            max_intensity   -> [float] >= maximum real part in dataset
+            max_phase       -> [float] >= maximum imag part in dataset
         '''
         self.number_elements = number_elements
         self.max_real = max_real
@@ -564,9 +440,9 @@ class Scaler(object):
         '''
         Scale the values of intensity and phase to [-1,1]
         Inputs:
-            label -> List of arrays containing real and imaginary part of time signal [tensor]
+            label           -> [tensor] List of arrays containing real and imaginary part of time signal
         Outputs:
-            scaled_label -> List of arrays containing real and imaginary part of the time signal scaled to [-1,1] [tensor]
+            scaled_label    -> [tensor] List of arrays containing real and imaginary part of the time signal scaled to [-1,1]
         '''
         # get real and imaginary part
         real_part = label[:self.number_elements]
@@ -583,9 +459,9 @@ class Scaler(object):
         '''
         Unscales the values of the phase to [-1,1]
         Inputs:
-            scaled_label -> List of arrays containing the real and imaginary part scaled to [-1,1] [tensor]
+            scaled_label    -> [tensor] List of arrays containing the real and imaginary part scaled to [-1,1]
         Outputs:
-            label -> List of arrays containing the real and imaginary part of time signal [tensor]
+            label           -> [tensor] List of arrays containing the real and imaginary part of time signal
         '''
         # get real and imaginary part
         scaled_real_part = scaled_label[:self.number_elements]
@@ -600,68 +476,111 @@ class Scaler(object):
 
         return unscaled_label
 
-def removeTranslationAmbiguity(complex, index_center):
+'''
+removeTranslationAmbiguity()
+
+Description:
+    Remove the delay translation ambiguity from a complex signal
+Inputs:
+    complex_signal          -> [tensor] complex signal
+    center_index            -> [int] center index of the signal tensor
+Outputs:
+    complex_signal_noambig  -> [tensor] complex signal without the delay translation ambiguity
+'''
+def removeTranslationAmbiguity(complex_signal, center_index):
     # calculate the intensity of the signal
-    intensity = complex.real**2 + complex.imag**2
+    intensity = complex_signal.real**2 + complex_signal.imag**2
 
     # get the index of the highest intensity value and calculate the offset
-    index_peak = torch.argmax(intensity)
-    offset = index_center - index_peak
+    peak_index = torch.argmax(intensity)
+    offset = center_index - peak_index
 
     # shift the real and imaginary parts to center the peak
-    complex = torch.roll(complex, offset.item() )
+    complex_signal_noambig = torch.roll(complex_signal, offset.item() )
 
-    return complex
-    
-def removeKonjugationAmbiguity(complex, index_center):
+    return complex_signal_noambig
+
+'''
+removeConjugationAmbiguity()
+
+Description:
+    Remove the complex conjugation and mirroring ambiguity from a complex signal
+Inputs:
+    complex_signal          -> [tensor] complex signal
+    center_index            -> [int] center index of the signal tensor
+Outputs:
+    complex_signal_noambig  -> [tensor] complex signal without the complex conjugation and mirroring ambiguity
+'''
+def removeConjugationAmbiguity(complex_signal, center_index):
     # calculate the intensity of the signal
-    intensity = complex.real**2 + complex.imag**2
+    intensity = complex_signal.real**2 + complex_signal.imag**2
 
     # Calculate the mean of the pulse before and after the center index
-    mean_first_half = torch.mean(intensity[:index_center])
-    mean_second_half = torch.mean(intensity[index_center:])
+    mean_first_half = torch.mean(intensity[:center_index])
+    mean_second_half = torch.mean(intensity[center_index:])
     
     # if the weight of the signal is in the second half of the signal
     if mean_second_half > mean_first_half:
         # conjugate the signal
-        complex = complex.conj()
+        complex_signal_conjugated = complex_signal.conj()
         # mirror the signal
-        complex = torch.flip(complex, dims=[0])
+        complex_signal_noambig = torch.flip(complex_signal_conjugated, dims=[0])
     # if the weight of the signal is in the first half of the signal
     else:   
         # do nothing
-        pass
+        complex_signal_noambig = complex_signal
 
-    return complex
+    return complex_signal_noambig
 
-def removePhaseShiftAmbiguity(complex, index_center):
+'''
+removePhaseShiftAmbiguity()
+
+Description:
+    Remove the absolute phase shift ambiguity from a complex signal
+Inputs:
+    complex_signal          -> [tensor] complex signal
+    center_index            -> [int] center index of the signal tensor
+Outputs:
+    complex_signal_noambig  -> [tensor] complex signal without the absolute phase shift ambiguity
+'''
+def removePhaseShiftAmbiguity(complex_signal, center_index):
     # calculate the phase of the signal [rad]
-    phase = torch.angle(complex)
+    phase = torch.angle(complex_signal)
 
     # get phase at center index
-    center_phase = phase[index_center]
+    center_phase = phase[center_index]
     # remove the absolute phase shift from the whole phase tensor
     phase = phase - center_phase
 
     # reconstruct real and imaginary parts
     # get the magnitude
-    magnitude = torch.abs(complex)
+    magnitude = torch.abs(complex_signal)
     # calculate real part
     real_part = magnitude * torch.cos(phase) 
     imag_part = magnitude * torch.sin(phase)
     
     # create a new complex tensor
-    complex = torch.complex(real_part, imag_part)
+    complex_signal_noambig = torch.complex(real_part, imag_part)
     
-    return complex
+    return complex_signal_noambig
 
-def frequency_axis_from_header(header):
+'''
+frequency_axis_from_header()
+
+Description:
+    Create an equidistant frequency_axis based on the header of a SHG-Matrix
+Inputs:
+    header                      -> [tensor] 5 element header containing information about a SHG-Matrix
+Outputs:
+    equidistant_frequency_axis  -> [tensor] equidistant frequency axis
+'''
+def frequencyAxisFromHeader(header):
     # get header information
-    num_delays =        header[0]   # number of delay samples
-    num_wavelength =    header[1]   # number of wavelength samples
-    time_step =         header[2]   # time step per delay [s]
-    wavelength_step =   header[3]   # wavelength step per sample [m]
-    center_wavelength = header[4]   # center wavelength [m]
+    _, \
+    num_wavelength,\
+    _, \
+    delta_lambda, \
+    center_wavelength = header
     
     # number of frequency samples are equal to number of wavelength samples
     num_frequency = num_wavelength
@@ -669,17 +588,30 @@ def frequency_axis_from_header(header):
     # Create the wavelength axis
     wavelength_axis = preprocessing.generateAxis(
             N = num_wavelength,
-            resolution = wavelength_step,
+            resolution = delta_lambda,
             center = center_wavelength
             )
-
+    # convert to frequency axis which is not equidistant
     frequency_axis = c.c2pi / wavelength_axis
+    # get extrema
     min_freq = frequency_axis.min()
     max_freq = frequency_axis.max()
+
+    # create an equidistant frequency axis
     equidistant_frequency_axis = torch.linspace(min_freq, max_freq, steps=num_frequency)
 
     return equidistant_frequency_axis
 
+'''
+getCenterOfAxis
+
+Description:
+    return the center element of an axis
+Inputs:
+    axis            -> [tensor] wavelength/delay/frequency axis
+Outputs:
+    center_element  -> [float] center element of the axis
+'''
 def getCenterOfAxis(axis):
     length_axis = axis.size(0)
     # if the axis has an even number of elements
@@ -689,5 +621,23 @@ def getCenterOfAxis(axis):
     else:
         center_index = length_axis // 2
     # get the center element
-    center_element =  axis[center_index]
+    center_element =  float(axis[center_index])
     return center_element
+
+'''
+normalizeSHGMatrix()
+
+Description:
+    normalize a SHG-matrix to the range [0, 1]
+Inputs:
+    shg_matrix              -> [tensor] SHG-matrix
+Outputs:
+    shg_matrix_normalized   -> [tensor] normalized SHG-matrix
+'''
+def normalizeSHGmatrix(shg_matrix):
+    shg_min = shg_matrix.min()
+    shg_max = shg_matrix.max()
+
+    shg_matrix_normalized = (shg_matrix - shg_min) / (shg_max - shg_min)
+
+    return shg_matrix_normalized

@@ -15,7 +15,8 @@ from modules import loss
 logger = logging.getLogger(__name__)
 
 '''
-save_plot_training_loss()
+savePlotTrainingLoss()
+
 Plot the training loss ( Currently UNUSED )
 Inputs:
     loss_values     -> Array containing training loss values

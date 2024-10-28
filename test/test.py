@@ -7,6 +7,7 @@ from modules import config
 from modules import helper
 from modules import loss
 from modules import preprocessing
+from modules import constants as c
 
 import copy
 import torch
@@ -17,13 +18,9 @@ import numpy as np
 PathSpec = "./additional/samples/as_gn00.dat"
 PathLabel = "./additional/samples/Es.dat"
 
-# Constants
-c0 = 299792458
-c2p = 2 * torch.pi *c0
-
 # Initialize transforms for the spectrograms
-spec_reader = helper.ReadSpectrogram()
-spec_transform = helper.ResampleSpectrogram(    
+shg_reader = helper.ReadSHGmatrix()
+shg_transform = helper.ResampleSHGmatrix(    
     config.OUTPUT_NUM_DELAYS, 
     config.OUTPUT_TIMESTEP, 
     config.OUTPUT_NUM_WAVELENGTH,
@@ -36,7 +33,7 @@ label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
 label_ambig = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
 
 '''
-read in label and spectrogram
+read in label and SHG-matrix
 '''
 # get label
 label = label_reader(PathLabel)
@@ -47,13 +44,13 @@ label_real = label[:label_size // 2]
 label_imag = label[label_size // 2:]
 label_analytical = torch.complex(label_real, label_imag)
 
-# read and resample spectrogram from file
-spec_data_file = spec_reader(PathSpec)
+# read and resample SHG-matrix from file
+shg_data_file = shg_reader(PathSpec)
 
-original_spectrogram_not_resampled, original_header,\
-original_spectrogram, original_output_time, original_output_wavelength = spec_transform(spec_data_file)
+original_shg_not_resampled, original_header,\
+original_shg, original_output_time, original_output_wavelength = shg_transform(shg_data_file)
 
-# get the information from the spectrogram header
+# get the information from the SHG-matrix header
 num_delays          = original_header[0]
 num_wavelength      = original_header[1]
 delta_tau           = original_header[2]
@@ -69,55 +66,70 @@ new_header = original_header
 create the new spectrogram from header and label (time domain signal)
 '''
 # get frequency axis from header
-temp_freq_axis = helper.frequency_axis_from_header(new_header)
+temp_freq_axis = helper.frequencyAxisFromHeader(new_header)
 
 # get center frequency
 new_center_freq = helper.getCenterOfAxis(temp_freq_axis)
 
+# calculate SHG-Matrix from analytical signal
+new_shg = loss.createSHGmat(label_analytical, delta_tau, new_center_freq / 2)
+# get the intensity SHG-Matrix
+new_shg = torch.abs(new_shg) ** 2
+# normalize the SHG-matrix to [0, 1]
+new_shg = helper.normalizeSHGmatrix(new_shg)
+
+# calculate angular frequency step between samples
+delta_nu = 1 / (N * delta_tau) 
+delta_omega = 2 * c.pi * delta_nu
+
 # get delay_axis
 new_delay_axis = preprocessing.generateAxis(N=num_delays, resolution=delta_tau, center=0.0)
+# get new frequency axis
+freq_axis = preprocessing.generateAxis(N=num_wavelength, resolution=delta_omega, center=new_center_freq)
 
-# calculate SHG Matrix from analytical signal
-new_spectrogram = loss.createSHGmat(label_analytical, delta_tau, new_center_freq // 2)
-# get the intensity SHG Matrix
-new_spectrogram = torch.abs(new_spectrogram) ** 2
-# normalize the spectrogram to [0, 1]
-new_spectrogram = (new_spectrogram - new_spectrogram.min()) / (new_spectrogram.max()-new_spectrogram.min())
-
-delta_nu = 1 / (N * delta_tau) 
-delta_omega = 2 * torch.pi * delta_nu
-
-# construct new frequency axis
-freq_axis = preprocessing.generateAxis(N=num_wavelength, resolution=delta_nu, center=new_center_freq)
+print(f"Min frequency value = {freq_axis.min():.3}")
+print(f"Max frequency value = {freq_axis.max():.3}")
 
 # convert to wavelength
-wavelength_axis, new_spectrogram = preprocessing.intensityMatrixFreq2Wavelength(freq_axis, new_spectrogram)
-new_center_wavelength = helper.getCenterOfAxis(wavelength_axis)
-new_delta_lambda = wavelength_axis[1] - wavelength_axis[0]
-print(f"new_center_wavelength       = {new_center_wavelength:.3e}")
-print(f"original_center_wavelength  = {center_wavelength:.3e}")
-print(f"difference                  = {(new_center_wavelength - center_wavelength):.3e}")
+new_wavelength_axis, new_shg = preprocessing.intensityMatrixFreq2Wavelength(freq_axis, new_shg)
+print(f"Min wavelength value = {new_wavelength_axis.min():.3}")
+print(f"Max wavelength value = {new_wavelength_axis.max():.3}")
+# get new center_wavelength
+new_center_wavelength = helper.getCenterOfAxis(new_wavelength_axis)
+# calculate wavelength step size between samples
+new_delta_lambda = float(new_wavelength_axis[1] - new_wavelength_axis[0])
 
+print(f"New center wavelength           = {(new_center_wavelength):.3}")
+print(f"Original center wavelength      = {(center_wavelength):.3}")
+print(f"Center wavelength difference    = {(new_center_wavelength - center_wavelength):.3}")
+
+# create the header for the newly created shg-matrix
+new_num_delays = new_shg.size(1)
+new_num_wavelength = new_num_delays
 new_header = [
-        256,
-        256,
+        new_num_delays,
+        new_num_wavelength,
         delta_tau,
-        delta_lambda,
+        new_delta_lambda,
         new_center_wavelength
         ]
-# resample new spectrogram
-spec_data = [new_spectrogram, new_header]
 
-new_spectrogram_not_resampled, new_header,\
-new_spectrogram, new_output_time, new_output_wavelength = spec_transform(spec_data)
+print(f"Original Header = {original_header}")
+print(f"New Header      = {new_header}")
 
-# get original spectrogram (without 3 identical channels)
-new_spectrogram = new_spectrogram[1, :, :]
-original_spectrogram = original_spectrogram[1, :, :]
+# resample new SHG-matrix
+shg_data = [new_shg, new_header]
+
+new_shg_not_resampled, new_header,\
+new_shg, new_output_time, new_output_wavelength = shg_transform(shg_data)
+
+# get original SHG-matrix (without 3 identical channels)
+original_shg = original_shg[1, :, :]
+new_shg = new_shg[1, :, :]
 
 # normalize to [0, 1]
-original_spectrogram = (original_spectrogram - original_spectrogram.min()) / (original_spectrogram.max() - original_spectrogram.min())
-new_spectrogram = (new_spectrogram - new_spectrogram.min()) / (new_spectrogram.max()-new_spectrogram.min())
+original_shg = helper.normalizeSHGmatrix(original_shg)
+new_shg = helper.normalizeSHGmatrix(new_shg)
 
 '''
 Plot
@@ -128,7 +140,7 @@ ax = axs[0]
 cax0 = ax.pcolormesh(
         original_output_time.numpy(),
         original_output_wavelength.numpy(),
-        original_spectrogram.numpy().T,
+        original_shg.numpy().T,
         shading='auto'
         )
 ax.set_title('Originales Spektrum')
@@ -140,7 +152,7 @@ fig.colorbar(cax0, ax=ax)
 ax = axs[1]
 cax1 = ax.pcolormesh(new_output_time.numpy(),
                      new_output_wavelength.numpy(),
-                     new_spectrogram.numpy().T,
+                     new_shg.numpy().T,
                      shading='auto'
                      )
 ax.set_title('Aus Label erstelltes Spektrogramm')
@@ -148,11 +160,11 @@ ax.set_xlabel('Time [fs]')
 ax.set_ylabel('Wavelength [nm]')
 fig.colorbar(cax1, ax=ax)
 
-# Differenz der Spektrogramme
+# 
 ax = axs[2]
 cax2 = ax.pcolormesh(new_output_time.numpy(),
                      new_output_wavelength.numpy(),
-                     new_spectrogram.numpy().T-original_spectrogram.numpy().T,
+                     new_shg.numpy().T-original_shg.numpy().T,
                      shading='auto'
                      )
 ax.set_title('Differenz')

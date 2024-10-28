@@ -17,7 +17,7 @@ Options that configure parameters for the training process
 '''
 NUM_EPOCHS = 50     # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
-BATCH_SIZE = 10     # Amount of spectrograms trained at each step
+BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 70 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-8    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5     # TODO find description
@@ -49,11 +49,11 @@ MAX_IMAG = 1    # The highest possible value the imaginary part of the signal ca
 '''
 Resampled Matrix configuration
 
-Options that configure how the resampled spectrograms are created
+Options that configure how the resampled SHG-matrixes are created
 '''
-OUTPUT_NUM_DELAYS = 512                         # Number of delays the spectrograms get resampled to
-OUTPUT_NUM_WAVELENGTH = 512                     # Number of delays the spectrograms get resampled to
-OUTPUT_NUM_FREQUENCIES = OUTPUT_NUM_WAVELENGTH  # Number of frequencies the spectrograms get resampled to
+OUTPUT_NUM_DELAYS = 512                         # Number of delays the SHG-matrix get resampled to
+OUTPUT_NUM_WAVELENGTH = 512                     # Number of delays the SHG-matrix get resampled to
+OUTPUT_NUM_FREQUENCIES = OUTPUT_NUM_WAVELENGTH  # Number of frequencies the SHG-matrix get resampled to
 OUTPUT_TIMESTEP = 1.5*c.femto                   # Size of timestep between delays [fs]
 OUTPUT_START_WAVELENGTH = 226*c.nano            # Smallest wavelength in the dataset [nm]
 OUTPUT_END_WAVELENGTH = 528*c.nano              # Largest wavelength in the dataset [nm]
@@ -83,8 +83,8 @@ PredicitonPlotName = "post_training_prediction_"    # base name of prediction pl
 
 Path = "/mnt/data/desy/frog_simulated/grid_256_v3/" # Path to data used for training 
 TBDrmsFilename = "./TBDrms_grid_256_v3.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
-SpecFilename = "as_gn00.dat"    # Filename of the file containing the spectrograms
-LabelFilename = "Es.dat"        # Filename of the file containing the labels
+ShgFilename = "as_gn00.dat"    # Filename of the file containing the SHG-matrix
+LabelFilename = "Es.dat"        # Filename of the file containing the label
 
 
 logger = logging.getLogger(__name__)

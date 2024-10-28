@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 logger.info(config.DESCRIPTOR)
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
-logger.info(f"Spectrograms used: {config.SpecFilename}")
+logger.info(f"SHG-matrix used: {config.ShgFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
 logger.info(f"Batch size: {config.BATCH_SIZE} elements")
 logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
@@ -47,17 +47,17 @@ logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
 logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are used!")
 
 # Transforms (Inputs)
-# Read the Spectrograms and their headers
-spec_read = helper.ReadSpectrogram()
-# Resample the Spectrogram to the same delay and wavelength axes
-spec_resample = helper.ResampleSpectrogram(
+# Read the SHG-matrix and their headers
+shg_read = helper.ReadSHGmatrix()
+# Resample the SHG-matrix to the same delay and wavelength axes
+shg_resample = helper.ResampleSHGmatrix(
     config.OUTPUT_NUM_DELAYS, 
     config.OUTPUT_TIMESTEP, 
     config.OUTPUT_NUM_WAVELENGTH,
     config.OUTPUT_START_WAVELENGTH,
     config.OUTPUT_END_WAVELENGTH,
     )
-spec_transform = transforms.Compose([spec_read, spec_resample])
+shg_transform = transforms.Compose([shg_read, shg_resample])
 
 # Transforms (Labels)
 # Read the Labels
@@ -65,6 +65,7 @@ label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
 # Remove the trivial ambiguities from the labels
 label_remove_ambiguieties = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
 # Scale the Labels to the correct amplitude
+# TODO: Change Scaler
 scaler = helper.Scaler(
     number_elements=config.OUTPUT_SIZE, 
     max_real=config.MAX_REAL, 
@@ -118,10 +119,10 @@ logger.info("Loading Data...")
 data = helper.LoadDatasetReconstruction(
         path=config.Path,
         label_filename=config.LabelFilename,
-        spec_filename=config.SpecFilename,
+        shg_filename=config.ShgFilename,
         tbdrms_file=config.TBDrmsFilename,  # Path to the file containing TBDrms values
         tbdrms_threshold=config.TBDRMS_THRESHOLD,  # TBDrms threshold for filtering    
-        transform=spec_transform,
+        transform=shg_transform,
         target_transform=label_transform
         )
 ################
@@ -165,7 +166,7 @@ logger.info(f"Starting training...")
 # loss function
 # define and configure the loss function
 # criterion = nn.MSELoss()
-criterion = loss_module.PulseRetrievalLossFunctionHilbertFrog(
+criterion = loss_module.PulseRetrievalLossFunction(
         pulse_threshold = config.PULSE_THRESHOLD,
         penalty = config.PENALTY_FACTOR,
         real_weight = config.WEIGTH_REAL_PART,
@@ -220,21 +221,21 @@ for epoch in range(config.NUM_EPOCHS):
     # place model into training mode
     model.train()       
     # itterate over train data
-    for i, (spectrograms, labels, header) in enumerate(train_loader):
+    for i, (shg_matrix, label, header) in enumerate(train_loader):
         ###############
         ## Load Data ##
         ###############
-        # send spectrogram and label data to selected device
-        spectrograms = spectrograms.float().to(device)
-        labels = labels.float().to(device)
+        # send shg_matrix and label data to selected device
+        shg_matrix = shg_matrix.float().to(device)
+        label = label.float().to(device)
         
         ##################
         ## Forward pass ##
         ##################
         # get the predicted output from the model
-        outputs = model(spectrograms)
+        outputs = model(shg_matrix)
         # calculate the loss
-        loss = criterion(outputs, labels, spectrograms, header)
+        loss = criterion(outputs, label, shg_matrix, header)
 
         ###################
         ## Backward pass ##
@@ -274,21 +275,21 @@ for epoch in range(config.NUM_EPOCHS):
     # 
     with torch.no_grad():   # disable gradient computation for evaluation
         # itterate over validation data
-        for spectrograms, labels, header in validation_loader:
+        for shg_matrix, label, header in validation_loader:
             ###############
             ## Load Data ##
             ###############
-            # convert spectrograms and labels to float and send them to the device
-            spectrograms = spectrograms.float().to(device)
-            labels = labels.float().to(device)
+            # convert shg_matrix and label to float and send them to the device
+            shg_matrix = shg_matrix.float().to(device)
+            label = label.float().to(device)
 
             ##################
             ## Forward pass ## 
             ##################
             # calculate prediction
-            outputs = model(spectrograms)
+            outputs = model(shg_matrix)
             # calcultate validation loss
-            validation_loss = criterion(outputs, labels, spectrograms, header)
+            validation_loss = criterion(outputs, label, shg_matrix, header)
             # place validation loss into list
             validation_losses.append(validation_loss.item())
 
@@ -334,15 +335,15 @@ model.eval()
 # don't calculate gradients
 with torch.no_grad():
     # iterate over test data
-    for spectrograms, labels, header in test_loader:
-        # convert spectrograms and labels to float and send them to the device
-        spectrograms = spectrograms.float().to(device)
-        labels = labels.float().to(device)
+    for shg_matrix, label, header in test_loader:
+        # convert shg_matrix and labels to float and send them to the device
+        shg_matrix = shg_matrix.float().to(device)
+        label = label.float().to(device)
         
         # calculate the predicted output
-        outputs = model(spectrograms)
+        outputs = model(shg_matrix)
         # get the loss
-        test_loss = criterion(outputs, labels, spectrograms, header)
+        test_loss = criterion(outputs, label, shg_matrix, header)
         # place the loss in a list
         test_losses.append(test_loss.item())
 
@@ -354,13 +355,13 @@ with torch.no_grad():
     if len(test_data) > 0:
         # get a random sample
         test_sample = random.choice(test_data)
-        spectrogram, label, header = test_sample
-        # adding an extra dimension to spectrogram and label to simulate a batch size of 1
-        spectrogram = spectrogram.unsqueeze(0)
+        shg_matrix, label, header = test_sample
+        # adding an extra dimension to shg_matrix and label to simulate a batch size of 1
+        shg_matrix = shg_matrix.unsqueeze(0)
         label = label.unsqueeze(0)
-        # send spectrogram to device and make prediction
-        spectrogram = spectrogram.float().to(device)
-        prediction = model(spectrogram) 
+        # send shg_matrix to device and make prediction
+        shg_matrix = shg_matrix.float().to(device)
+        prediction = model(shg_matrix) 
         # send label and prediction to cpu, so that it can be plotted
         label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
