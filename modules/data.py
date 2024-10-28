@@ -243,18 +243,20 @@ class ResampleSHGmatrix(object):
                 )
 
         # resample along the delay axis
-        delay_resampled = helper.batchPiecewiseLinearInterpolation(
-                input_delay_axis,
-                shg_original,
-                self.output_delay
-                )
+        delay_resampled = torch.stack([
+            helper.piecewiseLinearInterpolation(input_delay_axis,
+                                         shg_original[:, i],
+                                         self.output_delay)
+            for i in range(shg_original.shape[1])
+            ], dim=1)
 
         # resample along the wavelength axis
-        shg_resampled = helper.batchPiecewiseLinearInterpolation(
-                input_wavelength_axis,
-                delay_resampled.transpose(0,1),
-                self.output_wavelength
-                ).transpose(0,1)
+        shg_resampled = torch.stack([
+            helper.piecewiseLinearInterpolation(input_wavelength_axis,
+                                         delay_resampled[i, :],
+                                         self.output_wavelength)
+            for i in range(delay_resampled.shape[0])
+            ], dim=0)
 
         # add another dimension to the tensor
         shg_resampled = shg_resampled.unsqueeze(0)

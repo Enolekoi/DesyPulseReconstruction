@@ -227,34 +227,33 @@ Outputs:
     y_new   -> [tensor] interpolated y-values
 '''
 def batchPiecewiseLinearInterpolation(x, y, x_new):
-    x, y, x_new = x.float(), y.float(), x_new.float()
-
-    # find indicies for the intervals where each new x_new belongs
-    indices = torch.searchsorted(x, x_new, right=True) -1 # https://pytorch.org/docs/stable/generated/torch.searchsorted.html
-    indices = torch.clamp(indices, 0, len(x) -2)
-
-    # get x0, x1, y0, y1 for each interval
-    x0, x1 = x[indices], x[indices + 1]
-    y0, y1 = y[..., indices], y[..., indices + 1]
-
-    # compute linear interpolation weights
-    weights = (x_new - x0) / (x1 - x0)
-
-    # Interpolate
-    y_new = y0 + weights * (y1 - y0)
+    # Ensure inputs are at least 2D, adding a batch dimension if necessary
+    if x.ndim == 1:
+        x = x.unsqueeze(0)  # Add a batch dimension
+    if y.ndim == 1:
+        y = y.unsqueeze(0)  # Add a batch dimension
+    if x_new.ndim == 1:
+        x_new = x_new.unsqueeze(0)  # Add a batch dimension
+    # Initialize y_new with the same shape as x_new to store interpolated results
     y_new = torch.zeros_like(x_new)
 
-    for i in range(len(x) -1):
-        # find indicies in x_new that fall within the range [x[i], x[i+1]]
-        mask = (x_new >= x[i]) & (x_new <= x[i+1])
+    # Loop over each segment in x and y
+    for i in range(x.shape[-1] - 1):
+        # Expand dimensions for broadcasting in batch mode
+        x_i, x_next = x[:, i:i+1], x[:, i+1:i+2]
+        y_i, y_next = y[:, i:i+1], y[:, i+1:i+2]
+
+        # Calculate mask where x_new is within the current segment [x_i, x_next]
+        mask = (x_new >= x_i) & (x_new <= x_next)
 
         if mask.any():
-            # calculate the slope (m) between two points
-            delta_x = x[i+1] - x[i]
-            delta_y = y[i+1] - y[i]
+            # Calculate slopes (m) in batch
+            delta_x = x_next - x_i
+            delta_y = y_next - y_i
             m = delta_y / delta_x
-            # interpolate
-            y_new[mask] = y[i] + m * (x_new[mask] - x[i])
+
+            # Apply piecewise linear interpolation where mask is True
+            y_new[mask] = (y_i + m * (x_new[mask] - x_i))[mask]
 
     return y_new
 
@@ -273,17 +272,22 @@ Outputs:
 def piecewiseLinearInterpolation(x, y, x_new):
     y_new = torch.zeros_like(x_new)
 
-    for i in range(len(x) -1):
-        # find indicies in x_new that fall within the range [x[i], x[i+1]]
-        mask = (x_new >= x[i]) & (x_new <= x[i+1])
+    indices = torch.searchsorted(x, x_new)
+    indices = torch.clamp(indices, 1, len(x) -1)
 
-        if mask.any():
-            # calculate the slope (m) between two points
-            delta_x = x[i+1] - x[i]
-            delta_y = y[i+1] - y[i]
-            m = delta_y / delta_x
-            # interpolate
-            y_new[mask] = y[i] + m * (x_new[mask] - x[i])
+    lower_indices = indices - 1
+    upper_indices = indices
+
+    x_lower = x[lower_indices]
+    x_upper = x[upper_indices]
+    y_lower = y[lower_indices]
+    y_upper = y[upper_indices]
+
+    delta_y = y_upper - y_lower
+    delta_x = x_upper - x_lower
+    m = delta_y / delta_x
+
+    y_new = y_lower + m * (x_new - x_lower)
 
     return y_new
 
