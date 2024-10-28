@@ -19,6 +19,8 @@ from modules import helper
 from modules import loss as loss_module
 from modules import visualize as vis
 from modules import config
+from modules import data
+from modules import models
 
 '''
 Variables and settings
@@ -35,6 +37,7 @@ logging.basicConfig(
             ]
 )
 logger = logging.getLogger(__name__)
+
 # Log some information
 logger.info(config.DESCRIPTOR)
 logger.info(f"Writing into log file: {config.log_filepath}")
@@ -48,9 +51,9 @@ logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are u
 
 # Transforms (Inputs)
 # Read the SHG-matrix and their headers
-shg_read = helper.ReadSHGmatrix()
+shg_read = data.ReadSHGmatrix()
 # Resample the SHG-matrix to the same delay and wavelength axes
-shg_resample = helper.ResampleSHGmatrix(
+shg_resample = data.ResampleSHGmatrix(
     config.OUTPUT_NUM_DELAYS, 
     config.OUTPUT_TIMESTEP, 
     config.OUTPUT_NUM_WAVELENGTH,
@@ -61,15 +64,13 @@ shg_transform = transforms.Compose([shg_read, shg_resample])
 
 # Transforms (Labels)
 # Read the Labels
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
+label_reader = data.ReadLabelFromEs(config.OUTPUT_SIZE)
 # Remove the trivial ambiguities from the labels
-label_remove_ambiguieties = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
+label_remove_ambiguieties = data.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
 # Scale the Labels to the correct amplitude
-# TODO: Change Scaler
-scaler = helper.Scaler(
+scaler = data.Scaler(
     number_elements=config.OUTPUT_SIZE, 
-    max_real=config.MAX_REAL, 
-    max_imag=config.MAX_IMAG
+    max_value=config.MAX_VALUE
     )
 # scale to [0, 1] 
 label_scaler = scaler.scale
@@ -88,7 +89,7 @@ Load Model
 '''
 logger.info("Loading Model...")
 # Load custom DenseNet
-model = helper.CustomDenseNetReconstruction(
+model = models.CustomDenseNetReconstruction(
     num_outputs=config.OUTPUT_SIZE
     )
 # Define location of pretrained weights
@@ -116,7 +117,7 @@ Load Data
 # print('Loading Data...')
 logger.info("Loading Data...")
 # configure the data loader
-data = helper.LoadDatasetReconstruction(
+data_loader = data.LoadDatasetReconstruction(
         path=config.Path,
         label_filename=config.LabelFilename,
         shg_filename=config.ShgFilename,
@@ -129,7 +130,7 @@ data = helper.LoadDatasetReconstruction(
 ## Split Data ##
 ################
 # get the length of the dataset
-length_dataset = len(data)
+length_dataset = len(data_loader)
 logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios of train, validation and test data
@@ -141,7 +142,7 @@ logger.info(f"Size of validation data: {validation_size}")
 logger.info(f"Size of test data:       {test_size}")
 
 # split the dataset accordingly
-train_data, validation_data, test_data = random_split(data, [train_size, validation_size, test_size])   # split data
+train_data, validation_data, test_data = random_split(data_loader, [train_size, validation_size, test_size])   # split data
 
 # define the data loaders for training and validation
 train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)

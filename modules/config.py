@@ -43,8 +43,8 @@ Scaling Options
 
 Options for scaling of labels, etc.
 '''
-MAX_REAL = 1    # The highest possible value the real part of the signal can be
-MAX_IMAG = 1    # The highest possible value the imaginary part of the signal can be
+MAX_VALUE = 1   # The highest possible value the label can be
+
 
 '''
 Resampled Matrix configuration

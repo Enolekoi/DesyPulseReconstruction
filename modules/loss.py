@@ -8,11 +8,11 @@ Module containing functions used for loss functions
 #############
 import torch
 import torch.nn as nn 
-import torch.nn.functional as F
 import torch.fft as trafo 
 import matplotlib.pyplot as plt
 
 from modules import config
+from modules import data
 from modules import helper
 from modules import constants as c
 
@@ -52,7 +52,7 @@ class PulseRetrievalLossFunction(nn.Module):
         self.frog_error_weight = frog_error_weight
         self.mse_weight_sum = real_weight + imag_weight + intensity_weight + phase_weight
          
-        self.spec_transform = helper.ResampleSHGmat(
+        self.shg_transform = data.ResampleSHGmatrix(
             config.OUTPUT_NUM_DELAYS, 
             config.OUTPUT_TIMESTEP, 
             config.OUTPUT_NUM_FREQUENCIES,
@@ -70,7 +70,6 @@ class PulseRetrievalLossFunction(nn.Module):
             loss            -> [float] loss
         '''
         device = shg_matrix.device
-        shg_shape = shg_matrix.shape
         # get the number of batches, as well as the shape of the labels
         batch_size, num_elements = label.shape
         # get half of elements
@@ -114,27 +113,19 @@ class PulseRetrievalLossFunction(nn.Module):
                 # get original SHG-matrix (without 3 identical channels)
                 original_shg = original_shg[0]
                 
-                # create new SHG-matrix
-                predicted_shg = createSHGmat(
-                        yta = prediction_analytical[i],
-                        Ts = prediction_header[i][2],
-                        wCenter = c.c2pi / prediction_header[i][4]
+                predicted_shg, new_header = createSHGmatFromAnalytical(
+                        analytical_signal= prediction_analytical[i],
+                        header=prediction_header[i]
                         )
-
-                # get FROG intensity from FROG amplitude
-                predicted_shg = (torch.abs(predicted_shg)**2).to(device)
-                predicted_shg = helper.normalizeSHGMatrix(predicted_shg)
-
+                # resample to correct size
                 predicted_shg_data = [predicted_shg, header]
-                _, prediction_header, predicted_shg, _, _ = self.spec_transform(predicted_shg_data)
+                _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
 
-                # print(f"1 = {torch.max(predicted_shg)}")
                 # calculate_frog_error
                 frog_error = calcFrogError(
-                        Tref  = original_shg, 
-                        Tmeas = predicted_shg
+                        t_ref  = original_shg, 
+                        t_meas = predicted_shg
                         )
-                print(f"FROG Error: {frog_error}")
             
             '''
             Weighted MSE-Error
@@ -250,49 +241,93 @@ Description:
 Inputs:
     analytical_signal   -> [tensor] analytical signal
     header              -> [list] header containing information of a SHG-matrix
+Outputs:
+    shg_matrix          -> [tensor] SHG-matrix
+    new_header          -> [list] header of the newly created SHG-matrix
 '''
-def createSHGmatFromAnalytic(analytical_signal, header):
+def createSHGmatFromAnalytical(analytical_signal, header):
     # get information from header
     num_delays, \
-    num_wavelenght, \
+    num_wavelength, \
     delta_tau, \
-    delta_lambda, \
-    lambda_center = header
+    _, \
+    _ = header
     
-    assert num_delays == num_wavelenght
+    assert num_delays == num_wavelength
+    
+    N = num_delays
 
-    # create temporary frequency axis for determining the center frequency
-    temp_freq_axis = helper.frequency_axis_from_header(header)
+    # create temporary angular frequency axis for determining the center frequency
+    temp_freq_axis = helper.frequencyAxisFromHeader(header)
+
+    # get the angular center frequency from the temporary frequency axis
+    center_frequency = helper.getCenterOfAxis(temp_freq_axis)
+
+    # calculate SHG-Matrix from analytical signal
+    shg_matrix_freq = createSHGmat(analytical_signal, delta_tau, center_frequency / 2)
+    # get the intensity SHG-Matrix
+    shg_matrix_freq = torch.abs(shg_matrix_freq) ** 2
+    # normalize the SHG-matrix to [0, 1] 
+    shg_matrix_freq = helper.normalizeSHGmatrix(shg_matrix_freq)
+
+    # calculate angular frequency step between samples
+    delta_nu = 1 / (N * delta_tau) 
+    delta_omega = 2 * c.pi * delta_nu
+    
+    # get frequency axis 
+    frequency_axis = helper.generateAxis(N=num_wavelength, resolution=delta_omega, center=center_frequency)
+
+    # convert to wavelength
+    wavelength_axis, shg_matrix = helper.intensityMatrixFreq2Wavelength(frequency_axis, shg_matrix_freq)
+    # get new center_wavelength
+    new_center_wavelength = helper.getCenterOfAxis(wavelength_axis)
+    # calculate wavelength step size between samples
+    new_delta_lambda = float(wavelength_axis[1] - wavelength_axis[0])
+
+    # get shape of the new SHG-matrix
+    new_num_delays = shg_matrix.size(0)
+    new_num_wavelength = shg_matrix.size(1)
+
+    # create the header for the newly created shg-matrix
+    new_header = [
+        new_num_delays,
+        new_num_wavelength,
+        delta_tau,
+        new_delta_lambda,
+        new_center_wavelength
+        ]
+
+    return shg_matrix, new_header
 
 '''
 calcFrogError()
 
 Description:
-    Calculate the FROG-Error out of two SHG-matrixes
+    Calculate the FROG-Error out of two FROG-Traces
 Inputs:
-    t_ref       -> [tensor] reference SHG-matrix
-    t_meas      -> [tensor] SHG-matrix to be compared
+    t_ref       -> [tensor] reference FROG-Trace
+    t_meas      -> [tensor] FROG-Trace to compare
 Outputs:
     frog_error  -> [float] FROG-Error
 '''
-def calcFrogError(Tref, Tmeas):
-    device = Tref.device
-    Tmeas.to(device)
+def calcFrogError(t_ref, t_meas):
+    device = t_ref.device
+    t_meas.to(device)
     # print(f"Max value of Tmeas = {torch.max(Tmeas)}")
-    M, N = Tmeas.shape
+    M, N = t_meas.shape
     # print(f"M = {M}")
     # print(f"N = {N}")
-    sum1 = torch.sum(Tmeas* Tref)
+    sum1 = torch.sum(t_meas* t_ref)
     # print(f"Tmeas * Tref = {sum1}")
-    sum2 = torch.sum(Tref* Tref)
+    sum2 = torch.sum(t_ref* t_ref)
     # print(f"Tref * Tref =  {sum2}")
     mu = sum1 / sum2 # pypret gl. 13 (s. 497)
     # print(f"mu = {mu}")
     # print(f"Tmeas-mu*Tref = {Tmeas - mu*Tref}")
-    r = torch.sum(Tmeas - mu*Tref)**2    # pypret gl. 11 (s. 497) 
+    r = torch.sum(t_meas - mu*t_ref)**2    # pypret gl. 11 (s. 497) 
     # print(f"r = {r}")
     if(r != 0.0):
-        normFactor = M * N * torch.max(Tmeas)**2    # pypret gl. 12 (s. 497)
+        normFactor = M * N * torch.max(t_meas)**2    # pypret gl. 12 (s. 497)
         # print(f"norm factor = {normFactor}")
         frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
     else:

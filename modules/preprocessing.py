@@ -4,17 +4,12 @@ Preprocessing
 #############
 ## Imports ##
 #############
-import matplotlib.pyplot as plt
-import os   # Dataloader, 
-import torch    # Dataloader,
-import torch.nn.functional as F
-from torch.utils.data import Dataset    # Dataloader,
-import torchvision.models as models     # Custom DenseNet
-import torch.nn as nn   # Custom DenseNet
 import logging
+import torch
 import numpy as np
 
 from modules import constants as c
+from modules import helper
 
 '''
 zeroCrossings()
@@ -106,72 +101,6 @@ def calcFWHM(yd, tt):
         fwhm = np.max(xz) - np.min(xz)
         return fwhm
 
-'''
-generateAxis()
-
-Description:
-    Generates Axis based on given parameters
-Inputs:
-    N           -> [int] length of the axis
-    resolution  -> [float] value between samples of the axis
-    center      -> [float] value around which the axis is centered
-Outputs:
-    axis        -> [tensor] Axis
-'''
-def generateAxis(N, resolution, center=0.0):
-    # generate indicies
-    if N % 2 == 0:
-        start = -(N // 2)
-        end = (N // 2) - 1
-    else:
-        start = -(N//2)
-        end = N // 2 
-    # generate indices
-    index = torch.arange(start, end + 1)
-    
-    # ensure the length is N
-    assert len(index) == N
-
-    # create axis by scaling indices with the resolution and adding center
-    axis = index * resolution + center
-
-    return axis
-
-''' 
-generateAxes()
-
-Description:
-    Generate time and wavelength Axes from the header of a SHG-matrix
-Inputs:
-    header              -> [list] header of a SHG-matrix
-Outputs:
-    delay_axis          -> [tensor] delay axis
-    wavelength_axis     -> [tensor] wavelength axis
-'''
-def generateAxes(header):
-    # extract header information
-    num_delays          = header[0] # number of delay samples
-    num_wavelength      = header[1] # number of wavelength samples
-    delta_tau           = header[2] # time step between delays [s]
-    delta_lambda        = header[3] # distance between wavelength samples [m]
-    center_wavelength   = header[4] # center wavelength in [m]
-
-    # create the delay axis
-    delay_axis = generateAxis(
-            N = num_delays, 
-            resolution = delta_tau,
-            center = 0.0
-            )
-
-     # create the wavelength axis
-    wavelength_axis = generateAxis(
-            N = num_wavelength, 
-            resolution = delta_lambda,
-            center = center_wavelength
-            )
-
-    # return axes
-    return delay_axis, wavelength_axis
 
 '''
 preprocessRawShgMatrix()
@@ -201,7 +130,7 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
 
     # 1: Symmetrically trim around the center of mass in the delay direction
     # get the sum of all spectrogram values
-    total_int = torch.sum(spectrogrm_matrix)
+    total_int = float(torch.sum(spectrogrm_matrix))
 
     com_delay_index = 0     # index of center of mass in delay direction
     # enumerate over rows
@@ -209,7 +138,7 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
         # get sum of row
         sum_row = torch.sum(row)
         # add previous center of mas index and the current index multiplied by the sum of the current row
-        com_delay_index += (index + 1) * sum_row
+        com_delay_index += float((index + 1) * sum_row )
     
     com_delay_index = round(com_delay_index / total_int)
     distance_to_end = min(num_delays - com_delay_index, com_delay_index)
@@ -248,7 +177,7 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
 
     # get the full width half mean of the wavelengths
     # get the wavelength axis
-    _, wavelenght_axis = generateAxes(header)
+    _, wavelenght_axis = helper.generateAxes(header)
     mean_spectrogram_profile = torch.mean(symmetric_spectrogram_matrix, dim=1)
     fwhm_wavelength = calcFWHM(mean_spectrogram_profile, wavelenght_axis)
     # if calcFWHM throws an error:
@@ -273,75 +202,3 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     # get noise from first and last three columns of the original spectrogram    
     noise = torch.cat((spectrogrm_matrix[:, :3].flatten(), spectrogrm_matrix[:, -3:].flatten()))
     resampled_matrix = torch.std(noise) * torch.randn(nTarget, nTarget) + torch.mean(noise)
-
-'''
-piecewiseLinearInterpolation()
-
-Description:
-    Interpolate signal
-Inputs:
-    x       -> [tensor] x-values of the signal
-    y       -> [tensor] y-values of the signal
-    x_new   -> [tensor] new x-values the y-Values are being interpolated to
-Outputs:
-    y_new   -> [tensor] interpolated y-values
-'''
-def piecewiseLinearInterpolation(x, y, x_new):
-    y_new = torch.zeros_like(x_new)
-
-    for i in range(len(x) -1):
-        # find indicies in x_new that fall within the range [x[i], x[i+1]]
-        mask = (x_new >= x[i]) & (x_new <= x[i+1])
-
-        if mask.any():
-            # calculate the slope (m) between two points
-            delta_x = x[i+1] - x[i]
-            delta_y = y[i+1] - y[i]
-            m = delta_y / delta_x
-            # interpolate
-            y_new[mask] = y[i] + m * (x_new[mask] - x[i])
-
-    return y_new
-
-'''
-intensityMatrixFreq2Wavelength()
-
-Description:
-    Convert an intensity SHG-matrix from frequency to wavelength
-Inputs:
-    frequency_axis                  -> [tensor] frequency axis of the intensity SHG-matrix
-    freq_intensity_matrix           -> [tensor] intensity SHG-matrix (frequency)
-Outputs:
-    wavelength_axis_equidistant     -> [tensor] wavelength axis of the new intensity SHG-matrix
-    wavelength_intensity_matrix     -> [tensor] intensity SHG-matrix (wavelength)
-'''
-def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
-    length = len(frequency_axis)
-    # print(f"length = {length}")
-    assert length == freq_intensity_matrix.size(1)
-
-    # initialize output matrix with zeros in the shape of the input matrix
-    wavelength_intensity_matrix = torch.zeros_like(freq_intensity_matrix)
-
-    # calculate the wavelength_axis and flip it for decending order
-    wavelength_axis = c.c2pi / frequency_axis.flip(0) 
-    # get the equidistant wavelength axis
-    wavelength_min = wavelength_axis[0]
-    wavelength_max = wavelength_axis[-1]
-    wavelength_axis_equidistant = torch.linspace(wavelength_min, wavelength_max, length)
-    
-    # calculate wavelength intensity matrix (2.17 Trebino)
-    # itterate over each row 
-    for i, Sw in enumerate(freq_intensity_matrix):
-        # Element wise operation (Sw .* wavelength_axis.^2 / c2p)
-        Sl = torch.flip(Sw * (frequency_axis ** 2) / c.c2pi, dims=[0])
-        # Reshape Sl to a 3D tensor for interpolation (batch size, channel_size, original length)
-        # Sl = Sl.unsqueeze(0).unsqueeze(0)
-
-        # perform linear interpolation
-        interpolated = piecewiseLinearInterpolation(wavelength_axis, Sl, wavelength_axis_equidistant)
-
-        # assign interpolated values to freq_intensity_matrix
-        wavelength_intensity_matrix[i, :] = interpolated
-
-    return wavelength_axis_equidistant, wavelength_intensity_matrix

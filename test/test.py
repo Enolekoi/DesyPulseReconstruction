@@ -4,23 +4,20 @@ test.py Script
 Script used for testing
 '''
 from modules import config
+from modules import data
 from modules import helper
 from modules import loss
-from modules import preprocessing
-from modules import constants as c
 
-import copy
 import torch
 import matplotlib.pyplot as plt
-import numpy as np
 
 # Define Paths
 PathSpec = "./additional/samples/as_gn00.dat"
 PathLabel = "./additional/samples/Es.dat"
 
 # Initialize transforms for the spectrograms
-shg_reader = helper.ReadSHGmatrix()
-shg_transform = helper.ResampleSHGmatrix(    
+shg_reader = data.ReadSHGmatrix()
+shg_transform = data.ResampleSHGmatrix(    
     config.OUTPUT_NUM_DELAYS, 
     config.OUTPUT_TIMESTEP, 
     config.OUTPUT_NUM_WAVELENGTH,
@@ -29,8 +26,8 @@ shg_transform = helper.ResampleSHGmatrix(
     )
 
 # Initialize transforms for the labels
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
-label_ambig = helper.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
+label_reader = data.ReadLabelFromEs(config.OUTPUT_SIZE)
+label_ambig = data.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
 
 '''
 read in label and SHG-matrix
@@ -60,62 +57,13 @@ center_wavelength   = original_header[4]
 assert num_delays == num_wavelength
 N = num_wavelength
 
-new_header = original_header
-
 '''
 create the new spectrogram from header and label (time domain signal)
 '''
-# get frequency axis from header
-temp_freq_axis = helper.frequencyAxisFromHeader(new_header)
-
-# get center frequency
-new_center_freq = helper.getCenterOfAxis(temp_freq_axis)
-
-# calculate SHG-Matrix from analytical signal
-new_shg = loss.createSHGmat(label_analytical, delta_tau, new_center_freq / 2)
-# get the intensity SHG-Matrix
-new_shg = torch.abs(new_shg) ** 2
-# normalize the SHG-matrix to [0, 1]
-new_shg = helper.normalizeSHGmatrix(new_shg)
-
-# calculate angular frequency step between samples
-delta_nu = 1 / (N * delta_tau) 
-delta_omega = 2 * c.pi * delta_nu
-
-# get delay_axis
-new_delay_axis = preprocessing.generateAxis(N=num_delays, resolution=delta_tau, center=0.0)
-# get new frequency axis
-freq_axis = preprocessing.generateAxis(N=num_wavelength, resolution=delta_omega, center=new_center_freq)
-
-print(f"Min frequency value = {freq_axis.min():.3}")
-print(f"Max frequency value = {freq_axis.max():.3}")
-
-# convert to wavelength
-new_wavelength_axis, new_shg = preprocessing.intensityMatrixFreq2Wavelength(freq_axis, new_shg)
-print(f"Min wavelength value = {new_wavelength_axis.min():.3}")
-print(f"Max wavelength value = {new_wavelength_axis.max():.3}")
-# get new center_wavelength
-new_center_wavelength = helper.getCenterOfAxis(new_wavelength_axis)
-# calculate wavelength step size between samples
-new_delta_lambda = float(new_wavelength_axis[1] - new_wavelength_axis[0])
-
-print(f"New center wavelength           = {(new_center_wavelength):.3}")
-print(f"Original center wavelength      = {(center_wavelength):.3}")
-print(f"Center wavelength difference    = {(new_center_wavelength - center_wavelength):.3}")
-
-# create the header for the newly created shg-matrix
-new_num_delays = new_shg.size(1)
-new_num_wavelength = new_num_delays
-new_header = [
-        new_num_delays,
-        new_num_wavelength,
-        delta_tau,
-        new_delta_lambda,
-        new_center_wavelength
-        ]
-
-print(f"Original Header = {original_header}")
-print(f"New Header      = {new_header}")
+new_shg, new_header = loss.createSHGmatFromAnalytical(
+        analytical_signal=label_analytical,
+        header=original_header
+        )
 
 # resample new SHG-matrix
 shg_data = [new_shg, new_header]
@@ -130,6 +78,10 @@ new_shg = new_shg[1, :, :]
 # normalize to [0, 1]
 original_shg = helper.normalizeSHGmatrix(original_shg)
 new_shg = helper.normalizeSHGmatrix(new_shg)
+
+# calculate the FROG-error
+frog_error = loss.calcFrogError(t_ref = original_shg, t_meas = new_shg)
+print(f"FROG-Error = {frog_error}")
 
 '''
 Plot
@@ -175,6 +127,6 @@ fig.colorbar(cax2, ax=ax)
 plt.tight_layout()
 
 # Zeige die Plots an
-plt.savefig("comparison_spectrograms.png")
+plt.savefig("comparison_shg.png")
 plt.show()
 # plt.close()
