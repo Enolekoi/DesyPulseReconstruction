@@ -246,7 +246,6 @@ Outputs:
     new_header          -> [list] header of the newly created SHG-matrix
 '''
 def createSHGmatFromAnalytical(analytical_signal, header):
-    device = analytical_signal.device()
     # get information from header
     num_delays      = header[0]
     num_wavelength  = header[1]
