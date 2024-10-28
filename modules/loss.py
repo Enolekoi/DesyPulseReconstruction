@@ -228,8 +228,8 @@ def createSHGmat(analytical_signal, delta_tau, wCenter):
         return torch.roll(x, shifts=shift, dims=0)
 
     for (matrix_index, delay_index) in enumerate(delay_index_vector):
-        analytical_shifted = circshift(analytical_signal, delay_index).to(device)
-        multiplied_matrixes = analytical_signal * analytical_shifted * shift_factor
+        analytical_shifted = circshift(analytical_signal, delay_index)
+        multiplied_matrixes = analytical_signal * analytical_shifted.to(device) * shift_factor
         fft_analytical = torch.fft.fft(fftshift(multiplied_matrixes))
         shg_matrix[matrix_index, :] = delta_tau * fftshift(fft_analytical)
 
