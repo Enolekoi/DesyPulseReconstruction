@@ -306,7 +306,7 @@ Outputs:
 '''
 def generateAxis(N, resolution, center=0.0):
     # generate indicies
-    if N % 2 == 0:
+    if N.item() % 2 == 0:
         start = -(N // 2)
         end = (N // 2) - 1
     else:
@@ -373,7 +373,6 @@ Outputs:
 '''
 def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
     device = freq_intensity_matrix.device
-    print(f"DEVICE = {device}")
     frequency_axis = frequency_axis.to(device)
 
     length = len(frequency_axis)
