@@ -115,10 +115,10 @@ class PulseRetrievalLossFunction(nn.Module):
                 
                 predicted_shg, new_header = createSHGmatFromAnalytical(
                         analytical_signal= prediction_analytical[i],
-                        header=prediction_header
+                        header=prediction_header[i]
                         )
                 # resample to correct size
-                predicted_shg_data = [predicted_shg, header[i]]
+                predicted_shg_data = [predicted_shg, header]
                 _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
 
                 predicted_shg = predicted_shg[0]
@@ -249,6 +249,7 @@ Outputs:
     new_header          -> [list] header of the newly created SHG-matrix
 '''
 def createSHGmatFromAnalytical(analytical_signal, header):
+    print(header)
     # get information from header
     num_delays      = header[0]
     num_wavelength  = header[1]
