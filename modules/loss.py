@@ -124,7 +124,7 @@ class PulseRetrievalLossFunction(nn.Module):
                 # calculate_frog_error
                 frog_error = calcFrogError(
                         t_ref  = original_shg, 
-                        t_meas = predicted_shg
+                        t_meas = predicted_shg[0]
                         )
             
             '''
