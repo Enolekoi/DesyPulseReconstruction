@@ -23,7 +23,7 @@ LEARNING_RATE = 1e-8    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 1.5  # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Testing training using hilbert transform for imaginary part - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Testing training using hilbert transform for imaginary part and FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
@@ -36,7 +36,7 @@ WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 1.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 20.0     # Weight used for MSE of the intensity
 WEIGTH_PHASE = 5.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
-WEIGTH_FROG_ERROR = 0.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
+WEIGTH_FROG_ERROR = 10.0    # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
 Scaling Options
