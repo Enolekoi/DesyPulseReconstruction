@@ -269,13 +269,12 @@ Outputs:
 '''
 def piecewiseLinearInterpolation(x, y, x_new):
     device = y.device
-    print(f"y device = {device}")
     x = x.to(device)
     x_new = x_new.to(device)
     y_new = torch.zeros_like(x_new).to(device)
 
     indices = torch.searchsorted(x, x_new).to(device)
-    indices = torch.clamp(indices, 1, len(x) -1).to(device)
+    indices = torch.clamp(indices, 1, len(x) -1)
 
     lower_indices = indices - 1
     upper_indices = indices
