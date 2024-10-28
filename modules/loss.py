@@ -121,10 +121,13 @@ class PulseRetrievalLossFunction(nn.Module):
                 predicted_shg_data = [predicted_shg, header[i]]
                 _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
 
+                predicted_shg = predicted_shg[0]
+                predicted_shg = helper.normalizeSHGmatrix(predicted_shg)
+
                 # calculate_frog_error
                 frog_error = calcFrogError(
                         t_ref  = original_shg, 
-                        t_meas = predicted_shg[0]
+                        t_meas = predicted_shg
                         )
             
             '''
