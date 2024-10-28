@@ -112,7 +112,7 @@ class PulseRetrievalLossFunction(nn.Module):
                 original_shg = shg_matrix[i]
                 # get original SHG-matrix (without 3 identical channels)
                 original_shg = original_shg[0]
-                print(header)
+                print(header[i])
                 predicted_shg, new_header = createSHGmatFromAnalytical(
                         analytical_signal= prediction_analytical[i],
                         header=prediction_header[i]
