@@ -305,14 +305,7 @@ Outputs:
     axis        -> [tensor] Axis
 '''
 def generateAxis(N, resolution, center=0.0):
-    # Ensure N is a tensor and convert it to a python integer if necessary
-    if isinstance(N, torch.Tensor):
-        if N.numel() == 1: # check if it has only one element
-            N = N.item()
-        else:
-            raise ValueError("N should be a single integer value or a tensor with one element")
-    elif not isinstance(N, int):
-            raise ValueError("N should be an integer or a tensor representing an integer")
+
     # generate indicies
     if N % 2 == 0:
         start = -(N // 2)
