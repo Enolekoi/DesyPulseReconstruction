@@ -369,6 +369,10 @@ Outputs:
     wavelength_intensity_matrix     -> [tensor] intensity SHG-matrix (wavelength)
 '''
 def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
+    device = freq_intensity_matrix.device
+    print(f"DEVICE = {device}")
+    frequency_axis = frequency_axis.to(device)
+
     length = len(frequency_axis)
     # print(f"length = {length}")
     assert length == freq_intensity_matrix.size(1)
@@ -387,7 +391,7 @@ def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
     # itterate over each row 
     for i, Sw in enumerate(freq_intensity_matrix):
         # Element wise operation (Sw .* wavelength_axis.^2 / c2p)
-        Sl = torch.flip(Sw * (frequency_axis ** 2) / c.c2pi, dims=[0])
+        Sl = torch.flip(Sw.to(device) * (frequency_axis ** 2) / c.c2pi, dims=[0])
         # Reshape Sl to a 3D tensor for interpolation (batch size, channel_size, original length)
         # Sl = Sl.unsqueeze(0).unsqueeze(0)
 

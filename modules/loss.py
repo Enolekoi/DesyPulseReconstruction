@@ -206,6 +206,8 @@ Outputs:
 def createSHGmat(analytical_signal, delta_tau, wCenter):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     N = len(analytical_signal)
+    # send the analytical_signal to the device
+    analytical_signal.to(device)
 
     # create a tensor storing indicies starting with -N/2 to N/2
     start = -N // 2
@@ -227,7 +229,7 @@ def createSHGmat(analytical_signal, delta_tau, wCenter):
 
     for (matrix_index, delay_index) in enumerate(delay_index_vector):
         analytical_shifted = circshift(analytical_signal, delay_index).to(device)
-        multiplied_matrixes = analytical_signal.to(device) * analytical_shifted * shift_factor.to(device)
+        multiplied_matrixes = analytical_signal * analytical_shifted * shift_factor
         fft_analytical = torch.fft.fft(fftshift(multiplied_matrixes))
         shg_matrix[matrix_index, :] = delta_tau * fftshift(fft_analytical)
 
