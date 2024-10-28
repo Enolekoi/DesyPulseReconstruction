@@ -18,7 +18,17 @@ The labview and additional directories contain not up to date files, that will b
 
 Some test scripts are placed inside the `./test/` directory. They can be called by `python -m test.module_name`
 
-Python modules are placed inside the `./modules/` directory.
+Python modules are placed inside the `./modules/` directory:
+- `./modules/config.py` contains the training configuration
+- `./modules/constants.py` contains constants
+- `./modules/data.py` contains functions for loading and transforming the SHG-matrix and labels
+- `./modules/helper.py` contains various helper functions
+- `./modules/loss.py` contains functions needed for the loss function
+- `./modules/models.py` contains custom models used for training
+- `./modules/preprocessing.py` contains functions for preprocessing experimental data
+- `./modules/tbdrms.py` contains functions and classes for predicting the TBDrms values
+- `./modules/visualize.py` contains functions for visualizing data
+ 
 
 Each Training creates a new directory in `./logs/` called `/training_xxx/` which contains the following files:
 - The model after training get saved to the `./model.pth/` file

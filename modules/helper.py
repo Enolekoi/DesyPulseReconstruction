@@ -191,7 +191,7 @@ Outputs:
 def getCenterOfAxis(axis):
     length_axis = axis.size(0)
     # calculate the center index
-    center_index = length_axis // 2 + 1
+    center_index = length_axis // 2
     # get the center element
     center_element =  float(axis[center_index])
     return center_element
