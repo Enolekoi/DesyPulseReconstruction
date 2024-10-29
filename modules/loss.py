@@ -109,9 +109,9 @@ class PulseRetrievalLossFunction(nn.Module):
                 # just get current index from batch
                 original_shg = shg_matrix[i]
                 original_header = header[i]
-                print(f"original_header = {original_header}")
                 # get original SHG-matrix (without 3 identical channels)
                 original_shg = original_shg[0]
+                # get a wavelength SHG-Matrix from the analytical signal and the header
                 predicted_shg, new_header = createSHGmatFromAnalytical(
                         analytical_signal= prediction_analytical[i],
                         header=original_header
