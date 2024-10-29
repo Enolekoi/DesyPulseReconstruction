@@ -100,6 +100,8 @@ class PulseRetrievalLossFunction(nn.Module):
         frog_error = 0.0
 
         # initialize some values for SHG-trace creation
+        print(type(header))
+        print(header.shape)
         prediction_header = torch.tensor(header).to(device)
 
         # Loop over each batch
