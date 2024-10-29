@@ -249,9 +249,9 @@ Outputs:
 '''
 def createSHGmatFromAnalytical(analytical_signal, header):
     # get information from header
-    num_delays      = int(header[0].item())
-    num_wavelength  = int(header[1].item())
-    delta_tau       = float(header[2].item())
+    num_delays      = header[0]
+    num_wavelength  = header[1]
+    delta_tau       = header[2]
     
     assert num_delays == num_wavelength
     
