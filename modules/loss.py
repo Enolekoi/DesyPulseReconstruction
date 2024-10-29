@@ -120,7 +120,6 @@ class PulseRetrievalLossFunction(nn.Module):
                 predicted_shg_data = [predicted_shg, new_header]
                 _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
 
-                predicted_shg = predicted_shg[0]
                 predicted_shg = helper.normalizeSHGmatrix(predicted_shg)
 
                 # calculate_frog_error
@@ -314,28 +313,28 @@ Outputs:
 def calcFrogError(t_ref, t_meas):
     device = t_ref.device
     t_meas.to(device)
-    print(f"Max value of Tmeas = {torch.max(t_meas)}")
+    # print(f"Max value of Tmeas = {torch.max(t_meas)}")
     # print(t_meas.shape)
     M, N = t_meas.shape
-    print(f"M = {M}")
-    print(f"N = {N}")
-    print(f"Tmeas = {t_meas}")
+    # print(f"M = {M}")
+    # print(f"N = {N}")
+    # print(f"Tmeas = {t_meas}")
     sum1 = torch.sum(t_meas* t_ref)
-    print(f"Tmeas * Tref = {sum1}")
+    # print(f"Tmeas * Tref = {sum1}")
     sum2 = torch.sum(t_ref* t_ref)
-    print(f"Tref * Tref =  {sum2}")
+    # print(f"Tref * Tref =  {sum2}")
     mu = sum1 / sum2 # pypret gl. 13 (s. 497)
-    print(f"mu = {mu}")
-    print(f"Tmeas-mu*Tref = {t_meas - mu*t_ref}")
+    # print(f"mu = {mu}")
+    # print(f"Tmeas-mu*Tref = {t_meas - mu*t_ref}")
     r = torch.sum(t_meas - mu*t_ref)**2    # pypret gl. 11 (s. 497) 
-    print(f"r = {r}")
+    # print(f"r = {r}")
     if(r != 0.0):
         normFactor = M * N * torch.max(t_meas)**2    # pypret gl. 12 (s. 497)
-        print(f"norm factor = {normFactor}")
+        # print(f"norm factor = {normFactor}")
         frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
     else:
         frog_error = 0.0
-    print(f"FROG Error = {frog_error}")
+    # print(f"FROG Error = {frog_error}")
     return frog_error
 
 '''
