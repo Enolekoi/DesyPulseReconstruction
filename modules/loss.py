@@ -101,7 +101,7 @@ class PulseRetrievalLossFunction(nn.Module):
 
         # initialize some values for SHG-trace creation
         print(type(header))
-        print(header.shape)
+        print(header.size())
         prediction_header = torch.tensor(header).to(device)
 
         # Loop over each batch
