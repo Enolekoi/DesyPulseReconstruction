@@ -305,7 +305,6 @@ Outputs:
     axis        -> [tensor] Axis
 '''
 def generateAxis(N, resolution, center=0.0):
-
     # generate indicies
     if N % 2 == 0:
         start = -(N // 2)

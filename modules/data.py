@@ -161,6 +161,7 @@ class ReadSHGmatrix(object):
                 float(header[3]) * c.nano,  # wavelength step per sample [m]
                 float(header[4]) * c.nano   # center wavelength [m]
                 ]
+        shg_header = torch.tensor(shg_header)
         #####################
         ## Read SHG-matrix ##
         #####################
