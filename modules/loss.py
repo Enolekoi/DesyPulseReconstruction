@@ -325,7 +325,7 @@ def calcFrogError(t_ref, t_meas):
     print(f"Tref * Tref =  {sum2}")
     mu = sum1 / sum2 # pypret gl. 13 (s. 497)
     print(f"mu = {mu}")
-    print(f"Tmeas-mu*Tref = {Tmeas - mu*Tref}")
+    print(f"Tmeas-mu*Tref = {t_meas - mu*t_ref}")
     r = torch.sum(t_meas - mu*t_ref)**2    # pypret gl. 11 (s. 497) 
     print(f"r = {r}")
     if(r != 0.0):
