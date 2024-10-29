@@ -329,7 +329,7 @@ generateAxes()
 Description:
     Generate time and wavelength Axes from the header of a SHG-matrix
 Inputs:
-    header              -> [list] header of a SHG-matrix
+    header              -> [tensor] header of a SHG-matrix
 Outputs:
     delay_axis          -> [tensor] delay axis
     wavelength_axis     -> [tensor] wavelength axis

@@ -123,7 +123,7 @@ class ReadSHGmatrix(object):
         Inputs: 
             path        -> [string] path to the shg_matrix
         Outputs:
-            shg_data    -> [shg_matrix [tensor], header [list]] Original (not resampled) SHG-Matrix and Header 
+            shg_data    -> [shg_matrix [tensor], header [tensor]] Original (not resampled) SHG-Matrix and Header 
         '''
         # Constants 
         NUM_HEADER_ELEMENTS = 5
@@ -214,7 +214,7 @@ class ResampleSHGmatrix(object):
         Description:
             Takes path of a SHG-matrix and resamples it to the configured size and range of time/wavelength 
         Inputs:
-            shg_data                -> [shg_matrix [tensor], header [list]] Original (not resampled) SHG-Matrix and Header 
+            shg_data                -> [shg_matrix [tensor], header [tensor]] Original (not resampled) SHG-Matrix and Header 
         Outputs:
             shg_resampled           -> [tensor] Resampled SHG-matrix 
             self.output_delay       -> [tensor] Resampled delay axis

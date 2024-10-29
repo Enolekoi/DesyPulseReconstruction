@@ -242,17 +242,17 @@ Description:
     Create a SHG-matrix from an analytical signal and a header
 Inputs:
     analytical_signal   -> [tensor] analytical signal
-    header              -> [list] header containing information of a SHG-matrix
+    header              -> [tensor] header containing information of a SHG-matrix
 Outputs:
     shg_matrix          -> [tensor] SHG-matrix
-    new_header          -> [list] header of the newly created SHG-matrix
+    new_header          -> [tensor] header of the newly created SHG-matrix
 '''
 def createSHGmatFromAnalytical(analytical_signal, header):
     print(header)
     # get information from header
-    num_delays      = header[0]
-    num_wavelength  = header[1]
-    delta_tau       = header[2]
+    num_delays      = int(header[0])
+    num_wavelength  = int(header[1])
+    delta_tau       = float(header[2])
     
     assert num_delays == num_wavelength
     
