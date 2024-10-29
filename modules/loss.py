@@ -121,6 +121,8 @@ class PulseRetrievalLossFunction(nn.Module):
                 _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
                 
                 predicted_shg = predicted_shg[0,:,:]
+                print(f"shape = {predicted_shg.shape}")
+                print(f"max_val = {predicted_shg.max()}")
                 predicted_shg = helper.normalizeSHGmatrix(predicted_shg)
                 
                 # calculate_frog_error
