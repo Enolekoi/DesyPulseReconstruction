@@ -128,6 +128,7 @@ class PulseRetrievalLossFunction(nn.Module):
                         t_ref  = original_shg, 
                         t_meas = predicted_shg
                         )
+
             
             '''
             Weighted MSE-Error
@@ -316,24 +317,24 @@ def calcFrogError(t_ref, t_meas):
     # print(f"Max value of Tmeas = {torch.max(Tmeas)}")
     # print(t_meas.shape)
     M, N = t_meas.shape
-    # print(f"M = {M}")
-    # print(f"N = {N}")
+    print(f"M = {M}")
+    print(f"N = {N}")
     sum1 = torch.sum(t_meas* t_ref)
-    # print(f"Tmeas * Tref = {sum1}")
+    print(f"Tmeas * Tref = {sum1}")
     sum2 = torch.sum(t_ref* t_ref)
-    # print(f"Tref * Tref =  {sum2}")
+    print(f"Tref * Tref =  {sum2}")
     mu = sum1 / sum2 # pypret gl. 13 (s. 497)
-    # print(f"mu = {mu}")
-    # print(f"Tmeas-mu*Tref = {Tmeas - mu*Tref}")
+    print(f"mu = {mu}")
+    print(f"Tmeas-mu*Tref = {Tmeas - mu*Tref}")
     r = torch.sum(t_meas - mu*t_ref)**2    # pypret gl. 11 (s. 497) 
-    # print(f"r = {r}")
+    print(f"r = {r}")
     if(r != 0.0):
         normFactor = M * N * torch.max(t_meas)**2    # pypret gl. 12 (s. 497)
-        # print(f"norm factor = {normFactor}")
+        print(f"norm factor = {normFactor}")
         frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
     else:
         frog_error = 0.0
-    # print(f"FROG Error = {frog_error}")
+    print(f"FROG Error = {frog_error}")
     return frog_error
 
 '''
