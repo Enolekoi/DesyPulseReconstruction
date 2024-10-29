@@ -15,7 +15,7 @@ Training Options
 
 Options that configure parameters for the training process
 '''
-NUM_EPOCHS = 2      # Number of epochs to train the model
+NUM_EPOCHS = 10     # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 70 # Epoch after which the whole model is trained (before that only the output layers are trained)
@@ -36,7 +36,7 @@ WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 1.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 20.0     # Weight used for MSE of the intensity
 WEIGTH_PHASE = 5.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
-WEIGTH_FROG_ERROR = 10.0    # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
+WEIGTH_FROG_ERROR = 1.0    # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
 Scaling Options
