@@ -117,16 +117,14 @@ class PulseRetrievalLossFunction(nn.Module):
                         header=original_header
                         )
                 # resample to correct size
-                print(predicted_shg)
-                predicted_shg = helper.normalizeSHGmatrix(predicted_shg)
-                print(predicted_shg)
                 predicted_shg_data = [predicted_shg, new_header]
                 _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
                 
+                # get only one channel
                 predicted_shg = predicted_shg[0,:,:]
-                print(f"shape = {predicted_shg.shape}")
-                print(f"max_val = {predicted_shg.max()}")
+                # normalize SHG-matrix
                 predicted_shg = helper.normalizeSHGmatrix(predicted_shg)
+                original_shg = helper.normalizeSHGmatrix(original_shg)
                 
                 # calculate_frog_error
                 frog_error = calcFrogError(
@@ -302,6 +300,10 @@ def createSHGmatFromAnalytical(analytical_signal, header):
         new_delta_lambda,
         new_center_wavelength
         ]
+    # convert new header to tensor
+    new_header = torch.tensor(new_header)
+    # normalize SHG-matrix
+    shg_matrix = helper.normalizeSHGmatrix(shg_matrix)
 
     return shg_matrix, new_header
 
