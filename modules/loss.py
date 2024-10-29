@@ -117,7 +117,7 @@ class PulseRetrievalLossFunction(nn.Module):
                 original_shg = original_shg[0]
                 predicted_shg, new_header = createSHGmatFromAnalytical(
                         analytical_signal= prediction_analytical[i],
-                        header=prediction_header
+                        header=original_header
                         )
                 # resample to correct size
                 predicted_shg_data = [predicted_shg, new_header]
