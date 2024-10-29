@@ -101,10 +101,8 @@ class PulseRetrievalLossFunction(nn.Module):
         frog_error = 0.0
 
         # initialize some values for SHG-trace creation
-        print(type(header))
-        print(len(header))
         # prediction_header = torch.tensor(header)
-        prediction_header = copy.deepcopy(header)
+        prediction_header = torch.tensor(copy.deepcopy(header))
 
         # Loop over each batch
         for i in range(batch_size):
@@ -119,7 +117,7 @@ class PulseRetrievalLossFunction(nn.Module):
                 original_shg = original_shg[0]
                 predicted_shg, new_header = createSHGmatFromAnalytical(
                         analytical_signal= prediction_analytical[i],
-                        header=prediction_header[:,i]
+                        header=prediction_header
                         )
                 # resample to correct size
                 predicted_shg_data = [predicted_shg, new_header]
