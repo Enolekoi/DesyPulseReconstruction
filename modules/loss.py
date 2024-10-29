@@ -117,7 +117,6 @@ class PulseRetrievalLossFunction(nn.Module):
                         header=original_header
                         )
                 # resample to correct size
-                predicted_shg = predicted_shg[0,:,:]
                 print(predicted_shg)
                 # predicted_shg_data = [predicted_shg, new_header]
                 # _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
