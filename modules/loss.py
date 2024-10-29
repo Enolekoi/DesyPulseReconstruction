@@ -102,7 +102,6 @@ class PulseRetrievalLossFunction(nn.Module):
 
         # initialize some values for SHG-trace creation
         # prediction_header = torch.tensor(header)
-        prediction_header = header
 
         # Loop over each batch
         for i in range(batch_size):
@@ -112,7 +111,8 @@ class PulseRetrievalLossFunction(nn.Module):
             if self.frog_error_weight != 0.0:
                 # just get current index from batch
                 original_shg = shg_matrix[i]
-                original_header = prediction_header[i]
+                original_header = header[i]
+                print(f"original_header = {original_header}")
                 # get original SHG-matrix (without 3 identical channels)
                 original_shg = original_shg[0]
                 predicted_shg, new_header = createSHGmatFromAnalytical(
