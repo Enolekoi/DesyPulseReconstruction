@@ -314,11 +314,12 @@ Outputs:
 def calcFrogError(t_ref, t_meas):
     device = t_ref.device
     t_meas.to(device)
-    # print(f"Max value of Tmeas = {torch.max(Tmeas)}")
+    print(f"Max value of Tmeas = {torch.max(Tmeas)}")
     # print(t_meas.shape)
     M, N = t_meas.shape
     print(f"M = {M}")
     print(f"N = {N}")
+    print(f"Tmeas = {t_meas}")
     sum1 = torch.sum(t_meas* t_ref)
     print(f"Tmeas * Tref = {sum1}")
     sum2 = torch.sum(t_ref* t_ref)
