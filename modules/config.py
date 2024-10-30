@@ -23,7 +23,7 @@ LEARNING_RATE = 1e-8    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 1.5  # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Testing training using hilbert transform for imaginary part and FROG-Error - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Testing training using hilbert transform for imaginary part and FROG-Error (reduced weight)- with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
