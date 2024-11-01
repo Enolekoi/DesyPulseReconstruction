@@ -137,7 +137,7 @@ class PulseRetrievalLossFunction(nn.Module):
             '''
             Weighted MSE-Error
             '''
-            if self.mse_weight_sum != 0.0 or self.use_label == False:
+            if self.mse_weight_sum != 0.0 or not self.use_label:
 
                 # Create masks for all absolute values higher than the threshold
                 mask_real_threshold = abs(label_real[i]) > self.pulse_threshold
