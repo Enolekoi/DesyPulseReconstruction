@@ -63,7 +63,7 @@ class PulseRetrievalLossFunction(nn.Module):
             config.OUTPUT_END_FREQUENCY,
             )
 
-    def forward(self, prediction, label=None, shg_matrix, header):
+    def forward(self, prediction, shg_matrix, header, label=None):
         '''
         Inputs:
             prediction      -> [tensor] real part of predicted signal (imaginary part will be calculated)

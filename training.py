@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 
 # Log some information
 logger.info(config.DESCRIPTOR)
+logger.info("Supervised Training")
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
 logger.info(f"SHG-matrix used: {config.ShgFilename}")
@@ -237,7 +238,12 @@ for epoch in range(config.NUM_EPOCHS):
         # get the predicted output from the model
         outputs = model(shg_matrix)
         # calculate the loss
-        loss = criterion(outputs, label, shg_matrix, header)
+        loss = criterion(
+                prediction=outputs, 
+                label=label, 
+                shg_matrix=shg_matrix, 
+                header=header
+                )
 
         ###################
         ## Backward pass ##
@@ -291,7 +297,12 @@ for epoch in range(config.NUM_EPOCHS):
             # calculate prediction
             outputs = model(shg_matrix)
             # calcultate validation loss
-            validation_loss = criterion(outputs, label, shg_matrix, header)
+            validation_loss = criterion(
+                    prediction=outputs, 
+                    label=label, 
+                    shg_matrix=shg_matrix, 
+                    header=header
+                    )
             # place validation loss into list
             validation_losses.append(validation_loss.item())
 
@@ -345,7 +356,12 @@ with torch.no_grad():
         # calculate the predicted output
         outputs = model(shg_matrix)
         # get the loss
-        test_loss = criterion(outputs, label, shg_matrix, header)
+        test_loss = criterion(
+                prediction=outputs,
+                label=label, 
+                shg_matrix=shg_matrix, 
+                header=header
+                )
         # place the loss in a list
         test_losses.append(test_loss.item())
 
