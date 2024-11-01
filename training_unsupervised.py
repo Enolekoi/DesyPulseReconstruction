@@ -40,13 +40,15 @@ logger = logging.getLogger(__name__)
 
 # Log some information
 logger.info(config.DESCRIPTOR)
+logger.info("Unsupervised Learning step")
 logger.info(f"Writing into log file: {config.log_filepath}")
 logger.info(f"Dataset used: {config.Path}")
 logger.info(f"SHG-matrix used: {config.ShgFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
 logger.info(f"Batch size: {config.BATCH_SIZE} elements")
 logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
-logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
+logger.info(f"Initial learning rate: {1e-6}")
+# logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
 logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are used!")
 
 # Transforms (Inputs)
@@ -169,13 +171,8 @@ logger.info(f"Starting training...")
 # define and configure the loss function
 # criterion = nn.MSELoss()
 criterion = loss_module.PulseRetrievalLossFunction(
-        pulse_threshold = config.PULSE_THRESHOLD,
-        penalty = config.PENALTY_FACTOR,
-        real_weight = 0.0,
-        imag_weight = 0.0,
-        intensity_weight = 0.0,
-        phase_weight = 0.0,
-        frog_error_weight= config.WEIGTH_FROG_ERROR
+        use_label = False,
+        frog_error_weight= 1.0
         )
 
 # define and configure the optimizer used
@@ -185,7 +182,7 @@ optimizer = torch.optim.Adam(
          {'params': model.fc1.parameters()},
          {'params': model.fc2.parameters()}
         ],
-        lr=config.LEARNING_RATE,
+        lr=1e-6,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
 #optimizer = torch.optim.SGD(
@@ -207,7 +204,7 @@ optimizer = torch.optim.Adam(
     # )
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
-    max_lr=0.5e-3,
+    max_lr=0.5e-1,
     total_steps=NUM_STEPS
     )
 
@@ -237,7 +234,12 @@ for epoch in range(config.NUM_EPOCHS):
         # get the predicted output from the model
         outputs = model(shg_matrix)
         # calculate the loss
-        loss = criterion(outputs, _, shg_matrix, header)
+        loss = criterion(
+                prediction=outputs,
+                label=None,
+                shg_matrix=shg_matrix, 
+                header=header
+                )
 
         ###################
         ## Backward pass ##
@@ -277,13 +279,12 @@ for epoch in range(config.NUM_EPOCHS):
     # 
     with torch.no_grad():   # disable gradient computation for evaluation
         # itterate over validation data
-        for shg_matrix, label, header in validation_loader:
+        for shg_matrix, header in validation_loader:
             ###############
             ## Load Data ##
             ###############
             # convert shg_matrix and label to float and send them to the device
             shg_matrix = shg_matrix.float().to(device)
-            label = label.float().to(device)
 
             ##################
             ## Forward pass ## 
@@ -291,7 +292,12 @@ for epoch in range(config.NUM_EPOCHS):
             # calculate prediction
             outputs = model(shg_matrix)
             # calcultate validation loss
-            validation_loss = criterion(outputs, label, shg_matrix, header)
+            validation_loss = criterion(
+                    prediction=outputs, 
+                    label=None,
+                    shg_matrix=shg_matrix,
+                    header=header
+                    )
             # place validation loss into list
             validation_losses.append(validation_loss.item())
 
@@ -337,15 +343,18 @@ model.eval()
 # don't calculate gradients
 with torch.no_grad():
     # iterate over test data
-    for shg_matrix, label, header in test_loader:
+    for shg_matrix, header in test_loader:
         # convert shg_matrix and labels to float and send them to the device
         shg_matrix = shg_matrix.float().to(device)
-        label = label.float().to(device)
         
         # calculate the predicted output
         outputs = model(shg_matrix)
         # get the loss
-        test_loss = criterion(outputs, label, shg_matrix, header)
+        test_loss = criterion(
+                prediction = outputs,
+                label = None, 
+                shg_matrix = shg_matrix,
+                header = header)
         # place the loss in a list
         test_losses.append(test_loss.item())
 
@@ -360,17 +369,16 @@ with torch.no_grad():
         shg_matrix, label, header = test_sample
         # adding an extra dimension to shg_matrix and label to simulate a batch size of 1
         shg_matrix = shg_matrix.unsqueeze(0)
-        label = label.unsqueeze(0)
         # send shg_matrix to device and make prediction
         shg_matrix = shg_matrix.float().to(device)
         prediction = model(shg_matrix) 
         # send label and prediction to cpu, so that it can be plotted
-        label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
         # calculate the imaginary part of the signal and make it the shape of the label
         prediction_analytical = loss_module.hilbert(prediction.squeeze())
         prediction = torch.cat((prediction_analytical.real, prediction_analytical.imag))
         # plot
+        label = torch.zeros_like(prediction)
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
 logger.info("Test Step finished!")
