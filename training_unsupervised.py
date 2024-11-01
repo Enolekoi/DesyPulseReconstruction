@@ -47,7 +47,7 @@ logger.info(f"SHG-matrix used: {config.ShgFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
 logger.info(f"Batch size: {config.BATCH_SIZE} elements")
 logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
-logger.info(f"Initial learning rate: {1e-6}")
+logger.info(f"Initial learning rate: {1e-4}")
 # logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
 logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are used!")
 
@@ -182,7 +182,7 @@ optimizer = torch.optim.Adam(
          {'params': model.fc1.parameters()},
          {'params': model.fc2.parameters()}
         ],
-        lr=1e-8,
+        lr=1e-6,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
 #optimizer = torch.optim.SGD(
@@ -204,7 +204,7 @@ optimizer = torch.optim.Adam(
     # )
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
-    max_lr=1e-4,
+    max_lr=1e-3,
     total_steps=NUM_STEPS
     )
 
