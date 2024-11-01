@@ -23,7 +23,7 @@ Description:
     Custom Dataloader Class
 '''
 class LoadDatasetReconstruction(Dataset):
-    def __init__(self, path, use_label=True, label_filename, shg_filename, tbdrms_file, tbdrms_threshold, transform=None, target_transform=None):
+    def __init__(self, path, label_filename, shg_filename, tbdrms_file, tbdrms_threshold, transform=None, target_transform=None, use_label=True,):
         '''
         Inputs:
             path                -> [string] root directory containing all data subdirectories
@@ -33,6 +33,7 @@ class LoadDatasetReconstruction(Dataset):
             tbdrms_threshold    -> [float] maximum allowed TBDrms value
             transform           -> transform used on the SHG-Matrix
             target_transform    -> transforms used on labels
+            use_label           -> [bool] load labels from dataset
         '''
         self.path = path                            # root directory containing all data subdirectories
         self.use_label = use_label
