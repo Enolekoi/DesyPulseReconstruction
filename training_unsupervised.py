@@ -93,7 +93,7 @@ model = models.CustomDenseNetReconstruction(
     num_outputs=config.OUTPUT_SIZE
     )
 # Define location of pretrained weights
-# model.load_state_dict(torch.load('./models/trained_model_3.pth', weights_only=True))
+model.load_state_dict(torch.load('./logs/training_015/model.pth', weights_only=True))
 
 # set the model to float, send it to the selected device and put it in evaluation mode
 model.float().to(device).eval()
@@ -119,6 +119,7 @@ logger.info("Loading Data...")
 # configure the data loader
 data_loader = data.LoadDatasetReconstruction(
         path=config.Path,
+        use_label=False,
         label_filename=config.LabelFilename,
         shg_filename=config.ShgFilename,
         tbdrms_file=config.TBDrmsFilename,  # Path to the file containing TBDrms values
@@ -170,10 +171,10 @@ logger.info(f"Starting training...")
 criterion = loss_module.PulseRetrievalLossFunction(
         pulse_threshold = config.PULSE_THRESHOLD,
         penalty = config.PENALTY_FACTOR,
-        real_weight = config.WEIGTH_REAL_PART,
-        imag_weight = config.WEIGTH_IMAG_PART,
-        intensity_weight = config.WEIGTH_INTENSITY,
-        phase_weight = config.WEIGTH_PHASE,
+        real_weight = 0.0,
+        imag_weight = 0.0,
+        intensity_weight = 0.0,
+        phase_weight = 0.0,
         frog_error_weight= config.WEIGTH_FROG_ERROR
         )
 
@@ -223,13 +224,12 @@ for epoch in range(config.NUM_EPOCHS):
     # place model into training mode
     model.train()       
     # itterate over train data
-    for i, (shg_matrix, label, header) in enumerate(train_loader):
+    for i, (shg_matrix, header) in enumerate(train_loader):
         ###############
         ## Load Data ##
         ###############
         # send shg_matrix and label data to selected device
         shg_matrix = shg_matrix.float().to(device)
-        label = label.float().to(device)
         
         ##################
         ## Forward pass ##
@@ -237,7 +237,7 @@ for epoch in range(config.NUM_EPOCHS):
         # get the predicted output from the model
         outputs = model(shg_matrix)
         # calculate the loss
-        loss = criterion(outputs, label, shg_matrix, header)
+        loss = criterion(outputs, _, shg_matrix, header)
 
         ###################
         ## Backward pass ##

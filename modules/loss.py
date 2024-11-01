@@ -26,6 +26,7 @@ Description:
 class PulseRetrievalLossFunction(nn.Module):
     def __init__(
             self, 
+            use_label = True,
             pulse_threshold = 0.01,
             penalty = 10.0,
             real_weight = 1.0,
@@ -44,6 +45,7 @@ class PulseRetrievalLossFunction(nn.Module):
             frog_error_weight   -> [float] weight used for FROG-Error
         '''
         super(PulseRetrievalLossFunction, self).__init__() 
+        self.use_label = use_label
         self.pulse_threshold = pulse_threshold
         self.penalty = penalty
         self.real_weight = real_weight
@@ -61,7 +63,7 @@ class PulseRetrievalLossFunction(nn.Module):
             config.OUTPUT_END_FREQUENCY,
             )
 
-    def forward(self, prediction, label, shg_matrix, header):
+    def forward(self, prediction, label=None, shg_matrix, header):
         '''
         Inputs:
             prediction      -> [tensor] real part of predicted signal (imaginary part will be calculated)
@@ -71,29 +73,28 @@ class PulseRetrievalLossFunction(nn.Module):
             loss            -> [float] loss
         '''
         device = shg_matrix.device
-        # get the number of batches, as well as the shape of the labels
-        batch_size, num_elements = label.shape
-        # get half of elements
-        half_size = num_elements // 2
-
+        batch_size, half_size = prediction.shape
         # create the analytical signal using the hilbert transformation
         prediction_analytical = torch.zeros(batch_size, half_size, dtype=torch.complex64)
         for i in range(batch_size):
             prediction_analytical[i] = hilbert(prediction[i], plot=False).to(device)
 
-        # get real and imaginary parts of labels and predictions
+        # get real and imaginary parts of predictions
         prediction_real = prediction_analytical.real.to(device)
         prediction_imag = prediction_analytical.imag.to(device)
-        label_real = label[:, :half_size].to(device)
-        label_imag = label[:, half_size:].to(device)
 
-        # calculate intensities
-        label_intensity = label_real**2 + label_imag**2
-        prediction_intensity = prediction_real**2 + prediction_imag**2
+        if self.use_label == True:
+            # get real and imaginary parts of labels
+            label_real = label[:, :half_size].to(device)
+            label_imag = label[:, half_size:].to(device)
 
-        # calculate phases
-        label_phase = torch.atan2(label_imag, label_real)
-        prediction_phase = torch.atan2(prediction_imag, prediction_real)
+            # calculate intensities
+            label_intensity = label_real**2 + label_imag**2
+            prediction_intensity = prediction_real**2 + prediction_imag**2
+
+            # calculate phases
+            label_phase = torch.atan2(label_imag, label_real)
+            prediction_phase = torch.atan2(prediction_imag, prediction_real)
 
         # initialize losses
         loss = 0.0
@@ -136,7 +137,7 @@ class PulseRetrievalLossFunction(nn.Module):
             '''
             Weighted MSE-Error
             '''
-            if self.mse_weight_sum != 0.0:
+            if self.mse_weight_sum != 0.0 or self.use_label == False:
 
                 # Create masks for all absolute values higher than the threshold
                 mask_real_threshold = abs(label_real[i]) > self.pulse_threshold
@@ -193,10 +194,12 @@ class PulseRetrievalLossFunction(nn.Module):
 
             # calculate weighted mean loss of mse loss and frog error
             loss += mse_loss + frog_error*self.frog_error_weight
+
         # devide by batch size 
         loss = loss / batch_size
 
         return loss
+
 '''
 createSHGmat()
 

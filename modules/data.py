@@ -23,7 +23,7 @@ Description:
     Custom Dataloader Class
 '''
 class LoadDatasetReconstruction(Dataset):
-    def __init__(self, path, label_filename, shg_filename, tbdrms_file, tbdrms_threshold, transform=None, target_transform=None):
+    def __init__(self, path, use_label=True, label_filename, shg_filename, tbdrms_file, tbdrms_threshold, transform=None, target_transform=None):
         '''
         Inputs:
             path                -> [string] root directory containing all data subdirectories
@@ -35,6 +35,7 @@ class LoadDatasetReconstruction(Dataset):
             target_transform    -> transforms used on labels
         '''
         self.path = path                            # root directory containing all data subdirectories
+        self.use_label = use_label
         self.label_filename = label_filename        # file name in which labels are stored
         self.shg_filename = shg_filename            # file name in which SHG-matrix are stored
         self.target_transform = target_transform    # transforms used on labels
@@ -81,7 +82,6 @@ class LoadDatasetReconstruction(Dataset):
             label           -> [tensor] Label of given index
         '''
         data_dir = self.data_dirs[index]    # get the subdirectory for the given index
-        label_path = os.path.join(self.path, data_dir, self.label_filename) # construct the full path to the label file
         shg_path = os.path.join(self.path, data_dir, self.shg_filename)     # construct the full path to the SHG-matrix file
 
         if self.transform:
@@ -90,23 +90,24 @@ class LoadDatasetReconstruction(Dataset):
             output_shg = torch.tensor(pd.read_csv(shg_path, header=None, engine='python').values, dtype=torch.half).unsqueeze(0)
             header = []
 
-        if self.target_transform:
-            label = self.target_transform(label_path)
-        else:
-            label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
-    
-        # create a SHG-matrix with 3 identical channels
-        # output_shg = output_shg.unsqueeze(0)  # add another dimension to the tensor
-        # output_shg = output_shg.repeat(3,1,1) # repeat the SHG-matrix 3 times (3,h,w)
-
         # ensure correct output data type
         if not isinstance(output_shg, torch.Tensor):
             output_shg = torch.tensor(output_shg)
 
-        if not isinstance(label, torch.Tensor):
-            label = torch.tensor(label)
+        if self.use_label == True:
+            label_path = os.path.join(self.path, data_dir, self.label_filename) # construct the full path to the label file
+            if self.target_transform:
+                label = self.target_transform(label_path)
+            else:
+                label = torch.tensor(pd.read_csv(label_path, header=None, engine='python').values).unsqueeze(0)
 
-        return output_shg, label, header
+            # ensure correct output data type
+            if not isinstance(label, torch.Tensor):
+                label = torch.tensor(label)
+        else:
+            return output_shg, header
+
+                return output_shg, label, header
 
 '''
 ReadShgMatrix()

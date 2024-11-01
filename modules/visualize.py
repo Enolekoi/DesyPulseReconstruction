@@ -8,11 +8,15 @@ Module containing functions used for plotting or visualizing data
 #############
 import logging
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 import numpy as np
 
-from modules import loss
+from modules import helper
+from modules import data
 
 logger = logging.getLogger(__name__)
+
+
 
 '''
 savePlotTrainingLoss()
@@ -390,5 +394,36 @@ def compareTimeDomainComplex(filepath, label, prediction):
 plotSpectrogram()
 plotting Spectrogram
 '''
-def plotSpectrogram(spectrogram):
+def plotSpectrogram(path):
+    # reader
+    reader = data.ReadSHGmatrix()
+    shg_data = reader(path)
+    shg_matrix, header = shg_data
+
+    delay_axis, wavelength_axis = helper.generateAxes(header)
+
+    # Create a figure
+    plt.figure(figsize=(10, 18))
+
+    # FIGURE 1
+    # fix the axes to a specific exponent representation
+    plt.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # Plot the SHG-matrix
+    plt.pcolormesh(
+        delay_axis.numpy(),
+        wavelength_axis.numpy(),
+        shg_matrix.numpy().T,
+        shading='auto',
+        norm=LogNorm(vmin=1e-10, vmax=float( shg_matrix.max() ))
+        )
+
+    # Add labels and title
+    # fig.colorbar(c1, label='Intensity')
+    plt.ylabel("Wavelength [m]")
+    plt.xlabel("Time [s]")
+    plt.title("SHG-Matrix")
+    
+    plt.colorbar(label='Intensity')
+    plt.show()
     return

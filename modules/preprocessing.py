@@ -4,16 +4,18 @@ Preprocessing
 #############
 ## Imports ##
 #############
+import os
 import logging
 import torch
 import numpy as np
-from scipy.interpolate import RectBivariateSpline as RectBivariateSpline
+from scipy.interpolate import RectBivariateSpline
 from scipy.signal import windows
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
 from modules import constants as c
+from modules import config
 from modules import data
 from modules import helper
 
@@ -106,17 +108,43 @@ def calcFWHM(yd, tt):
         fwhm = np.max(xz) - np.min(xz)
         return fwhm
 
-
 '''
-preprocessFromPath()
-'''
-def preprocessFromPath(path):
-    N = 256
-    reader = data.ReadSHGmatrix()
-    shg_data = reader(path)
-    shg_matrix, header = shg_data
-    preprocessRawShgMatrix(shg_matrix, header, N)
+windowSHGmatrix()
 
+Description:
+    Use a window function on the SHG-matrix
+Inputs:
+    shg_matrix                  -> [tensor] SHG-matrix over which to apply the windowing function
+    dimension                   -> [int] Dimension across which the window will be applied
+    standard_deviation_factor   -> [float] the standard deviation of the gauss window equals window_width*standard_deviation_factor
+Outputs:
+    shg_matrix_windowed     -> [tensor] SHG-matrix after application of the windowing function
+'''
+def windowSHGmatrix(shg_matrix, dimension = 1, standard_deviation_factor = 0.1):
+    # Raise exceptions
+    if not( (dimension == 1) or (dimension == 0) ):
+        raise ValueError(f"dimension should be either 1 or 0 but is {dimension}")
+    if not (standard_deviation_factor > 0):
+        raise ValueError(f"standard_deviation_factor needs to be higher than 0, but is {standard_deviation_factor}")
+    shg_matrix_windowed = shg_matrix
+
+    # determine the window width (equals the number of samples across the selected dimension)
+    window_width = int(shg_matrix.size(dimension))
+    # calculate the standard deviation used for the gaussian window
+    window_standard_deviation = window_width * standard_deviation_factor
+    print(f"Window width                        = {window_width}")
+    print(f"Standard deviation of the window    = {window_standard_deviation}")
+    # define the window
+    window_delay = torch.from_numpy( windows.gaussian(window_width, std=window_standard_deviation)).float()
+
+    # apply the window to the SHG-matrix
+    # 'None' adds a new axis for broadcasting
+    if dimension == 1:
+        shg_matrix_windowed = shg_matrix * window_delay[None, :]
+    elif dimension == 0:
+        shg_matrix_windowed = shg_matrix * window_delay[:, None]
+
+    return shg_matrix_windowed
 
 '''
 preprocessRawShgMatrix()
@@ -127,30 +155,46 @@ Inputs:
 
 Outputs:
 '''
-def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
+def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     # extract header information
     num_delays          = header[0] # number of delay samples
     num_wavelength      = header[1] # number of wavelength samples
     delta_tau           = header[2] # time step between delays [s]
     delta_lambda        = header[3] # distance between wavelength samples [m]
     center_wavelength   = header[4] # center wavelength in [m]
-    spectrogrm_matrix = helper.normalizeSHGmatrix(spectrogrm_matrix)
+    # normalize SHG-Matrix
+    shg_matrix = helper.normalizeSHGmatrix(shg_matrix)
+    shg_matrix_original = shg_matrix
+
+    # Windowing function to reduce the trails at the end of the original SHG-matrix
+    # There would be a hard limit between the original SHG-matrix and the background
+    # shg_matrix = windowSHGmatrix(
+    #         shg_matrix = shg_matrix, 
+    #         dimension = 0
+    #         )
+    # shg_matrix = windowSHGmatrix(
+    #         shg_matrix = shg_matrix, 
+    #         dimension = 1
+    #         )
+
+    # get the delay and wavelength axis
+    delay_axis, wavelength_axis = helper.generateAxes(header)
 
     # if nTarget is not even
     if nTarget % 2 !=0:
         raise ValueError("nTarget must be even")
 
-    # if the shape of the spectrogrm_matrix is not even
-    if spectrogrm_matrix.shape[0] != num_delays or spectrogrm_matrix.shape[1] != num_wavelength:
-        raise ValueError("spectrogram matrix and header information don't match!")
+    # if the shape of the spectrogram_matrix is not even
+    if shg_matrix.shape[0] != num_delays or shg_matrix.shape[1] != num_wavelength:
+        raise ValueError("shg matrix and header information don't match!")
 
     # 1: Symmetrically trim around the center of mass in the delay direction
     # get the sum of all spectrogram values
-    total_int = float(torch.sum(spectrogrm_matrix))
+    total_int = float(torch.sum(shg_matrix))
 
     com_delay_index = 0     # index of center of mass in delay direction
     # enumerate over rows
-    for index, row in enumerate(spectrogrm_matrix):
+    for index, row in enumerate(shg_matrix):
         # get sum of row
         sum_row = torch.sum(row)
         # add previous center of mass index and the current index
@@ -164,7 +208,7 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     #   - the center of mass index
     # This will get the index which has the smallest distance to the end of the matrix
     distance_to_end = int(min(num_delays - com_delay_index - 1, com_delay_index))
-    # Create a tensor with the index range to be in the new spectrogram
+    # Create a tensor with the index range to be in the new SHG-matrix
     # The smalles value will be the Center of Mass index - the smallest distance to the end of the original matrix 
     # The hightest value will be the Center of Mass index + the smallest distance to the end of the original matrix 
     # This means com_delay_index is exactly in the middle of the index range
@@ -175,8 +219,8 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
 
     # Cut a matrix that is equally as large in both directions of com_delay_index
     # This means com_delay_index is exactly in the middle
-    symmetric_spectrogram_matrix = spectrogrm_matrix[index_range, :]
-    num_symmetric_delays = symmetric_spectrogram_matrix.shape[0]    # size of matrix in delay direction (uneven by design)
+    symmetric_shg_matrix = shg_matrix[index_range, :]
+    num_symmetric_delays = symmetric_shg_matrix.shape[0]    # size of matrix in delay direction (uneven by design)
     assert num_symmetric_delays % 2 == 1
 
     # Construct Delay Axis for symmetric_spectrogram_matrix
@@ -189,35 +233,28 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     assert abs(symmetric_delay_axis[middle_index - 1]) < delta_tau / 1e6    # check that the delay at the center index is 0
 
     # 2: Symmetrization of matrix around the center of mass by getting the mean left and right halves
-    left_matrix = symmetric_spectrogram_matrix[:middle_index-1, :]
-    right_matrix = symmetric_spectrogram_matrix[middle_index:, :]
+    left_matrix = symmetric_shg_matrix[:middle_index-1, :]
+    right_matrix = symmetric_shg_matrix[middle_index:, :]
     # get the mean of left and mirrored right half of the matrix
     left_symmetric = 0.5 * (left_matrix + torch.flip(right_matrix, dims=[0]))
     # replace left and right half by their mean and the flipped mean
-    symmetric_spectrogram_matrix[:middle_index-1, :] = left_symmetric
-    symmetric_spectrogram_matrix[middle_index:, :] = torch.flip(left_symmetric, dims=[0])
-    print(symmetric_spectrogram_matrix.shape)
+    symmetric_shg_matrix[:middle_index-1, :] = left_symmetric
+    symmetric_shg_matrix[middle_index:, :] = torch.flip(left_symmetric, dims=[0])
 
     # 3: Resampling with tau and lambda estimation
     # estimate full width half mean in both directions (not perfectly exact, but close enough)
     # get the mean the delay
-    mean_delay_profile = torch.mean(symmetric_spectrogram_matrix, dim=1)
-    print(len(mean_delay_profile))
-    print(len(symmetric_delay_axis))
+    mean_delay_profile = torch.mean(symmetric_shg_matrix, dim=1)
     # get the full width half mean of the delay
     fwhm_delay = calcFWHM(mean_delay_profile, symmetric_delay_axis)
     # if calcFWHM throws an error:
     if fwhm_delay < 0.0:
         raise ValueError("fwhm_delay could not be calculated")
 
-    # get the wavelength axis
-    _, wavelenght_axis = helper.generateAxes(header)
     # get the mean the wavelengths
-    mean_spectrogram_profile = torch.mean(symmetric_spectrogram_matrix, dim=0)
-    print(len(mean_spectrogram_profile))
-    print(len(wavelenght_axis))
+    mean_shg_profile = torch.mean(symmetric_shg_matrix, dim=0)
     # get the full width half mean of the wavelengths
-    fwhm_wavelength = calcFWHM(mean_spectrogram_profile, wavelenght_axis)
+    fwhm_wavelength = calcFWHM(mean_shg_profile, wavelength_axis)
     # if calcFWHM throws an error:
     if fwhm_wavelength < 0.0:
         raise ValueError("fwhm_wavelength could not be calculated")
@@ -248,35 +285,32 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     # limits of the wavelength axis
     index_range_new_wavelength = indexRangeWithinLimits(
             resampled_wavelength_axis,
-            (wavelenght_axis.min(), wavelenght_axis.max())
+            (wavelength_axis.min(), wavelength_axis.max())
             )
     # get the subset of 'resampled_wavelength_axis', that is within the 'index_range_new_wavelength'
     resampled_wavelength_axis_subset = resampled_wavelength_axis[
             index_range_new_wavelength[0]:index_range_new_wavelength[1]
             ]
     
-    # get noise from first and last three columns of the original spectrogram    
-    noise = torch.cat((spectrogrm_matrix[:, :3].flatten(), spectrogrm_matrix[:, -3:].flatten()))
+    # get noise level from first and last three columns of the original SHG-matrix
+    noise = torch.cat((shg_matrix[:, :3].flatten(), shg_matrix[:, -3:].flatten()))
+    # fill the background of the new SHG-matrix with the noise
     resampled_shg_matrix = torch.std(noise) * torch.randn(nTarget, nTarget) + torch.mean(noise)
+    # resampled_shg_matrix = torch.zeros(nTarget, nTarget)
 
-    # Windowing function to reduce the trails at the end of the original SHG-matrix
-    # There would be a hard limit between the original SHG-matrix and the background
-    # define hamming window
-    window_width = int(symmetric_spectrogram_matrix.size(1))
-    print(window_width)
-    window_delay = torch.from_numpy( windows.gaussian(window_width, std=1000 )).float()
-    # window_wavelength = torch.from_numpy(np.hanning( symmetric_spectrogram_matrix.size(1) )).float()
-    # apply the window to the symmetric_spectrogram_matrix
-    # 'None' adds a new axis for broadcasting
-    windowed_spectrogram = symmetric_spectrogram_matrix * window_delay[None, :]
-    # windowed_spectrogram = windowed_spectrogram * window_wavelength[None, :]
+    # # Windowing function to reduce the trails at the end of the original SHG-matrix
+    # # There would be a hard limit between the original SHG-matrix and the background
+    # symmetric_shg_matrix = windowSHGmatrix(
+    #         shg_matrix = symmetric_shg_matrix, 
+    #         dimension = 0   # delay dimension
+    #         )
     
     # 2D interpolate
     # initialize the interpolator
     interpolator = RectBivariateSpline(
             symmetric_delay_axis.numpy(),
-            wavelenght_axis.numpy(),
-            windowed_spectrogram.numpy()
+            wavelength_axis.numpy(),
+            symmetric_shg_matrix.numpy()
             )
     # perform interpolation
     shg_interpolated = interpolator(
@@ -287,52 +321,117 @@ def preprocessRawShgMatrix(spectrogrm_matrix, header, nTarget):
     index_delay_range_max = index_range_new_delay[1] 
     index_wavelength_range_min = index_range_new_wavelength[0]
     index_wavelength_range_max = index_range_new_wavelength[1]
+
     # Embed the interpolated matrix into the larger matrix
     resampled_shg_matrix = resampled_shg_matrix.numpy()
     resampled_shg_matrix[index_wavelength_range_min:index_wavelength_range_max,\
             index_delay_range_min:index_delay_range_max] = shg_interpolated
-    resampled_shg_matrix = torch.from_numpy(resampled_shg_matrix)
+    resampled_shg_matrix = torch.from_numpy(resampled_shg_matrix.T)
 
+    resampled_shg_matrix = windowSHGmatrix(
+            shg_matrix = resampled_shg_matrix, 
+            dimension = 0,    # delay dimension
+            standard_deviation_factor=0.025
+            )
+    resampled_shg_matrix = windowSHGmatrix(
+            shg_matrix = resampled_shg_matrix, 
+            dimension = 1,    # wavelength dimension
+            standard_deviation_factor=0.03
+            )
     # new header
-    delta_tau = float(resampled_delay_axis[1] - resampled_delay_axis[0])
-    delta_lambda = float(resampled_wavelength_axis[1] - resampled_wavelength_axis[0])
-    center_wavelength = helper.getCenterOfAxis(resampled_wavelength_axis)
-    num_delays = int(resampled_delay_axis.size(0))
-    num_wavelength = int(resampled_wavelength_axis.size(0))
+    num_delays          = int(resampled_delay_axis.size(0))
+    num_wavelength      = int(resampled_wavelength_axis.size(0))
+    delta_tau           = float(resampled_delay_axis[1] - resampled_delay_axis[0])
+    delta_lambda        = float(resampled_wavelength_axis[1] - resampled_wavelength_axis[0])
+    center_wavelength   = helper.getCenterOfAxis(resampled_wavelength_axis)
     
-    new_header = [
-            num_delays,
+    new_header = torch.tensor(
+            [ num_delays,
             num_wavelength,
             delta_tau,
             delta_lambda,
-            center_wavelength
-            ]
-    print(f"New Header = {new_header}")
-    
-    # Create a figure
-    plt.figure(figsize=(10, 6))
-    # fix the axes to a specific exponent representation
-    plt.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
-    # Plot the spectrogram
-    plt.pcolormesh(
-            resampled_delay_axis.numpy(),
-            resampled_wavelength_axis.numpy(),
-            resampled_shg_matrix.numpy(),
-            shading='auto',
-            # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
+            center_wavelength ]
             )
 
+    shg_data = torch.from_numpy(resampled_shg_matrix.numpy()), new_header
+    resample = data.ResampleSHGmatrix(    
+            config.OUTPUT_NUM_DELAYS, 
+            config.OUTPUT_TIMESTEP, 
+            config.OUTPUT_NUM_WAVELENGTH,
+            config.OUTPUT_START_WAVELENGTH,
+            config.OUTPUT_END_WAVELENGTH)
+
+    # _, new_header, resampled_shg_matrix, resampled_delay_axis, resampled_wavelength_axis = resample(shg_data)
+    # resampled_shg_matrix = helper.normalizeSHGmatrix(resampled_shg_matrix[0,:,:])
+    
+    # Create a figure
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 18))
+
+    # FIGURE 1
+    # fix the axes to a specific exponent representation
+    ax1.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    ax1.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # Plot the SHG-matrix
+    c1 = ax1.pcolormesh(
+        delay_axis.numpy(),
+        wavelength_axis.numpy(),
+        shg_matrix.numpy().T,
+        shading='auto',
+        # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
+        )
+
     # Add labels and title
-    plt.colorbar(label='Intensity')
-    plt.ylabel("Wavelength [m]")
-    plt.xlabel("Time [s]")
-    plt.title("SHG Matrix")
+    # fig.colorbar(c1, label='Intensity')
+    ax1.set_ylabel("Wavelength [m]")
+    ax1.set_xlabel("Time [s]")
+    ax1.set_title("Original SHG-Matrix")
+    
+    fig.colorbar(c1, ax=ax1, label='Intensity')
+    # FIGURE 2
+    # fix the axes to a specific exponent representation
+    ax2.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    ax2.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # Plot the SHG-matrix
+    c2 = ax2.pcolormesh(
+        resampled_delay_axis.numpy(),
+        resampled_wavelength_axis.numpy(),
+        resampled_shg_matrix.numpy().T,
+        shading='auto',
+        # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
+        )
+
+    # Add labels and title
+    # fig.colorbar(c2, label='Intensity')
+    ax2.set_ylabel("Wavelength [m]")
+    ax2.set_xlabel("Time [s]")
+    ax2.set_title("Preprocessed SHG-Matrix")
+
+    fig.colorbar(c2, ax=ax2, label='Intensity')
+
+    # fix the axes to a specific exponent representation
+    ax3.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    ax3.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # Plot the SHG-matrix
+    c3 = ax3.pcolormesh(
+        resampled_delay_axis.numpy(),
+        resampled_wavelength_axis.numpy(),
+        resampled_shg_matrix.numpy().T,
+        shading='auto',
+        norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
+        )
+
+    # Add labels and title
+    # fig.colorbar(c3, label='Intensity')
+    ax3.set_ylabel("Wavelength [m]")
+    ax3.set_xlabel("Time [s]")
+    ax3.set_title("Preprocessed SHG Matrix (Logarithmic)")
+
+    fig.colorbar(c3, ax=ax3, label='Intensity')
 
     # Show the plot
     plt.show()
 
-    return resampled_shg_matrix
+    return resampled_shg_matrix, new_header
 
 '''
 indexRangeWithinLimits()
@@ -367,3 +466,51 @@ def indexRangeWithinLimits(signal, limits):
     index_range = (index_1, index_2)
 
     return index_range
+
+'''
+preprocessFromPath()
+
+Description:
+    Preprocess the measured SHG-matrix from the path of it's file
+Inputs:
+    path        -> [string] path of the file the SHG-matrix and it's header are saved in
+    N           -> [int] size of the SHG-matrix is (N x N) 
+Outputs:
+    shg_matrix  -> [tensor] preprocessed SHG-matrix
+    header      -> [tensor] header of the preprocessed SHG-matrix
+'''
+def preprocessFromPath(path, N = 256):
+    reader = data.ReadSHGmatrix()
+    shg_data = reader(path)
+    input_shg_matrix, input_header = shg_data
+    shg_matrix, header = preprocessRawShgMatrix(input_shg_matrix, input_header, N)
+
+    return shg_matrix, header
+
+def preprocess(shg_path, output_path, N = 256):
+    # extract the filename of the SHG-matrix
+    shg_filename = os.path.basename(shg_path)
+    # split the file name into the file name itself and its extension
+    name, extension = os.path.splitext(shg_filename)
+    # create the filename for the preproocessed SHG-matrix
+    shg_preproc_filename = f"{name}_preproc{extension}"
+    # create the full path of the output SHG-matrix
+    full_output_path = os.path.join(output_path, shg_preproc_filename)
+
+    shg_matrix, header = preprocessFromPath(shg_path, N)
+    
+    # preprocess the header
+    number_delays       = int(header[0])
+    number_wavelengths  = int(header[1])
+    delta_tau           = round( float(header[2]) / c.femto, 4)
+    delta_lambda        = round( float(header[3]) / c.nano, 4)
+    center_wavelength   = round( float(header[4]) / c.nano, 4)
+    # place the header information into a string
+    header_line = f"{number_delays} {number_wavelengths} {delta_tau} {delta_lambda} {center_wavelength}"
+    shg_lines = '\n'.join(' '.join(map(str, row.tolist() )) for row in shg_matrix)
+    
+    with open(full_output_path, 'w') as file:
+        file.write(header_line + '\n')
+        file.write(shg_lines + '\n')
+
+    return full_output_path
