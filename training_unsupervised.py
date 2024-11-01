@@ -121,7 +121,7 @@ logger.info("Loading Data...")
 # configure the data loader
 data_loader = data.LoadDatasetReconstruction(
         path=config.Path,
-        use_label=False,
+        use_label=True,
         label_filename=config.LabelFilename,
         shg_filename=config.ShgFilename,
         tbdrms_file=config.TBDrmsFilename,  # Path to the file containing TBDrms values
@@ -221,7 +221,7 @@ for epoch in range(config.NUM_EPOCHS):
     # place model into training mode
     model.train()       
     # itterate over train data
-    for i, (shg_matrix, header) in enumerate(train_loader):
+    for i, (shg_matrix, label, header) in enumerate(train_loader):
         ###############
         ## Load Data ##
         ###############
@@ -279,7 +279,7 @@ for epoch in range(config.NUM_EPOCHS):
     # 
     with torch.no_grad():   # disable gradient computation for evaluation
         # itterate over validation data
-        for shg_matrix, header in validation_loader:
+        for shg_matrix, label, header in validation_loader:
             ###############
             ## Load Data ##
             ###############
@@ -343,7 +343,7 @@ model.eval()
 # don't calculate gradients
 with torch.no_grad():
     # iterate over test data
-    for shg_matrix, header in test_loader:
+    for shg_matrix, label, header in test_loader:
         # convert shg_matrix and labels to float and send them to the device
         shg_matrix = shg_matrix.float().to(device)
         
@@ -369,16 +369,17 @@ with torch.no_grad():
         shg_matrix, label, header = test_sample
         # adding an extra dimension to shg_matrix and label to simulate a batch size of 1
         shg_matrix = shg_matrix.unsqueeze(0)
+        label = label.unsqueeze(0)
         # send shg_matrix to device and make prediction
         shg_matrix = shg_matrix.float().to(device)
         prediction = model(shg_matrix) 
         # send label and prediction to cpu, so that it can be plotted
+        label = label_unscaler(label).cpu()
         prediction = label_unscaler(prediction).cpu()
         # calculate the imaginary part of the signal and make it the shape of the label
         prediction_analytical = loss_module.hilbert(prediction.squeeze())
         prediction = torch.cat((prediction_analytical.real, prediction_analytical.imag))
         # plot
-        label = torch.zeros_like(prediction)
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
 logger.info("Test Step finished!")
