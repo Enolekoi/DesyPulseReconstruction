@@ -47,7 +47,7 @@ logger.info(f"SHG-matrix used: {config.ShgFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
 logger.info(f"Batch size: {config.BATCH_SIZE} elements")
 logger.info(f"Number of epochs: {config.NUM_EPOCHS}")
-logger.info(f"Initial learning rate: {1e-4}")
+logger.info(f"Initial learning rate: {1e-6}")
 # logger.info(f"Initial learning rate: {config.LEARNING_RATE}")
 logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are used!")
 
@@ -182,7 +182,7 @@ optimizer = torch.optim.Adam(
          {'params': model.fc1.parameters()},
          {'params': model.fc2.parameters()}
         ],
-        lr=1e-6,
+        lr=1e-8,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
 #optimizer = torch.optim.SGD(
@@ -204,7 +204,7 @@ optimizer = torch.optim.Adam(
     # )
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
-    max_lr=1e-3,
+    max_lr=1e-4,
     total_steps=NUM_STEPS
     )
 
@@ -381,6 +381,46 @@ with torch.no_grad():
         prediction = torch.cat((prediction_analytical.real, prediction_analytical.imag))
         # plot
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
+
+    test_loss_indices = [(i, loss) for i, loss  in enumerate(test_losses)]
+    average_test_loss = np.mean(test_losses)
+
+    # find the index of the minimum and maximum loss
+    min_loss_idx = min(test_loss_indices, key=lambda x: x[1])[0]
+    max_loss_idx = max(test_loss_indices, key=lambda x: x[1])[0]
+    closest_to_mean_idx = min(test_loss_indices, key=lambda x: abs(x[1] - avg_test_loss))[0]
+
+    shg_min, label_min, header_min = test_data[min_loss_idx]
+    shg_max, label_max, header_max = test_data[max_loss_idx]
+    shg_mean, label_mean, header_mean = test_data[closest_to_mean_idx]
+
+    shg_min =   shg_min.unsqueeze(0).float().to(device)
+    shg_max =   shg_max.unsqueeze(0).float().to(device)
+    shg_mean = shg_mean.unsqueeze(0).float().to(device)
+
+    prediction_min = model(shg_min)
+    prediction_max = model(shg_max)
+    prediction_mean = model(shg_mean)
+
+    label_min = label_unscaler(label_min.unsqueeze(0)).cpu()
+    label_max = label_unscaler(label_max.unsqueeze(0)).cpu()
+    label_mean = label_unscaler(label_mean.unsqueeze(0)).cpu()
+    prediction_min = label_unscaler(prediction_min.unsqueeze(0)).cpu()
+    prediction_max = label_unscaler(prediction_max.unsqueeze(0)).cpu()
+    prediction_mean = label_unscaler(prediction_mean.unsqueeze(0)).cpu()
+
+    prediction_min_analytical = loss_module.hilbert(prediction_min.squeeze())
+    prediction_min_combinded = torch.cat((prediction_min_analytical.real, prediction_min_analytical.imag))
+
+    prediction_max_analytical = loss_module.hilbert(prediction_max.squeeze())
+    prediction_max_combined = torch.cat((prediction_max_analytical.real, prediction_max_analytical.imag))
+
+    prediction_mean_analytical = loss_module.hilbert(prediction_mean.squeeze())
+    prediction_mean_combined = torch.cat((prediction_mean_analytical.real, prediction_mean_analytical.imag))
+
+    vis.compareTimeDomainComplex("./prediction_min.png", label_min, prediction_min_combinded)
+    vis.compareTimeDomainComplex("./prediction_max.png", label_max, prediction_max_combined)
+    vis.compareTimeDomainComplex("./prediction_mean.png", label_mean, prediction_mean_combined)
 
 logger.info("Test Step finished!")
 
