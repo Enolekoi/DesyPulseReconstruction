@@ -182,7 +182,7 @@ optimizer = torch.optim.Adam(
          {'params': model.fc1.parameters()},
          {'params': model.fc2.parameters()}
         ],
-        lr=1e-6,
+        lr=1e-8,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
 #optimizer = torch.optim.SGD(
@@ -204,7 +204,7 @@ optimizer = torch.optim.Adam(
     # )
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
-    max_lr=0.5e-1,
+    max_lr=1e-4,
     total_steps=NUM_STEPS
     )
 
