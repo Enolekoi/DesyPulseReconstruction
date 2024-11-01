@@ -95,7 +95,7 @@ class LoadDatasetReconstruction(Dataset):
         if not isinstance(output_shg, torch.Tensor):
             output_shg = torch.tensor(output_shg)
 
-        if self.use_label == True:
+        if self.use_label:
             label_path = os.path.join(self.path, data_dir, self.label_filename) # construct the full path to the label file
             if self.target_transform:
                 label = self.target_transform(label_path)
@@ -105,10 +105,9 @@ class LoadDatasetReconstruction(Dataset):
             # ensure correct output data type
             if not isinstance(label, torch.Tensor):
                 label = torch.tensor(label)
+            return output_shg, label, header
         else:
             return output_shg, header
-
-                return output_shg, label, header
 
 '''
 ReadShgMatrix()
