@@ -389,6 +389,49 @@ with torch.no_grad():
         # plot
         vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
 
+    test_loss_indices = [(i, loss) for i, loss  in enumerate(test_losses)]
+    average_test_loss = np.mean(test_losses)
+
+    # find the index of the minimum and maximum loss
+    logger.info("Determine the test sample with the lowest and highest loss, as well as the closest loss to the mean loss")
+    min_loss_idx = min(test_loss_indices, key=lambda x: x[1])[0]
+    max_loss_idx = max(test_loss_indices, key=lambda x: x[1])[0]
+    closest_to_mean_idx = min(test_loss_indices, key=lambda x: abs(x[1] - avg_test_loss))[0]
+
+    shg_min, label_min, header_min = test_data[min_loss_idx]
+    shg_max, label_max, header_max = test_data[max_loss_idx]
+    shg_mean, label_mean, header_mean = test_data[closest_to_mean_idx]
+
+    shg_min =   shg_min.unsqueeze(0).float().to(device)
+    shg_max =   shg_max.unsqueeze(0).float().to(device)
+    shg_mean = shg_mean.unsqueeze(0).float().to(device)
+
+    prediction_min = model(shg_min)
+    prediction_max = model(shg_max)
+    prediction_mean = model(shg_mean)
+
+    label_min = label_unscaler(label_min.unsqueeze(0)).cpu()
+    label_max = label_unscaler(label_max.unsqueeze(0)).cpu()
+    label_mean = label_unscaler(label_mean.unsqueeze(0)).cpu()
+    prediction_min = label_unscaler(prediction_min.unsqueeze(0)).cpu()
+    prediction_max = label_unscaler(prediction_max.unsqueeze(0)).cpu()
+    prediction_mean = label_unscaler(prediction_mean.unsqueeze(0)).cpu()
+
+    prediction_min_analytical = loss_module.hilbert(prediction_min.squeeze())
+    prediction_min_combinded = torch.cat((prediction_min_analytical.real, prediction_min_analytical.imag))
+
+    prediction_max_analytical = loss_module.hilbert(prediction_max.squeeze())
+    prediction_max_combined = torch.cat((prediction_max_analytical.real, prediction_max_analytical.imag))
+
+    prediction_mean_analytical = loss_module.hilbert(prediction_mean.squeeze())
+    prediction_mean_combined = torch.cat((prediction_mean_analytical.real, prediction_mean_analytical.imag))
+    
+    logger.info("Create plot of the test value with the lowest loss")
+    vis.compareTimeDomainComplex("./prediction_min.png", label_min, prediction_min_combinded)
+    logger.info("Create plot of the test value with the highest loss")
+    vis.compareTimeDomainComplex("./prediction_max.png", label_max, prediction_max_combined)
+    logger.info("Create plot of the closest test value to the mean loss")
+    vis.compareTimeDomainComplex("./prediction_mean.png", label_mean, prediction_mean_combined)
 logger.info("Test Step finished!")
 
 for handler in logger.handlers:
