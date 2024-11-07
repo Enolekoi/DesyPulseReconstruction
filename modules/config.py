@@ -65,7 +65,7 @@ Path Options
 
 The paths used are defined here
 '''
-ModelPath = "./models/trained_model_7.pth"  # path of pretrained model used to initialize weights before training
+ModelPath = "./logs/training_015/model.pth"  # path of pretrained model used to initialize weights before training
 
 LogDirectory = "./logs/"
 ModelFilename = "model.pth"
