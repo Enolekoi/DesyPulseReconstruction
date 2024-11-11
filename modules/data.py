@@ -388,10 +388,10 @@ class RemoveAmbiguitiesFromLabel(object):
 
         # remove translation ambiguity Eamb(t) = E(t-t0)
         complex_signal = helper.removeTranslationAmbiguity(complex_signal, self.center_index)
-        # remove mirrored complex conjugate ambiguity Eamb(t) = E*(-t)
-        complex_signal = helper.removeConjugationAmbiguity(complex_signal, self.center_index)
         # remove absolute phase shift ambiguity Eamb(t) = E(t)*exp(j\phi0)
         complex_signal = helper.removePhaseShiftAmbiguity(complex_signal, self.center_index)
+        # remove mirrored complex conjugate ambiguity Eamb(t) = E*(-t)
+        complex_signal = helper.removeConjugationAmbiguity(complex_signal, self.center_index)
 
         real = complex_signal.real
         imag = complex_signal.imag

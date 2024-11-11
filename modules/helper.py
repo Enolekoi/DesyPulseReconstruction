@@ -90,17 +90,22 @@ Outputs:
 def removeConjugationAmbiguity(complex_signal, center_index):
     # calculate the intensity of the signal
     intensity = complex_signal.real**2 + complex_signal.imag**2
+    phase = unwrap_phase(complex_signal.real, complex_signal.imag)
 
     # Calculate the mean of the pulse before and after the center index
-    mean_first_half = torch.mean(intensity[:center_index])
-    mean_second_half = torch.mean(intensity[center_index:])
-    
+    mean_first_half = torch.mean(phase[:center_index])
+    mean_second_half = torch.mean(phase[center_index:])
+    mean_phase = torch.mean(phase)
+    sum_phase = torch.sum(phase)
     # if the weight of the signal is in the second half of the signal
-    if mean_second_half > mean_first_half:
+    # if mean_second_half > mean_first_half:
+    if sum_phase < 0.0:
         # conjugate the signal
         complex_signal_conjugated = complex_signal.conj()
+        # complex_signal_conjugated = complex_signal
         # mirror the signal
-        complex_signal_noambig = torch.flip(complex_signal_conjugated, dims=[0])
+        # complex_signal_noambig = torch.flip(complex_signal_conjugated, dims=[0])
+        complex_signal_noambig = complex_signal_conjugated
     # if the weight of the signal is in the first half of the signal
     else:   
         # do nothing
@@ -122,6 +127,7 @@ Outputs:
 def removePhaseShiftAmbiguity(complex_signal, center_index):
     # calculate the phase of the signal [rad]
     phase = torch.angle(complex_signal)
+    # phase = unwrap_phase(complex_signal.real, complex_signal.imag)
 
     # get phase at center index
     center_phase = phase[center_index]
@@ -404,3 +410,28 @@ def intensityMatrixFreq2Wavelength(frequency_axis, freq_intensity_matrix):
         wavelength_intensity_matrix[i, :] = interpolated
 
     return wavelength_axis_equidistant, wavelength_intensity_matrix
+
+'''
+unwrap_phase()
+
+Description:
+    Calculate the unwrapped phase of a complex signal
+Inputs:
+    real                -> [tensor] real part of a complex signal
+    imag                -> [tensor] real part of a complex signal
+    discontinuity       -> [float] steps greater than this will result in wrapping
+Outputs:
+    unwrapped_phase     -> [tensor] unwrapped phase
+'''
+def unwrap_phase(real, imag, discontinuity=torch.pi):
+    # calculate the phase angle
+    phase = torch.atan2(imag, real)
+    # calculate the difference between consecutive elements
+    diff = torch.diff(phase, prepend=phase[..., :1])
+    # find jumps greater than the discontinuity threshold
+    phase_jumps = (diff > discontinuity).float() - (diff < - discontinuity).float()
+    # Cumulative sum of jumps, scaled by 2 * pi to correct the phase
+    phase_adjustment = torch.cumsum(phase_jumps * (-2 * discontinuity), dim = -1)
+    # Apply the adjustment to get the unwrapped phase
+    unwrapped_phase = phase + phase_adjustment
+    return unwrapped_phase

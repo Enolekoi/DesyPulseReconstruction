@@ -432,6 +432,7 @@ with torch.no_grad():
     vis.compareTimeDomainComplex("./prediction_max.png", label_max, prediction_max_combined)
     logger.info("Create plot of the closest test value to the mean loss")
     vis.compareTimeDomainComplex("./prediction_mean.png", label_mean, prediction_mean_combined)
+
 logger.info("Test Step finished!")
 
 for handler in logger.handlers:

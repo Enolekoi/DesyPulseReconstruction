@@ -1,6 +1,9 @@
-from .modules import config
-from .modules import helper
-from .modules import visualize as vis
+from modules import config
+from modules import data
+from modules import helper
+from modules import loss
+from modules import models
+from modules import visualize as vis
 
 import torch
 import torchvision.transforms as transforms
@@ -10,8 +13,8 @@ import matplotlib.pyplot as plt
 import logging
 
 
-spectrogram_path = "/mnt/data/desy/frog_simulated/grid_512_v2/tr1000/as_gn00.dat"
-label_path = "/mnt/data/desy/frog_simulated/grid_512_v2/tr1000/Es.dat"
+
+shg_matrix_path = "./additional/samples/as_gn00.dat"
 filepath = "./pred.png"
 
 # Logger Settings
@@ -26,16 +29,29 @@ logging.basicConfig(
             ]
 )
 logger = logging.getLogger(__name__)
+##########
+## CUDA ##
+##########
+# If cuda is is available use it instead of the cpu
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+logger.info(f"Device used (cuda/cpu): {device}")
+if device == 'cuda':
+    torch.cuda.empty_cache()
 
 ###########
 ## MODEL ##
 ###########
 # Define Model
-model = helper.CustomDenseNet(
-    num_outputs=2*config.OUTPUT_SIZE
+model = models.CustomDenseNetReconstruction(
+    num_outputs=config.OUTPUT_SIZE
     )
 # Load the saved model state
-model.load_state_dict(torch.load(config.ModelPath, weights_only=True))
+model.load_state_dict(
+    torch.load(
+        config.ModelPath,
+        weights_only=True,
+        map_location=torch.device(device))
+    )
 logger.info(f"Model state loaded from {config.ModelPath}")
 # Set to evaluation mode
 model.eval()
@@ -43,14 +59,22 @@ model.eval()
 ################
 ## TRANSFORMS ##
 ################
-spec_transform = helper.ResampleSpectrogram(config.OUTPUT_NUM_DELAYS, config.OUTPUT_TIMESTEP, config.OUTPUT_NUM_WAVELENGTH, config.OUTPUT_START_WAVELENGTH, config.OUTPUT_END_WAVELENGTH)
+shg_read = data.ReadSHGmatrix()
+shg_resampled = data.ResampleSHGmatrix(
+    config.OUTPUT_NUM_DELAYS,
+    config.OUTPUT_TIMESTEP,
+    config.OUTPUT_NUM_WAVELENGTH,
+    config.OUTPUT_START_WAVELENGTH,
+    config.OUTPUT_END_WAVELENGTH
+    )
 
-label_reader = helper.ReadLabelFromEs(config.OUTPUT_SIZE)
-label_phase_correction = helper.RemoveAbsolutePhaseShift()
-label_scaler = helper.ScaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
-# label_transform = transforms.Compose([label_reader, label_phase_correction, label_scaler])
-label_transform = transforms.Compose([label_reader, label_scaler])
-label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_phase=config.MAX_PHASE)
+label_scaler = data.Scaler(
+    number_elements=config.OUTPUT_SIZE,
+    max_value = 1
+    )
+label_ambig = data.RemoveAmbiguitiesFromLabel(
+        number_elements=config.OUTPUT_SIZE
+        )
 
 ################
 ## PREDICTION ##
@@ -58,25 +82,22 @@ label_unscaler = helper.UnscaleLabel(max_intensity=config.MAX_INTENSITY, max_pha
 
 def predict(spectrogram):
     with torch.no_grad():
-        output_unscaled = model(spectrogram)
-        output = label_unscaler(output_unscaled.numpy())
+        real_part = model(spectrogram).squeeze()
+        analytical_signal = loss.hilbert(real_part, plot=True)
+        output = torch.cat((analytical_signal.real, analytical_signal.imag)).to(device)
+        output = label_ambig(output)
     return output
 
-# load spectrogram
-logger.info(f"Loading spectrogram from {spectrogram_path}")
-orig_spec, orig_time, orig_wave, spec, out_time, out_wave = spec_transform(spectrogram_path)
-spec = torch.tensor(spec, dtype=torch.float64)
-spec = torch.unsqueeze(spec, dim=0)  # Add batch dimension [1, 512, 512]
-spec = torch.unsqueeze(spec, dim=0)  # Add batch dimension [1, 1, 512, 512]
-spec = spec.repeat(1, 3, 1, 1)  # Repeat the channel 3 times, changing [1, 1, 512, 512] to [1, 3, 512, 512] 
-spec = spec.to(torch.float)
+# load SHG-Matrix and convert it to right shape [1, 3, 512, 512]
+logger.info(f"Loading SHG-Matrix from {shg_matrix_path}")
+shg_data = shg_read(shg_matrix_path)
+shg_matrix_original, header, shg_matrix, delay_axis, wavelength_axis = shg_resampled(shg_data)
+shg_matrix = torch.unsqueeze(shg_matrix, dim=0)  # Add batch dimension [1, 512, 512]
+shg_matrix = shg_matrix.to(torch.float)
 
-label = label_transform(label_path)
-prediction = predict(spec)
+prediction = predict(shg_matrix)
 
-prediction_length = len(prediction)
-
-vis.compareTimeDomainComplex(filepath, label, prediction)
+vis.plotTimeDomainFromPrediction(filepath, prediction)
 
 for handler in logger.handlers:
     handler.flush()

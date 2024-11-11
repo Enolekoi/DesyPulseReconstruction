@@ -7,16 +7,16 @@ Module containing functions used for plotting or visualizing data
 ## Imports ##
 #############
 import logging
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import numpy as np
 
 from modules import helper
 from modules import data
+from modules import constants as c
 
 logger = logging.getLogger(__name__)
-
-
 
 '''
 savePlotTrainingLoss()
@@ -303,6 +303,114 @@ def compareTimeDomain(filepath, label, prediction):
     logger.info(f"Saved comparison of random prediction and label to {filepath}")
 
 '''
+plotTimeDomainFromPrediction()
+
+Description:
+    Plot time domains of a prediction
+Inputs:
+    filepath    -> path to where the plot is saved
+    prediction  -> predicted signal
+'''
+def plotTimeDomainFromPrediction(filepath, prediction):
+    matplotlib.use('TkAgg')  # Or use 'Qt5Agg', 'MacOSX' depending on your system
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.numpy()
+    # get the real and imaginary parts
+    prediction = prediction.squeeze()
+
+    prediction_length = len(prediction)
+    
+    half_size = int(prediction_length //2)
+    pred_real = prediction[:half_size].squeeze()
+    pred_imag = prediction[half_size:].squeeze()
+    
+    # create the delay axis
+    delay_axis = helper.generateAxis(
+            N = 256,
+            resolution = 1.5*c.femto,
+            center = 0.0
+            ).numpy()
+
+    # calculate the intensity and phase
+    pred_intensity = pred_real*pred_real + pred_imag*pred_imag
+    
+    pred_phase = np.mod(np.arctan2(pred_imag, pred_real), 2*np.pi)
+    pred_phase = np.unwrap(pred_phase)
+    
+    # calculate the spectral intensity and phase
+    pred_complex = pred_real + 1j * pred_imag
+    # compute the fft
+    pred_fft = np.fft.fft(pred_complex) 
+    # calculate the spectral intensity and phase
+    fft_intensity = np.sqrt(np.abs(pred_fft))
+    fft_phase = np.mod(np.arctan2(pred_fft.imag, pred_fft.real), 2*np.pi)
+    fft_phase = np.unwrap(fft_phase)
+    # create a frequency axis for plotting
+    n = pred_complex.size
+    n_half = n // 2
+    freq_axis = np.fft.fftfreq(n, d=(1/1.5*c.femto) )
+
+    fft_intensity = fft_intensity[n_half:]
+    fft_phase =         fft_phase[n_half:]
+    freq_axis =         freq_axis[:n_half]
+
+    fig, axs = plt.subplots(4,1, figsize=(10,16))
+
+    # Plotting the real part
+    axs[0].plot(delay_axis, pred_real, label="Retrieved real part", color="red")
+    axs[0].set_title("Retrieved real part of the E-Field")
+    axs[0].set_xlabel("Delays in [s]")
+    axs[0].set_ylabel("Amplitude")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Plotting the imgainary part
+    axs[1].plot(delay_axis,pred_imag, label="Retrieved imaginary part", color="red")
+    axs[1].set_title("Retrieved imaginary part of the E-Field")
+    axs[1].set_xlabel("Delays in [s]")
+    axs[0].set_ylabel("Amplitude")
+    axs[1].grid(True)
+    axs[1].legend()
+    
+    # Plotting the Phase
+    axs[2].plot(delay_axis,pred_phase, label="Retrieved phase", color="blue")
+    axs[2].set_title("Retrieved intensity and phase of the E-Field")
+    axs[2].set_ylabel("Phase in [rad]")
+    axs[2].set_xlabel("Delays in [s]")
+    axs[2].grid(True)
+    
+    ax_intensity = axs[2].twinx()
+    ax_intensity.plot(delay_axis, pred_intensity, label="Retrieved intensity", color="orange")
+    ax_intensity.set_ylabel("Intensity")
+    # ax_intensity.legend(loc='best')
+
+    # Combine legends from both axes
+    lines_1, labels_1 = axs[2].get_legend_handles_labels()
+    lines_2, labels_2 = ax_intensity.get_legend_handles_labels()
+    axs[2].legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
+
+    # Plot Intensity difference
+    axs[3].plot(freq_axis,fft_phase, label="Retrieved spectral phase", color="blue")
+    axs[3].set_title("Retrieved spectral intensity and phase")
+    axs[3].set_ylabel("Phase in [rad]")
+    axs[3].set_xlabel("Frequency")
+    axs[3].grid(True)
+
+    ax_fft_intensity = axs[3].twinx()
+    ax_fft_intensity.plot(freq_axis,fft_intensity, label="Retrieved spectral intensity", color="orange")
+    ax_fft_intensity.set_ylabel("Intensity")
+
+    lines_3, labels_3 = axs[3].get_legend_handles_labels()
+    lines_4, labels_4 = ax_fft_intensity.get_legend_handles_labels()
+    axs[3].legend(lines_3 + lines_4, labels_3 + labels_4, loc='upper right')
+
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
+    plt.savefig(filepath)
+    plt.close()
+    logger.info(f"Saved plot of prediction to {filepath}")
+
+'''
 compareTimeDomainComplex()
 Compate Time Domains of label and prediction
 Inputs:
@@ -341,7 +449,7 @@ def compareTimeDomainComplex(filepath, label, prediction):
 
     fig, axs = plt.subplots(4,1, figsize=(10,16))
 
-    # Plotting the Intensity
+    # Plotting the real part
     axs[0].plot(orig_real, label="original pulse", color="green")
     axs[0].plot(pred_real, label="predicted pulse", color="red")
     axs[0].set_title("Comparison of the real part of the E-Field")
@@ -349,7 +457,7 @@ def compareTimeDomainComplex(filepath, label, prediction):
     axs[0].grid(True)
     axs[0].legend()
 
-    # Plotting the Phase
+    # Plotting the imaginary part
     axs[1].plot(orig_imag, label="original pulse", color="green")
     axs[1].plot(pred_imag, label="predicted pulse", color="red")
     axs[1].set_title("Comparison of the imaginary part of the E-Field")

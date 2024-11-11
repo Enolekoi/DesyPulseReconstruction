@@ -360,14 +360,9 @@ Outputs:
     analytical_signal   -> [tensor] the analytical signal (with the hilbert transform as the imaginary part) [tensor]
 '''
 def hilbert(signal, plot=False):
-    """
-    Inputs:
-        signal  -> real-valued signal [tensor]
-    Outputs:
-        analytical_signal -> the analytical signal (with the hilbert transform as the imaginary part) [tensor]
-    """
     N = signal.size(0)  # Length of the input signal
     signal_fft = trafo.fft(signal)  # FFT of input signal
+    freq_axis = trafo.fftfreq(N)  # FFT of input signal
     
     # Create the frequency mask for the hilbert transform
     H = torch.zeros(N, dtype=torch.complex64, device=signal.device)
@@ -375,13 +370,13 @@ def hilbert(signal, plot=False):
     # if N is even
     if N % 2 == 0:
         N_half = N // 2     # Half of the signal (when N is even)
-        # H[0] = 1            # DC component
-        H[N_half+1:] = 2    # Positive frequencies
+        H[0] = 1            # DC component
+        H[:N_half] = 2    # Positive frequencies
         H[N_half] = 1       # Nyquist frequency (only for even N)
     else:
         N_half = (N+1) // 2 # Half of the signal (when N is uneven)
-        # H[0] = 1            # DC component
-        H[N_half:] = 2    # Positive frequencies
+        H[0] = 1            # DC component
+        H[:N_half] = 2    # Positive frequencies
     # apply the frequency mask
     signal_fft_hilbert = signal_fft * H
 
@@ -401,7 +396,7 @@ def hilbert(signal, plot=False):
         
         # plot 2 (frequency domain, real part[fft] )
         plt.subplot(4,1,2)
-        plt.plot(signal_fft, label='real part')
+        plt.plot(freq_axis, signal_fft, label='real part')
         plt.title('FFT of the real part of time domain signal')
         plt.ylabel('Intensity')
         plt.xlabel('Frequency')
@@ -419,7 +414,7 @@ def hilbert(signal, plot=False):
         
         # plot 4 (frequency domain, hilbert mask)
         plt.subplot(4,1,4)
-        plt.plot(signal_fft_hilbert, label='Signal after Hilbert Mask')
+        plt.plot(freq_axis, signal_fft_hilbert, label='Signal after Hilbert Mask')
         plt.title('Signal after multiplication with the mask of the Hilbert transform')
         plt.ylabel('Intensity')
         plt.xlabel('Frequency')
