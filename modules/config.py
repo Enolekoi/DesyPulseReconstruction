@@ -15,10 +15,10 @@ Training Options
 
 Options that configure parameters for the training process
 '''
-NUM_EPOCHS = 2      # Number of epochs to train the model
+NUM_EPOCHS = 1      # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
-UNFREEZE_EPOCH = 40 # Epoch after which the whole model is trained (before that only the output layers are trained)
+UNFREEZE_EPOCH = 30 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-6    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
@@ -31,7 +31,7 @@ Loss function options
 Options that configure how the loss function is used
 '''
 PULSE_THRESHOLD = 0.001     # The Pulse is considered to be between the first and last value over the threshold
-PENALTY_FACTOR = 100.0      # Values outside the pulse are surpressed, by weighing their error with this factor
+PENALTY_FACTOR = 500.0      # Values outside the pulse are surpressed, by weighing their error with this factor
 WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 1.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 40.0     # Weight used for MSE of the intensity
