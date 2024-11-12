@@ -334,8 +334,14 @@ vis.save_plot_training_loss(
 logger.info("Training finished!")
 
 # Write state_dict of model to file
-torch.save(model.state_dict(), config.model_filepath)
-logger.info("Saved Model")
+try:
+    torch.save(model.state_dict(), config.model_filepath)
+    logger.info("Saved Model")
+except Exception as e:
+    logger.error(f"Error saving model: {e}")
+    logger.error(f"model filepath: {config.model_filepath}")
+    logger.error(f"Model: {model.state_dict}")
+
 
 '''
 Testing Loop
