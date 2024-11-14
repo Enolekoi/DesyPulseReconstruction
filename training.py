@@ -177,7 +177,13 @@ criterion = loss_module.PulseRetrievalLossFunction(
         phase_weight = config.WEIGTH_PHASE,
         frog_error_weight= config.WEIGTH_FROG_ERROR
         )
-
+logger.info(f"Threshold over which signal is considered part of the pulse: {config.PULSE_THRESHOLD}")
+logger.info(f"Penalty for signal outside of pulse:  {config.PENALTY_FACTOR}")
+logger.info(f"Weight Used for MSE of Real part:     {config.WEIGTH_REAL_PART}")
+logger.info(f"Weight Used for MSE of imaginary part:{config.WEIGTH_IMAG_PART}")
+logger.info(f"Weight Used for MSE of Intensity:     {config.WEIGTH_INTENSITY}")
+logger.info(f"Weight Used for MSE of Phase:         {config.WEIGTH_PHASE}")
+logger.info(f"Weight Used for FROG-Error:           {config.WEIGTH_FROG_ERROR}")
 # define and configure the optimizer used
 # TODO: AdamW probieren
 optimizer = torch.optim.Adam(
