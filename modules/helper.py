@@ -100,12 +100,14 @@ def removeConjugationAmbiguity(complex_signal, center_index):
     # if the weight of the signal is in the second half of the signal
     # if mean_second_half > mean_first_half:
     if sum_phase < 0.0:
+        # mirror the signal
+        # complex_signal = torch.flip(complex_signal, dims=[0])
         # conjugate the signal
         complex_signal_conjugated = complex_signal.conj()
         # complex_signal_conjugated = complex_signal
         # mirror the signal
-        # complex_signal_noambig = torch.flip(complex_signal_conjugated, dims=[0])
-        complex_signal_noambig = complex_signal_conjugated
+        complex_signal_noambig = torch.flip(complex_signal_conjugated, dims=[0])
+        # complex_signal_noambig = complex_signal_conjugated
     # if the weight of the signal is in the first half of the signal
     else:   
         # do nothing

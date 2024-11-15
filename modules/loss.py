@@ -371,7 +371,7 @@ def hilbert(signal, plot=False):
     if N % 2 == 0:
         N_half = N // 2     # Half of the signal (when N is even)
         H[0] = 1            # DC component
-        H[:N_half] = 2    # Positive frequencies
+        H[N_half+1:] = 2    # Positive frequencies
         H[N_half] = 1       # Nyquist frequency (only for even N)
     else:
         N_half = (N+1) // 2 # Half of the signal (when N is uneven)
