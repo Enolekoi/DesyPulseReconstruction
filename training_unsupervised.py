@@ -62,7 +62,8 @@ shg_resample = data.ResampleSHGmatrix(
     config.OUTPUT_START_WAVELENGTH,
     config.OUTPUT_END_WAVELENGTH,
     )
-shg_transform = transforms.Compose([shg_read, shg_resample])
+shg_3channel = data.Create3ChannelSHGmatrix()
+shg_transform = transforms.Compose([shg_read, shg_resample, shg_3channel])
 
 # Transforms (Labels)
 # Read the Labels

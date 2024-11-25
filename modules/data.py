@@ -207,8 +207,6 @@ class ResampleSHGmatrix(object):
         # ensure all tensors have the same type (float32)
         self.output_delay = self.output_delay.float()
         self.output_wavelength = self.output_wavelength.float()
-        # initialize normalization with values for the densenet (https://pytorch.org/hub/pytorch_vision_densenet/)
-        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     def __call__(self, shg_data):
         '''
@@ -260,6 +258,36 @@ class ResampleSHGmatrix(object):
             for i in range(delay_resampled.shape[0])
             ], dim=0)
 
+       
+        return shg_original, header, shg_resampled, self.output_delay, self.output_wavelength
+
+'''
+Create3ChannelShgMatrix()
+
+Description:
+    Create a 3 Channel SHG-matrix and normalize it for the DenseNet
+'''
+class Create3ChannelSHGmatrix(object):
+    def __init__(self):
+        # initialize normalization with values for the densenet (https://pytorch.org/hub/pytorch_vision_densenet/)
+        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+
+    def __call__(self, shg_original, header, shg_resampled, output_delay, output_wavelength):
+        '''
+        Inputs:
+            shg_original        -> [tensor] Original SHG-matrix
+            header              -> [tensor] Header of original SHG-matrix
+            shg_resampled       -> [tensor] Resampled SHG-matrix 
+            output_delay        -> [tensor] Resampled delay axis
+            output_wavelength   -> [tensor] Resampled wavelength axis
+        Outputs:
+            shg_original        -> [tensor] Original SHG-matrix
+            header              -> [tensor] Header of original SHG-matrix
+            shg_resampled       -> [tensor] Resampled SHG-matrix 
+            output_delay        -> [tensor] Resampled delay axis
+            output_wavelength   -> [tensor] Resampled wavelength axis
+        '''
+
         # add another dimension to the tensor
         shg_resampled = shg_resampled.unsqueeze(0)
         # repeat the SHG-matrix for 3 times to get 3 channels (shape =[3,h,w])
@@ -267,8 +295,9 @@ class ResampleSHGmatrix(object):
 
         # normalize using weights specified for the densenet
         shg_resampled = self.normalize(shg_resampled)
-        
-        return shg_original, header, shg_resampled, self.output_delay, self.output_wavelength
+ 
+        return shg_original, header, shg_resampled, output_delay, output_wavelength
+
 
 '''
 ReadLabelFromEs()
