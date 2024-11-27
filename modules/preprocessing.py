@@ -534,6 +534,7 @@ Description:
     All other directories should be empty
 '''
 def prepare(dataset_directory, experimental_blacklist_path):
+    print(f"dataset_directory           = {dataset_directory}")
     # create variables for needed paths
     raw_path        = os.path.join(dataset_directory, "/raw")
     print(f"raw path                    = {raw_path}")
