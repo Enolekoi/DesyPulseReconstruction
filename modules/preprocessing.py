@@ -728,7 +728,7 @@ def getDatasetInformation(data_directory, matrix_filename=None):
     # check if all entries in the directory are files
     if all(os.path.isfile(os.path.join(data_directory, entry)) for entry in entries):
         for index, file_name in enumerate(entries):
-            file_path = os.path.join(data_directory, entry)
+            file_path = os.path.join(data_directory, file_name)
             # get the delay, highest and lowest wavelength
             delay, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
             # Update the minimum timestep
