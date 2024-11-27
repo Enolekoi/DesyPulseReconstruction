@@ -8,6 +8,7 @@ Module containing various helper functions
 #############
 import logging
 import torch
+import os
 
 from modules import constants as c
 logger = logging.getLogger(__name__)
@@ -437,3 +438,89 @@ def unwrap_phase(real, imag, discontinuity=torch.pi):
     # Apply the adjustment to get the unwrapped phase
     unwrapped_phase = phase + phase_adjustment
     return unwrapped_phase
+
+'''
+saveSHGMatrixToFile()
+
+Description:
+    Saves SHG-Matrix and it's header to a specified path
+Inputs:
+    shg_matrix  -> [tensor] 2D-SHG-matrix
+    header      -> [tensor] Header of the SHG-matrix
+    path        -> [string] Path to save to
+'''
+def saveSHGMatrixToFile(shg_matrix, header, path):
+    # check if shg_matrix is 2D
+    if shg_matrix.ndimension() != 2:
+        raise ValueError("The SHG-matrix must be 2D")
+
+    # check if the header has exactly 5 elements
+    if len(header) != 5:
+        raise ValueError("The header should have exactly 5 Elements")
+
+    # write header and tensor to a file
+    with open(path, "w") as file:
+        # write header
+        file.write(" ".join(map(str, header)) + "\n")
+        # write each row of the SHG-matrix
+        for row in shg_matrix:
+            file.write(" ".join(map(str, row.tolist())) + "\n")
+
+'''
+countFilesAndDirectories()
+
+Description:
+    Counts the amount of files or directories inside a given directory
+Inputs:
+    directory_path
+'''
+
+def countFilesAndDirectories(directory_path):
+    # check if the provided path is a directory
+    if not os.path.isdir(directory_path):
+        raise ValueError(f"The path '{directory_path}' is not a valid directory")
+
+    # initialize counts
+    file_count = 0
+    directory_count = 0
+
+    # iterate over items in directory
+    for item in os.listdir(directory_path):
+        # get path of item
+        item_path = os.path.join(directory_path, item)
+        # check if it's a file or directory and increment counter
+        if os.path.isfile(item_path):
+            file_count += 1
+        elif os.path.isdir(item_path):
+            directory_count += 1
+
+    return file_count, directory_count
+
+'''
+createSubdirectories()
+
+Description:
+    Creates a given number of subdirectories in the given path with names in the format 'namexxxxx'
+Inputs:
+    base_path
+    name_string
+    number_directories
+'''
+def createSubdirectories(base_path, name_string, number_directories):
+    # Check Inputs
+    if not os.path.isdir(base_path):
+        raise ValueError(f"The path '{base_path}' is not a valid directory")
+    if number_directories <= 0:
+        raise ValueError("The number of directories must be positive, but is {number_directories}")
+
+    # create the subdirectories
+    for i in range(number_directories):
+        # create name of subdirectory
+        # format index as 5-digit zero-padded string
+        # subdirectory_name = f"{name_string}{i:05d}"
+        subdirectory_name = f"{name_string}{i}"
+        subdirectory_path = os.path.join(base_path, subdirectory_name)
+        try:
+            os.makedirs(subdirectory_path, exist_ok=True)
+        except OSError as e:
+            raise OSError(f"Error creating directory '{subdirectory_path}': {e: {e}}")

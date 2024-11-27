@@ -123,57 +123,104 @@ def processHeader(lines):
     return header
 
 '''
-getTimeWavelengthValues()
-Process 
+getDatasetInformation()
+
+Description:
+    Get the smallest and largest delay and wavelength values from the dataset
 '''
-def getTimeWavelengthValues(data_directory):
+def getDatasetInformation(data_directory, matrix_filename=None):
     '''
     Inputs:
         data_directory  -> Directory which contains the data subdirectories [string]
     Outputs:
-        NULL
+        min_delay       -> [float] Minimum delay value in dataset
+        max_delay       -> [float] Maximum delay value in dataset
+        min_wavelength  -> [float] Minumum wavelength value in dataset
+        max_wavelength  -> [float] Maximum wavelength value in dataset
     '''
-    max_timestep = float('-inf')
-    max_wavelength = float('-inf')
-    min_wavelength = float('inf')
-    
-    for subdirectory in os.listdir(data_directory):
-        subdirectory_path = os.path.join(data_directory, subdirectory)
-        if os.path.isdir(subdirectory_path):
-            file_path = os.path.join(subdirectory_path, 'as_gn00.dat')
-            if os.path.exists(file_path):
-                with open(file_path, 'r') as f:
-                    # Read the first two lines
-                    lines = [f.readline(), f.readline()]
-                    
-                    # Extract the header
-                    header = processHeader(lines)
-                    
-                    # Extract the required values
-                    timestep = header[2]  # Third element
-                    number_wavelength = header[1]  # Second element
-                    wavelength_step = header[3]  # Fourth element
-                    center_wavelenght = header[4]  # Fifth element
 
-                    # Update the maximum timestep
-                    if timestep > max_timestep:
-                        max_timestep = timestep
-                    
-                    # Calculate wavelength related values
-                    wavelength_range = (number_wavelength // 2) * wavelength_step
-                    wavelength_plus = center_wavelenght + wavelength_range
-                    wavelength_minus = center_wavelenght - wavelength_range
-                    
-                    # Update maximum and minimum wavelengths
-                    if wavelength_plus > max_wavelength:
-                        max_wavelength = wavelength_plus
-                    if wavelength_minus < min_wavelength:
-                        min_wavelength = wavelength_minus
+    min_delay = float('inf')
+    max_delay = float('-inf')
+    min_wavelength = float('inf')
+    max_wavelength = float('-inf')
+
+    entries = os.listdir(data_directory)
+    
+    # check if all entries in the directory are files
+    if all(os.path.isfile(os.path.join(data_directory, entry)) for entry in entries):
+        for index, file_name in enumerate(entries):
+            file_path = os.path.join(data_directory, entry)
+            # get the delay, highest and lowest wavelength
+            delay, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
+            # Update the minimum timestep
+            if delay < max_delay:
+                min_delay = delay                    
+            # Update the maximum timestep
+            if delay > min_delay:
+                max_delay = delay
+                
+            # Update maximum and minimum wavelengths
+            if wavelength_highest > max_wavelength:
+                max_wavelength = wavelength_highest
+            if wavelength_lowest < min_wavelength:
+                min_wavelength = wavelength_lowest
+
+    # check if all entries in the directory are subdirectories
+    elif all(os.path.isdir(os.path.join(data_directory, entry)) for entry in entries):
+        # itterate over all subdirectories
+        for subdirectory in enumerate(entries):
+            # get the subdirectory path and also the filepath
+            subdirectory_path = os.path.join(data_directory, subdirectory)
+            file_path = os.path.join(subdirectory_path, matrix_filename)
+            # get the delay, highest and lowest wavelength
+            delay, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
+            # Update the minimum timestep
+            if delay < max_delay:
+                min_delay = delay                    
+            # Update the maximum timestep
+            if delay > min_delay:
+                max_delay = delay
+                
+            # Update maximum and minimum wavelengths
+            if wavelength_highest > max_wavelength:
+                max_wavelength = wavelength_highest
+            if wavelength_lowest < min_wavelength:
+                min_wavelength = wavelength_lowest
+    else:
+        raise ValueError(f"The directory '{data_directory}' contains a mix of files and subdirectories or is empty")
                             
     # Print the results
-    logger.info(f"Highest Time Step: {max_timestep}")
-    logger.info(f"Max Wavelength: {max_wavelength}")
+    logger.info(f"Min Delay: {min_delay}")
+    logger.info(f"Max Delay: {max_delay}")
     logger.info(f"Min Wavelength: {min_wavelength}")
+    logger.info(f"Max Wavelength: {max_wavelength}")
+
+    return min_delay, max_delay, min_wavelength, max_wavelength
+
+def getDelayWavelengthFromFile(path):
+
+    if not os.path.exists(path):
+        raise OSError(f"The file '{path}' does not exist!")
+
+    with open(path, 'r') as file:
+        # Read the first two lines
+        lines = [file.readline(), file.readline()]
+    
+        # Extract the header
+        header = processHeader(lines)
+    
+        # Extract the required values
+        delay = header[2]  # Third element
+        number_wavelength = header[1]  # Second element
+        wavelength_step = header[3]  # Fourth element
+        center_wavelenght = header[4]  # Fifth element
+
+        # Calculate wavelength related values
+        wavelength_range = (number_wavelength // 2) * wavelength_step
+        wavelength_highest = center_wavelenght + wavelength_range
+        wavelength_lowest = center_wavelenght - wavelength_range
+
+        return delay, wavelength_highest, wavelength_lowest
 
 '''
 Calling the functions
@@ -182,8 +229,4 @@ getTBDrmsValues(
         data_directory = DATA_DIRECTORY,
         root_directory = ROOT_DIRECTORY,
         output_filename = FILENAME_TBDRMS,
-        )
-
-getTimeWavelengthValues(
-        data_directory = DATA_DIRECTORY
         )

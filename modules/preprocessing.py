@@ -5,9 +5,11 @@ Preprocessing
 ## Imports ##
 #############
 import os
+import shutil
 import logging
 import torch
 import numpy as np
+import csv
 from scipy.interpolate import RectBivariateSpline
 from scipy.signal import windows
 
@@ -514,3 +516,281 @@ def preprocess(shg_path, output_path, N = 256):
         file.write(shg_lines + '\n')
 
     return full_output_path
+
+'''
+prepare()
+
+Description:
+    Expects dataset directory to have the following format:
+        dataset_directory
+        ├─ raw
+        │  ├─ simulated           (these need the data in them)
+        │  └─ experimental        (these need the data in them)
+        └─ preproc
+           ├─ simulated           (empty)
+           └─ experimental        (empty)
+    The raw simulated data has all it's datapoints in seperate directories,
+    while the raw experimental data has all datapoints in one directory.
+    All other directories should be empty
+'''
+def prepare(dataset_directory, experimental_blacklist_path):
+    # create variables for needed paths
+    raw_path        = os.path.join(dataset_directory, "/raw")
+    preproc_path    = os.path.join(dataset_directory, "/preproc")
+    raw_simulated_path          = os.path.join(raw_path,"/simulated")
+    raw_experimental_path       = os.path.join(raw_path,"/experimental")  
+    preproc_simulated_path      = os.path.join(preproc_path,"/simulated")  
+    preproc_experimental_path   = os.path.join(preproc_path,"/experimental")  
+
+
+    # remove blacklisted spectrograms from './raw/experimental' directory
+    removeBlacklistFromDirectory(
+            blacklist_path= experimental_blacklist_path,
+            directory_path= raw_experimental_path
+            )
+    # get number of experimental datapoints
+    experimental_directories, experimental_files = helper.countFilesAndDirectories(directory_path=raw_experimental_path)
+    experimental_elements = experimental_directories + experimental_files
+
+    # get number of simulated datapoints
+    simulated_directories, simulated_files = helper.countFilesAndDirectories(directory_path=raw_simulated_path)
+    simulated_elements = simulated_directories + simulated_files
+    
+    # create needed subdirectories for each datapoint in './preproc/experimental'
+    helper.createSubdirectories(
+            base_path= preproc_experimental_path,
+            name_string="s",
+            number_directories= experimental_elements
+            )
+
+    # create needed subdirectories for each datapoint in './preproc/simulated'
+    helper.createSubdirectories(
+            base_path= preproc_simulated_path,
+            name_string="s",
+            number_directories= simulated_elements
+            )
+    # get the minimum and maximum wavelength of simulated data
+    sim_min_delay, sim_max_delay, sim_min_wavelength, sim_max_wavelength = getDatasetInformation(
+            data_directory=raw_simulated_path,
+            matrix_filename="as_gn00.dat"
+            )
+    print(f"Minimum Delay Simulated         = {sim_min_delay}")
+    print(f"Maximum Delay Simulated         = {sim_max_delay}")
+    print(f"Minimum Wavelength Simulated    = {sim_min_wavelength}")
+    print(f"Maximum Wavelength Simulated    = {sim_max_wavelength}")
+
+    # get the minimum and maximum wavelength of experimental data
+    exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
+            data_directory=raw_simulated_path
+            )
+    print(f"Minimum Delay Experimental      = {exp_min_delay}")
+    print(f"Maximum Delay Experimental      = {exp_max_delay}")
+    print(f"Minimum Wavelength Experimental = {exp_min_wavelength}")
+    print(f"Maximum Wavelength Experimental = {exp_max_wavelength}")
+
+    # write to info file
+
+    # create a csv file which sorts the simulated data by TBD_{rms}
+
+    # create subdirectory for plots of the preprocessed SHG-matrixes
+
+    ''' MOVE BELOW TO SECOND FUNCTION'''
+    # preprocess the experimental data
+
+    # create plots of the original and preprocessed experimental SHG-matrixes
+
+    # preprocess the simulated data
+
+    # create plots of the original and preprocessed simulated SHG-matrixes
+
+'''
+removeBlacklistFromDirectory()
+
+Description:
+    Remove files in a blacklist from the specified directory
+Inputs:
+    blacklist_path  -> [string] Path to blacklist file
+    directory_path  -> [string] Path to directory
+Outputs:
+    deleted_files   -> [array of strings] Filename of files that got deleted
+    failed_files    -> [array of strings] Filename of files that weren't deleted
+'''
+def removeBlacklistFromDirectory(blacklist_path, directory_path):
+    deleted_files = []
+    failed_files = []
+
+    try:
+        # Read the blacklist
+        with open(blacklist_path, newline='', encoding='utf-8') as csv_file:
+            reader = csv.reader(csv_file)
+            blacklisted_files = [row[0] for row in reader]
+    except Exception as e:
+        print(f"Reading blacklist unsuccesful: {e}")
+        
+    # itterate over the blacklist and remove the files
+    for file_name in blacklisted_files:
+        # get full path of selected file
+        file_path = os.path.join(directory_path, file_name)
+        if os.path.isfile(file_path):
+            try:
+                # remove file from directory, if it exists
+                os.remove(file_path)
+                deleted_files.append(file_name)
+            except Exception as e:
+                # file doesn't exist
+                print(f"Failed to delte {file_name}: {e}")
+                failed_files.append(file_name)
+        else:
+            failed_files.append(file_name)
+
+    return deleted_files, failed_files
+
+'''
+preprocess_directory()
+'''
+def preprocess_directory(main_directory, target_directory, matrix_name=None, label_name=None):
+    # get files+directories in the target directory
+    target_files = os.listdir(target_directory)
+    target_count = len(target_files)
+
+    # Determine if main_dir contains files or directories
+    entries= os.listdir(main_directory)
+    if all(os.path.isfile(os.path.join(main_directory, entry)) for entry in entries):
+        # Case 1: Files are directly inside the main directory (experimental data)
+        if len(entries) != target_count:
+            raise ValueError(f"Number of files in '{main_directory}' ({len(entries)}) "
+                             f"does not match number of target subdirectories ({target_directory}).")
+        # itterate over files and preprocess them
+        for index, file_name in enumerate(entries):
+            file_path = os.path.join(main_directory, file_name)
+            print(f"Preprocessing file {index + 1}/{target_count}: {file_path}")
+
+    elif all(os.path.isdir(os.path.join(main_directory, entry)) for entry in entries):
+        # Case 2: Files are inside subdirectories in the main directory (simulated data)
+        if len(entries) != target_count:
+            raise ValueError(f"Number of subdirectories in '{main_directory}' ({len(entries)}) "
+                             f"does not match number of target subdirectories ({target_directory}).")
+
+        # itterate over subdirectories and preprocess the files inside
+        for index, subdirectory in enumerate(entries):
+            subdirectory_path = os.path.join(main_directory, subdirectory)
+            target_subdirectory_path = os.path.join(target_directory, subdirectory)
+            matrix_path = os.path.join(subdirectory_path, matrix_name)
+            label_path = os.path.join(subdirectory_path, label_name)
+
+            if not os.path.isfile(matrix_path):
+                raise ValueError(f"File '{matrix_name}' not found in subdirectory")
+            if not os.path.isfile(label_path):
+                raise ValueError(f"File '{label_name}' not found in subdirectory")
+
+            print(f"Preprocessing file {index + 1}/{target_count}: {matrix_path}")
+
+            # copy the label
+            destination_path = os.path.join(target_subdirectory_path, label_name)
+            try:
+                shutil.copy(label_path, destination_path)
+                print(f"Copied '{label_path}' to '{destination_path}'")
+            except OSError as e:
+                raise OSError(f"Failed to copy file to '{destination_path}': {e}")
+    else:
+        raise ValueError(f"The directory '{main_directory}' contains a mix of files and subdirectories or is empty")
+
+'''
+getDatasetInformation()
+
+Description:
+    Get the smallest and largest delay and wavelength values from the dataset
+'''
+def getDatasetInformation(data_directory, matrix_filename=None):
+    '''
+    Inputs:
+        data_directory  -> Directory which contains the data subdirectories [string]
+    Outputs:
+        min_delay       -> [float] Minimum delay value in dataset
+        max_delay       -> [float] Maximum delay value in dataset
+        min_wavelength  -> [float] Minumum wavelength value in dataset
+        max_wavelength  -> [float] Maximum wavelength value in dataset
+    '''
+
+    min_delay = float('inf')
+    max_delay = float('-inf')
+    min_wavelength = float('inf')
+    max_wavelength = float('-inf')
+
+    entries = os.listdir(data_directory)
+    
+    # check if all entries in the directory are files
+    if all(os.path.isfile(os.path.join(data_directory, entry)) for entry in entries):
+        for index, file_name in enumerate(entries):
+            file_path = os.path.join(data_directory, entry)
+            # get the delay, highest and lowest wavelength
+            delay, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
+            # Update the minimum timestep
+            if delay < max_delay:
+                min_delay = delay                    
+            # Update the maximum timestep
+            if delay > min_delay:
+                max_delay = delay
+                
+            # Update maximum and minimum wavelengths
+            if wavelength_highest > max_wavelength:
+                max_wavelength = wavelength_highest
+            if wavelength_lowest < min_wavelength:
+                min_wavelength = wavelength_lowest
+
+    # check if all entries in the directory are subdirectories
+    elif all(os.path.isdir(os.path.join(data_directory, entry)) for entry in entries):
+        # itterate over all subdirectories
+        for subdirectory in enumerate(entries):
+            # get the subdirectory path and also the filepath
+            subdirectory_path = os.path.join(data_directory, subdirectory)
+            file_path = os.path.join(subdirectory_path, matrix_filename)
+            # get the delay, highest and lowest wavelength
+            delay, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
+            # Update the minimum timestep
+            if delay < max_delay:
+                min_delay = delay                    
+            # Update the maximum timestep
+            if delay > min_delay:
+                max_delay = delay
+                
+            # Update maximum and minimum wavelengths
+            if wavelength_highest > max_wavelength:
+                max_wavelength = wavelength_highest
+            if wavelength_lowest < min_wavelength:
+                min_wavelength = wavelength_lowest
+    else:
+        raise ValueError(f"The directory '{data_directory}' contains a mix of files and subdirectories or is empty")
+                            
+    # Print the results
+    logger.info(f"Min Delay: {min_delay}")
+    logger.info(f"Max Delay: {max_delay}")
+    logger.info(f"Min Wavelength: {min_wavelength}")
+    logger.info(f"Max Wavelength: {max_wavelength}")
+
+    return min_delay, max_delay, min_wavelength, max_wavelength
+
+def getDelayWavelengthFromFile(path):
+
+    if not os.path.exists(path):
+        raise OSError(f"The file '{path}' does not exist!")
+
+    with open(path, 'r') as file:
+        # Read the first two lines
+        lines = [file.readline(), file.readline()]
+    
+        # Extract the header
+        header = processHeader(lines)
+    
+        # Extract the required values
+        delay = header[2]  # Third element
+        number_wavelength = header[1]  # Second element
+        wavelength_step = header[3]  # Fourth element
+        center_wavelenght = header[4]  # Fifth element
+
+        # Calculate wavelength related values
+        wavelength_range = (number_wavelength // 2) * wavelength_step
+        wavelength_highest = center_wavelenght + wavelength_range
+        wavelength_lowest = center_wavelenght - wavelength_range
+
+        return delay, wavelength_highest, wavelength_lowest

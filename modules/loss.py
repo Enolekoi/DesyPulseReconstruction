@@ -222,6 +222,7 @@ def createSHGmat(analytical_signal, delta_tau, wCenter):
     delay_index_vector = torch.arange(start, end, dtype=torch.float32).to(device)
 
     # calculate shift factor
+    # Bandpass signal in Arbeit
     shift_factor = torch.exp(-1j * 2 * wCenter * delta_tau * delay_index_vector).to(device)
     
     # initialize empty SHG-matrix
