@@ -748,6 +748,7 @@ def getDatasetInformation(data_directory, matrix_filename=None):
     elif all(os.path.isdir(os.path.join(data_directory, entry)) for entry in entries):
         # itterate over all subdirectories
         for subdirectory in enumerate(entries):
+            print(subdirectory)
             # get the subdirectory path and also the filepath
             subdirectory_path = os.path.join(data_directory, subdirectory)
             file_path = os.path.join(subdirectory_path, matrix_filename)
