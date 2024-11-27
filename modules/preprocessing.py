@@ -748,7 +748,6 @@ def getDatasetInformation(data_directory, matrix_filename=None):
     elif all(os.path.isdir(os.path.join(data_directory, entry)) for entry in entries):
         # itterate over all subdirectories
         for index, subdirectory in enumerate(entries):
-            print(subdirectory)
             # get the subdirectory path and also the filepath
             subdirectory_path = os.path.join(data_directory, subdirectory)
             file_path = os.path.join(subdirectory_path, matrix_filename)
@@ -801,3 +800,35 @@ def getDelayWavelengthFromFile(path):
         wavelength_lowest = center_wavelenght - wavelength_range
 
         return delay, wavelength_highest, wavelength_lowest
+
+'''
+processHeader()
+
+Extract the header information from the first two lines of the file.
+If the first line has fewer than 5 elements, the header is 2 lines.
+Otherwise, it's just the first line.
+'''
+def processHeader(lines):
+    """
+    Inputs:
+        lines   -> the first two lines of the spectrogram file
+    Outputs:
+        header  -> the header of the spectrogram file
+    """
+    header_line_1 = lines[0].split()
+    
+    if len(header_line_1) < 5:
+        header_line_2 = lines[1].split()
+        header = header_line_1 + header_line_2
+    else:
+        header = header_line_1
+
+    if len(header) < 5:
+        print("ERROR")
+    
+    # Convert elements to float for numeric calculations
+    header = [float(x) for x in header]
+    
+    return header
+
+
