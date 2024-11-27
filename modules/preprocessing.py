@@ -536,16 +536,16 @@ Description:
 def prepare(dataset_directory, experimental_blacklist_path):
     print(f"dataset_directory           = {dataset_directory}")
     # create variables for needed paths
-    raw_path        = os.path.join(dataset_directory, "/raw")
+    raw_path        = os.path.join(dataset_directory, "raw")
     print(f"raw path                    = {raw_path}")
-    preproc_path    = os.path.join(dataset_directory, "/preproc")
+    preproc_path    = os.path.join(dataset_directory, "preproc")
     print(f"preproc path                = {preproc_path}")
-    raw_simulated_path          = os.path.join(raw_path,"/simulated")
-    raw_experimental_path       = os.path.join(raw_path,"/experimental")  
+    raw_simulated_path          = os.path.join(raw_path,"simulated")
+    raw_experimental_path       = os.path.join(raw_path,"experimental")  
     print(f"raw experimental path       = {raw_experimental_path}")
     print(f"raw simulated path          = {raw_simulated_path}")
-    preproc_simulated_path      = os.path.join(preproc_path,"/simulated")  
-    preproc_experimental_path   = os.path.join(preproc_path,"/experimental")  
+    preproc_simulated_path      = os.path.join(preproc_path,"simulated")  
+    preproc_experimental_path   = os.path.join(preproc_path,"experimental")  
     print(f"preproc experimental path   = {raw_experimental_path}")
     print(f"preproc simulated path      = {raw_simulated_path}")
 
