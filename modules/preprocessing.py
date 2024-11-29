@@ -591,7 +591,7 @@ def prepare(dataset_directory, experimental_blacklist_path):
 
     # get the minimum and maximum wavelength of experimental data
     exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
-            data_directory=raw_simulated_path
+            data_directory=raw_experimental_path
             )
     logger.info(f"Minimum Delay Experimental      = {exp_min_delay}")
     logger.info(f"Maximum Delay Experimental      = {exp_max_delay}")
@@ -742,12 +742,12 @@ def getDatasetInformation(data_directory, matrix_filename=None):
             file_path = os.path.join(data_directory, file_name)
             # get the delay, highest and lowest wavelength
             delay_highest, delay_lowest, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
-            # Update the minimum delay value
-            if delay_highest < max_delay:
-                min_delay = delay_highest
+            # Update the maximum delay value
+            if delay_highest > max_delay:
+                max_delay = delay_highest
             # Update the maximum delay_value
-            if delay_lowest > min_delay:
-                max_delay = delay_lowest
+            if delay_lowest < min_delay:
+                min_delay = delay_lowest
              
             # Update maximum and minimum wavelengths
             if wavelength_highest > max_wavelength:
@@ -769,12 +769,12 @@ def getDatasetInformation(data_directory, matrix_filename=None):
             file_path = os.path.join(subdirectory_path, matrix_filename)
             # get the delay, highest and lowest wavelength
             delay_highest, delay_lowest, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
-            # Update the minimum delay value
-            if delay_highest < max_delay:
-                min_delay = delay_highest
-            # Update the maximum delay_value
-            if delay_lowest > min_delay:
-                max_delay = delay_lowest
+            # Update the maximum delay value
+            if delay_highest > max_delay:
+                max_delay = delay_highest
+            # Update the minimum delay_value
+            if delay_lowest < min_delay:
+                min_delay = delay_lowest
                 
             # Update maximum and minimum wavelengths
             if wavelength_highest > max_wavelength:
