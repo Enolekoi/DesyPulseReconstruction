@@ -741,13 +741,13 @@ def getDatasetInformation(data_directory, matrix_filename=None):
         for index, file_name in enumerate(entries):
             file_path = os.path.join(data_directory, file_name)
             # get the delay, highest and lowest wavelength
-            delay_highest, delay_lowest, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
+            delay_range, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
             # Update the maximum delay value
-            if delay_highest > max_delay:
-                max_delay = delay_highest
+            if abs(delay_range) > max_delay:
+                max_delay = abs(delay_highest)
             # Update the maximum delay_value
-            if delay_lowest < min_delay:
-                min_delay = delay_lowest
+            if abs(delay_range) < min_delay:
+                min_delay = abs(delay_lowest)
              
             # Update maximum and minimum wavelengths
             if wavelength_highest > max_wavelength:
@@ -768,13 +768,13 @@ def getDatasetInformation(data_directory, matrix_filename=None):
                 logger.info(f"Matrix filename = {matrix_filename}")
             file_path = os.path.join(subdirectory_path, matrix_filename)
             # get the delay, highest and lowest wavelength
-            delay_highest, delay_lowest, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
+            delay_range, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
             # Update the maximum delay value
-            if delay_highest > max_delay:
-                max_delay = delay_highest
+            if abs(delay_range) > max_delay:
+                max_delay = abs(delay_range)
             # Update the minimum delay_value
-            if delay_lowest < min_delay:
-                min_delay = delay_lowest
+            if abs(delay_range) < min_delay:
+                min_delay = abs(delay_range)
                 
             # Update maximum and minimum wavelengths
             if wavelength_highest > max_wavelength:
@@ -817,10 +817,8 @@ def getDelayWavelengthFromFile(path):
         wavelength_lowest = center_wavelenght - wavelength_range
         
         delay_range = (number_delays // 2) * delta_tau
-        delay_highest = delay_range
-        delay_lowest = -delay_range
 
-        return delay_highest, delay_lowest, wavelength_highest, wavelength_lowest
+        return delay_range, wavelength_highest, wavelength_lowest
 
 '''
 processHeader()
