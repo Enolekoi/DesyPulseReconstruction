@@ -18,7 +18,7 @@ function createSHGmat(yta, Ts,  wCenter)
     shgMat = zeros(Complex, N, N)
     for (matIdx, delayIdx) in enumerate(delayIdxVec)
         ytaShifted = circshift(yta, delayIdx)
-        shgMat[matIdx, :] = Ts * fftshift(fft(fftshift(yta .* ytaShifted .* shiftFactor)))
+        shgMat[matIdx, :] = Ts * fftshift(fft(yta .* ytaShifted .* shiftFactor)))
     end
     return shgMat   # Frog-Amplitude
 end 

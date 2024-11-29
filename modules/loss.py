@@ -12,6 +12,9 @@ import torch.nn as nn
 import torch.fft as trafo 
 import matplotlib.pyplot as plt
 
+from torch.fft import fftshift as fftshift
+from torch.fft import fft as fft
+
 from modules import config
 from modules import data
 from modules import helper
@@ -204,7 +207,10 @@ class PulseRetrievalLossFunction(nn.Module):
 createSHGmat()
 
 Description:
-    Create a SHG-matrix from the analytical signal
+    Create an amplitude SHG-matrix from the analytical signal with delay and frequency axis.
+    For the more common intensity SHG-matrix, take the elementwise squared absolute.
+    Because of frequency doubling due to the SHG crystal the product signal is shifted by 2*wCenter
+    A^{shg}_{FROG}(\omega,\tau) = \int_{infty}^{infty} E(t)*E(t-tau)exp(-j\omega t)dt
 Inputs:
     analytical_signal   -> [tensor] analytical time signal
     delta_tau           -> [float] time step between delays
@@ -215,30 +221,29 @@ Outputs:
 def createSHGmat(analytical_signal, delta_tau, wCenter):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     N = len(analytical_signal)
+    E = analytical_signal
+    wCenter2 = 2 * wCenter
 
-    # create a tensor storing indicies starting with -N/2 to N/2
+    # create a tensor storing indicies -N/2 to N/2
     start = -N // 2
     end = N // 2    
     delay_index_vector = torch.arange(start, end, dtype=torch.float32).to(device)
 
-    # calculate shift factor
-    # Bandpass signal in Arbeit
-    shift_factor = torch.exp(-1j * 2 * wCenter * delta_tau * delay_index_vector).to(device)
+    # calculate shift factor (TODO explain this)
+    shift_factor = torch.exp(-1j * wCenter2 * delta_tau * delay_index_vector).to(device)
     
     # initialize empty SHG-matrix
     shg_matrix = torch.zeros((N, N), dtype=torch.complex128).to(device)
     
-    def fftshift(x):
-        return torch.fft.fftshift(x)
-    
-    def circshift(x, shift):
-        shift = int( shift % x.size(0)) 
-        return torch.roll(x, shifts=shift, dims=0)
-
+    # increment over the 
     for (matrix_index, delay_index) in enumerate(delay_index_vector):
-        analytical_shifted = circshift(analytical_signal, delay_index).to(device)
-        multiplied_matrixes = analytical_signal.to(device) * analytical_shifted * shift_factor
-        fft_analytical = torch.fft.fft(fftshift(multiplied_matrixes))
+        # Shift E-Field for the current delay index
+        E_shifted = helper.circshift(E, delay_index).to(device)
+        # Calculate the the autocorrelation E(t)*E(t-\tau)
+        E_multiplied = E.to(device) * E_shifted.to(device) # (6.8 Trebino, p. 127)
+        # rearrange and fourier-transform E(t)*E(t-\tau)
+        fft_analytical = fft(fftshift(E_multiplied * shift_factor))
+        # current matrix index is the shifted fft multiplied with the delay step
         shg_matrix[matrix_index, :] = delta_tau * fftshift(fft_analytical)
 
     return shg_matrix

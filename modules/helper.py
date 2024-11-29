@@ -101,14 +101,8 @@ def removeConjugationAmbiguity(complex_signal, center_index):
     # if the weight of the signal is in the second half of the signal
     # if mean_second_half > mean_first_half:
     if sum_phase < 0.0:
-        # mirror the signal
-        # complex_signal = torch.flip(complex_signal, dims=[0])
         # conjugate the signal
-        complex_signal_conjugated = complex_signal.conj()
-        # complex_signal_conjugated = complex_signal
-        # mirror the signal
-        complex_signal_noambig = torch.flip(complex_signal_conjugated, dims=[0])
-        # complex_signal_noambig = complex_signal_conjugated
+        complex_signal_noambig = complex_signal.conj()
     # if the weight of the signal is in the first half of the signal
     else:   
         # do nothing
@@ -524,3 +518,20 @@ def createSubdirectories(base_path, name_string, number_directories):
             os.makedirs(subdirectory_path, exist_ok=True)
         except OSError as e:
             raise OSError(f"Error creating directory '{subdirectory_path}': {e: {e}}")
+
+'''
+circshift()
+
+Description:
+    Circular shifts the tensor 'x' by 'shift' positions
+Inputs:
+    x           -> [tensor] tensor to be shifted
+    shift       -> [int] number of positions the tensor is shifted by
+    dims        -> [int] (optional) specified dimension
+Outputs:
+    x_shifted   -> [tensor] shifted tensor
+'''
+def circshift(x, shift, dims=0):
+    shift = int( shift % x.size(0)) 
+    x_shifted = torch.roll(x, shifts=shift, dims=0) 
+    return x_shifted

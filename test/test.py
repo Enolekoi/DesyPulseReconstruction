@@ -72,8 +72,8 @@ new_shg_not_resampled, new_header,\
 new_shg, new_output_time, new_output_wavelength = shg_transform(shg_data)
 
 # get original SHG-matrix (without 3 identical channels)
-original_shg = original_shg[1, :, :]
-new_shg = new_shg[1, :, :]
+# original_shg = original_shg[1, :, :]
+# new_shg = new_shg[1, :, :]
 
 # normalize to [0, 1]
 original_shg = helper.normalizeSHGmatrix(original_shg)
