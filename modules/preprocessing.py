@@ -783,12 +783,16 @@ def getDatasetInformation(data_directory, matrix_filename=None):
                 min_wavelength = wavelength_lowest
     else:
         raise ValueError(f"The directory '{data_directory}' contains a mix of files and subdirectories or is empty")
-                            
+    
+    min_delay = min_delay *c.femto
+    max_delay = max_delay *c.femto
+    min_wavelength = min_wavelength *c.nano
+    max_wavelength = min_wavelength *c.nano
     # Print the results
-    logger.info(f"Min Delay: {min_delay}")
-    logger.info(f"Max Delay: {max_delay}")
-    logger.info(f"Min Wavelength: {min_wavelength}")
-    logger.info(f"Max Wavelength: {max_wavelength}")
+    logger.info(f"Min Delay: {min_delay:.4e}")
+    logger.info(f"Max Delay: {max_delay:.4e}")
+    logger.info(f"Min Wavelength: {min_wavelength:.4e}")
+    logger.info(f"Max Wavelength: {max_wavelength:.4e}")
 
     return min_delay, max_delay, min_wavelength, max_wavelength
 
