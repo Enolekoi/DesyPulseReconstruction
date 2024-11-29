@@ -477,7 +477,8 @@ def countFilesAndDirectories(directory_path):
     # initialize counts
     file_count = 0
     directory_count = 0
-
+    
+    logger.info("Counting files and directories in '{directory_path}' ")
     # iterate over items in directory
     for item in os.listdir(directory_path):
         # get path of item
@@ -487,6 +488,7 @@ def countFilesAndDirectories(directory_path):
             file_count += 1
         elif os.path.isdir(item_path):
             directory_count += 1
+    logger.info(f"There are {file_count} files and {directory_count} directories in {directory_path}!")
 
     return file_count, directory_count
 
@@ -506,7 +508,8 @@ def createSubdirectories(base_path, name_string, number_directories):
         raise ValueError(f"The path '{base_path}' is not a valid directory")
     if number_directories <= 0:
         raise ValueError("The number of directories must be positive, but is {number_directories}")
-
+    
+    logger.info(f"Creating {number_directories} subdirectories inside {base_path} with name {name_string}xxxxx!")    
     # create the subdirectories
     for i in range(number_directories):
         # create name of subdirectory

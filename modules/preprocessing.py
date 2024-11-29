@@ -558,10 +558,12 @@ def prepare(dataset_directory, experimental_blacklist_path):
     # get number of experimental datapoints
     experimental_directories, experimental_files = helper.countFilesAndDirectories(directory_path=raw_experimental_path)
     experimental_elements = experimental_directories + experimental_files
+    logger.info(f"Total amount of elements in '{raw_experimental_path}': {experimental_elements}")
 
     # get number of simulated datapoints
     simulated_directories, simulated_files = helper.countFilesAndDirectories(directory_path=raw_simulated_path)
     simulated_elements = simulated_directories + simulated_files
+    logger.info(f"Total amount of elements in '{raw_simulated_path}': {simulated_elements}")
     
     # create needed subdirectories for each datapoint in './preproc/experimental'
     helper.createSubdirectories(
@@ -576,6 +578,7 @@ def prepare(dataset_directory, experimental_blacklist_path):
             name_string="s",
             number_directories= simulated_elements
             )
+
     # get the minimum and maximum wavelength of simulated data
     sim_min_delay, sim_max_delay, sim_min_wavelength, sim_max_wavelength = getDatasetInformation(
             data_directory=raw_simulated_path,
@@ -625,9 +628,10 @@ Outputs:
 def removeBlacklistFromDirectory(blacklist_path, directory_path):
     deleted_files = []
     failed_files = []
-
+    logger.info(f"Deleting files listed in blacklist '{blacklist_path}' from '{directory_path}' directory!")
     try:
         # Read the blacklist
+        logger.info(f"Reading blacklist '{blacklist_path}'...")
         with open(blacklist_path, newline='', encoding='utf-8') as csv_file:
             reader = csv.reader(csv_file)
             blacklisted_files = [row[0] for row in reader]
@@ -635,6 +639,7 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
         logger.info(f"Reading blacklist unsuccesful: {e}")
         
     # itterate over the blacklist and remove the files
+    logger.info(f"Removing Files from '{directory_path}'...")
     for file_name in blacklisted_files:
         # get full path of selected file
         file_path = os.path.join(directory_path, file_name)
@@ -645,11 +650,12 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
                 deleted_files.append(file_name)
             except Exception as e:
                 # file doesn't exist
-                logger.info(f"Failed to delte {file_name}: {e}")
+                logger.info(f"Failed to delete {file_name}: {e}")
                 failed_files.append(file_name)
         else:
             failed_files.append(file_name)
-
+    logger.info("Finished deletion process.")
+    
     return deleted_files, failed_files
 
 '''
