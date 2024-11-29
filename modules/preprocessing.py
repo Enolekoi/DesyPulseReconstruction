@@ -731,14 +731,14 @@ def getDatasetInformation(data_directory, matrix_filename=None):
         for index, file_name in enumerate(entries):
             file_path = os.path.join(data_directory, file_name)
             # get the delay, highest and lowest wavelength
-            delay_points, delta_tau, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
-            # Update the minimum timestep
-            if delay < max_delay:
-                min_delay = delay                    
-            # Update the maximum timestep
-            if delay > min_delay:
-                max_delay = delay
-                
+            delay_highest, delay_lowest, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
+            # Update the minimum delay value
+            if delay_highest < max_delay:
+                min_delay = delay_highest
+            # Update the maximum delay_value
+            if delay_lowest > min_delay:
+                max_delay = delay_lowest
+             
             # Update maximum and minimum wavelengths
             if wavelength_highest > max_wavelength:
                 max_wavelength = wavelength_highest
@@ -751,8 +751,9 @@ def getDatasetInformation(data_directory, matrix_filename=None):
         for index, subdirectory in enumerate(entries):
             # get the subdirectory path and also the filepath
             subdirectory_path = os.path.join(data_directory, subdirectory)
-            print(f"subdirectory_path = {subdirectory_path}")
-            print(f"matrix_filename = {matrix_filename}")
+            logger.info(f"Index = {index}")
+            logger.info(f"subdirectory = {subdirectory}")
+            logger.info(f"Matrix filename = {matrix_filename}")
             file_path = os.path.join(subdirectory_path, matrix_filename)
             # get the delay, highest and lowest wavelength
             delay_highest, delay_lowest, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
