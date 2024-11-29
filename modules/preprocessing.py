@@ -104,7 +104,7 @@ def calcFWHM(yd, tt):
 
     # if there are less than 2 zero crossings, return -1 and print a message
     if len(xz) < 2:
-        print("FWHM cannot be calculated, since there are fewer than 2 half-maximum points")
+        logger.info("FWHM cannot be calculated, since there are fewer than 2 half-maximum points")
         return -1
     else:
         # calculate the full width half maximum as the difference between the highest and lowest zero crossing
@@ -135,8 +135,8 @@ def windowSHGmatrix(shg_matrix, dimension = 1, standard_deviation_factor = 0.1):
     window_width = int(shg_matrix.size(dimension))
     # calculate the standard deviation used for the gaussian window
     window_standard_deviation = window_width * standard_deviation_factor
-    print(f"Window width                        = {window_width}")
-    print(f"Standard deviation of the window    = {window_standard_deviation}")
+    logger.info(f"Window width                        = {window_width}")
+    logger.info(f"Standard deviation of the window    = {window_standard_deviation}")
     # define the window
     window_delay = torch.from_numpy( windows.gaussian(window_width, std=window_standard_deviation)).float()
 
@@ -535,20 +535,20 @@ Description:
     All other directories should be empty
 '''
 def prepare(dataset_directory, experimental_blacklist_path):
-    print(f"dataset_directory           = {dataset_directory}")
+    logger.info(f"dataset_directory           = {dataset_directory}")
     # create variables for needed paths
     raw_path        = os.path.join(dataset_directory, "raw")
-    print(f"raw path                    = {raw_path}")
+    logger.info(f"raw path                    = {raw_path}")
     preproc_path    = os.path.join(dataset_directory, "preproc")
-    print(f"preproc path                = {preproc_path}")
+    logger.info(f"preproc path                = {preproc_path}")
     raw_simulated_path          = os.path.join(raw_path,"simulated")
     raw_experimental_path       = os.path.join(raw_path,"experimental")  
-    print(f"raw experimental path       = {raw_experimental_path}")
-    print(f"raw simulated path          = {raw_simulated_path}")
+    logger.info(f"raw experimental path       = {raw_experimental_path}")
+    logger.info(f"raw simulated path          = {raw_simulated_path}")
     preproc_simulated_path      = os.path.join(preproc_path,"simulated")  
     preproc_experimental_path   = os.path.join(preproc_path,"experimental")  
-    print(f"preproc experimental path   = {raw_experimental_path}")
-    print(f"preproc simulated path      = {raw_simulated_path}")
+    logger.info(f"preproc experimental path   = {raw_experimental_path}")
+    logger.info(f"preproc simulated path      = {raw_simulated_path}")
 
     # remove blacklisted spectrograms from './raw/experimental' directory
     removeBlacklistFromDirectory(
@@ -581,19 +581,19 @@ def prepare(dataset_directory, experimental_blacklist_path):
             data_directory=raw_simulated_path,
             matrix_filename="as_gn00.dat"
             )
-    print(f"Minimum Delay Simulated         = {sim_min_delay}")
-    print(f"Maximum Delay Simulated         = {sim_max_delay}")
-    print(f"Minimum Wavelength Simulated    = {sim_min_wavelength}")
-    print(f"Maximum Wavelength Simulated    = {sim_max_wavelength}")
+    logger.info(f"Minimum Delay Simulated         = {sim_min_delay}")
+    logger.info(f"Maximum Delay Simulated         = {sim_max_delay}")
+    logger.info(f"Minimum Wavelength Simulated    = {sim_min_wavelength}")
+    logger.info(f"Maximum Wavelength Simulated    = {sim_max_wavelength}")
 
     # get the minimum and maximum wavelength of experimental data
     exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
             data_directory=raw_simulated_path
             )
-    print(f"Minimum Delay Experimental      = {exp_min_delay}")
-    print(f"Maximum Delay Experimental      = {exp_max_delay}")
-    print(f"Minimum Wavelength Experimental = {exp_min_wavelength}")
-    print(f"Maximum Wavelength Experimental = {exp_max_wavelength}")
+    logger.info(f"Minimum Delay Experimental      = {exp_min_delay}")
+    logger.info(f"Maximum Delay Experimental      = {exp_max_delay}")
+    logger.info(f"Minimum Wavelength Experimental = {exp_min_wavelength}")
+    logger.info(f"Maximum Wavelength Experimental = {exp_max_wavelength}")
 
     # write to info file
 
@@ -632,7 +632,7 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
             reader = csv.reader(csv_file)
             blacklisted_files = [row[0] for row in reader]
     except Exception as e:
-        print(f"Reading blacklist unsuccesful: {e}")
+        logger.info(f"Reading blacklist unsuccesful: {e}")
         
     # itterate over the blacklist and remove the files
     for file_name in blacklisted_files:
@@ -645,7 +645,7 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
                 deleted_files.append(file_name)
             except Exception as e:
                 # file doesn't exist
-                print(f"Failed to delte {file_name}: {e}")
+                logger.info(f"Failed to delte {file_name}: {e}")
                 failed_files.append(file_name)
         else:
             failed_files.append(file_name)
@@ -670,7 +670,7 @@ def preprocess_directory(main_directory, target_directory, matrix_name=None, lab
         # itterate over files and preprocess them
         for index, file_name in enumerate(entries):
             file_path = os.path.join(main_directory, file_name)
-            print(f"Preprocessing file {index + 1}/{target_count}: {file_path}")
+            logger.info(f"Preprocessing file {index + 1}/{target_count}: {file_path}")
 
     elif all(os.path.isdir(os.path.join(main_directory, entry)) for entry in entries):
         # Case 2: Files are inside subdirectories in the main directory (simulated data)
@@ -690,13 +690,13 @@ def preprocess_directory(main_directory, target_directory, matrix_name=None, lab
             if not os.path.isfile(label_path):
                 raise ValueError(f"File '{label_name}' not found in subdirectory")
 
-            print(f"Preprocessing file {index + 1}/{target_count}: {matrix_path}")
+            logger.info(f"Preprocessing file {index + 1}/{target_count}: {matrix_path}")
 
             # copy the label
             destination_path = os.path.join(target_subdirectory_path, label_name)
             try:
                 shutil.copy(label_path, destination_path)
-                print(f"Copied '{label_path}' to '{destination_path}'")
+                logger.info(f"Copied '{label_path}' to '{destination_path}'")
             except OSError as e:
                 raise OSError(f"Failed to copy file to '{destination_path}': {e}")
     else:
@@ -725,9 +725,13 @@ def getDatasetInformation(data_directory, matrix_filename=None):
     max_wavelength = float('-inf')
 
     entries = os.listdir(data_directory)
+    number_entries = len(entries)
+    logger.info(f"Selected Directory = {data_directory}")
+    logger.info(f"Number of entries in directory = {number_entries}")
     
     # check if all entries in the directory are files
     if all(os.path.isfile(os.path.join(data_directory, entry)) for entry in entries):
+        logger.info(f"All Entries in {data_directory} are files!")
         for index, file_name in enumerate(entries):
             file_path = os.path.join(data_directory, file_name)
             # get the delay, highest and lowest wavelength
@@ -747,11 +751,12 @@ def getDatasetInformation(data_directory, matrix_filename=None):
 
     # check if all entries in the directory are subdirectories
     elif all(os.path.isdir(os.path.join(data_directory, entry)) for entry in entries):
+        logger.info(f"All Entries in {data_directory} are subdirectories!")
         # itterate over all subdirectories
         for index, subdirectory in enumerate(entries):
             # get the subdirectory path and also the filepath
             subdirectory_path = os.path.join(data_directory, subdirectory)
-            logger.info(f"Index = {index}")
+            logger.info(f"Index = {index} / {number_entries}")
             logger.info(f"subdirectory = {subdirectory}")
             logger.info(f"Matrix filename = {matrix_filename}")
             file_path = os.path.join(subdirectory_path, matrix_filename)
@@ -833,7 +838,7 @@ def processHeader(lines):
         header = header_line_1
 
     if len(header) < 5:
-        print("ERROR")
+        logger.error("ERROR: Header is has to many elements")
     
     # Convert elements to float for numeric calculations
     header = [float(x) for x in header]
