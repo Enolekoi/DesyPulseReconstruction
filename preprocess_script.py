@@ -16,8 +16,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+GRID_SIZE = 256
 
 pre.prepare(
         dataset_directory="/mnt/data/desy/dataset/dataset_01/",
-        experimental_blacklist_path="./additional/experimental_matrix_blacklist.csv"
+        experimental_blacklist_path="./additional/experimental_matrix_blacklist.csv",
+        grid_size= GRID_SIZE
         )
