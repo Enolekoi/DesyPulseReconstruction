@@ -744,10 +744,10 @@ def getDatasetInformation(data_directory, matrix_filename=None):
             delay_range, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
             # Update the maximum delay value
             if abs(delay_range) > max_delay:
-                max_delay = abs(delay_highest)
+                max_delay = abs(delay_range)
             # Update the maximum delay_value
             if abs(delay_range) < min_delay:
-                min_delay = abs(delay_lowest)
+                min_delay = abs(delay_range)
              
             # Update maximum and minimum wavelengths
             if wavelength_highest > max_wavelength:
