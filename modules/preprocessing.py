@@ -584,20 +584,29 @@ def prepare(dataset_directory, experimental_blacklist_path):
             data_directory=raw_simulated_path,
             matrix_filename="as_gn00.dat"
             )
-    logger.info(f"Minimum Delay Simulated         = {sim_min_delay}")
-    logger.info(f"Maximum Delay Simulated         = {sim_max_delay}")
-    logger.info(f"Minimum Wavelength Simulated    = {sim_min_wavelength}")
-    logger.info(f"Maximum Wavelength Simulated    = {sim_max_wavelength}")
+    logger.info(f"Minimum Delay Simulated           = {sim_min_delay:.6e}")
+    logger.info(f"Maximum Delay Simulated           = {sim_max_delay:.6e}")
+    logger.info(f"Minimum Wavelength Simulated      = {sim_min_wavelength:.6e}")
+    logger.info(f"Maximum Wavelength Simulated      = {sim_max_wavelength:.6e}")
+                                                    
+    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/256:.6e} (256 Grid)")
+    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/256:.6e} (256 Grid)")
+    logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/256:.6e} (256 Grid)")
+    logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/256:.6e} (256 Grid)")
 
     # get the minimum and maximum wavelength of experimental data
     exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
             data_directory=raw_experimental_path
             )
-    logger.info(f"Minimum Delay Experimental      = {exp_min_delay}")
-    logger.info(f"Maximum Delay Experimental      = {exp_max_delay}")
-    logger.info(f"Minimum Wavelength Experimental = {exp_min_wavelength}")
-    logger.info(f"Maximum Wavelength Experimental = {exp_max_wavelength}")
+    logger.info(f"Minimum Delay Experimental        = {exp_min_delay:.6e}")
+    logger.info(f"Maximum Delay Experimental        = {exp_max_delay:.6e}")
+    logger.info(f"Minimum Wavelength Experimental   = {exp_min_wavelength:.6e}")
+    logger.info(f"Maximum Wavelength Experimental   = {exp_max_wavelength:.6e}")
 
+    logger.info(f"Minimum delta_tau Experimental    = {exp_min_delay/256:.6e} (256 Grid)")
+    logger.info(f"Maximum delta_tau Experimental    = {exp_max_delay/256:.6e} (256 Grid)")
+    logger.info(f"Minimum delta_lambda Experimental = {exp_min_wavelength/256:.6e} (256 Grid)")
+    logger.info(f"Maximum delta_lambda Experimental = {exp_max_wavelength/256:.6e} (256 Grid)")
     # write to info file
 
     # create a csv file which sorts the simulated data by TBD_{rms}
@@ -788,11 +797,6 @@ def getDatasetInformation(data_directory, matrix_filename=None):
     max_delay = max_delay *c.femto
     min_wavelength = min_wavelength *c.nano
     max_wavelength = max_wavelength *c.nano
-    # Print the results
-    logger.info(f"Min Delay: {min_delay:.4e}")
-    logger.info(f"Max Delay: {max_delay:.4e}")
-    logger.info(f"Min Wavelength: {min_wavelength:.4e}")
-    logger.info(f"Max Wavelength: {max_wavelength:.4e}")
 
     return min_delay, max_delay, min_wavelength, max_wavelength
 
