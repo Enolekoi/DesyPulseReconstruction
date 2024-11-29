@@ -535,18 +535,19 @@ Description:
     All other directories should be empty
 '''
 def prepare(dataset_directory, experimental_blacklist_path, grid_size):
-    logger.info(f"dataset_directory           = {dataset_directory}")
     # create variables for needed paths
     raw_path        = os.path.join(dataset_directory, "raw")
-    logger.info(f"raw path                    = {raw_path}")
     preproc_path    = os.path.join(dataset_directory, "preproc")
-    logger.info(f"preproc path                = {preproc_path}")
     raw_simulated_path          = os.path.join(raw_path,"simulated")
     raw_experimental_path       = os.path.join(raw_path,"experimental")  
-    logger.info(f"raw experimental path       = {raw_experimental_path}")
-    logger.info(f"raw simulated path          = {raw_simulated_path}")
     preproc_simulated_path      = os.path.join(preproc_path,"simulated")  
     preproc_experimental_path   = os.path.join(preproc_path,"experimental")  
+
+    logger.info(f"dataset_directory           = {dataset_directory}")
+    logger.info(f"raw path                    = {raw_path}")
+    logger.info(f"preproc path                = {preproc_path}")
+    logger.info(f"raw experimental path       = {raw_experimental_path}")
+    logger.info(f"raw simulated path          = {raw_simulated_path}")
     logger.info(f"preproc experimental path   = {raw_experimental_path}")
     logger.info(f"preproc simulated path      = {raw_simulated_path}")
 
@@ -584,29 +585,29 @@ def prepare(dataset_directory, experimental_blacklist_path, grid_size):
             data_directory=raw_simulated_path,
             matrix_filename="as_gn00.dat"
             )
-    logger.info(f"Minimum Delay Simulated           = {sim_min_delay:.6e}")
-    logger.info(f"Maximum Delay Simulated           = {sim_max_delay:.6e}")
-    logger.info(f"Minimum Wavelength Simulated      = {sim_min_wavelength:.6e}")
-    logger.info(f"Maximum Wavelength Simulated      = {sim_max_wavelength:.6e}")
+    logger.info(f"Minimum Delay Simulated           = {sim_min_delay} fs")
+    logger.info(f"Maximum Delay Simulated           = {sim_max_delay} fs")
+    logger.info(f"Minimum Wavelength Simulated      = {sim_min_wavelength} nm")
+    logger.info(f"Maximum Wavelength Simulated      = {sim_max_wavelength} nm")
                                                     
-    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/grid_size:.6e} ({grid_size} Grid)")
-    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/grid_size:.6e} ({grid_size} Grid)")
-    logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/grid_size:.6e} ({grid_size} Grid)")
-    logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/grid_size} nm ({grid_size} Grid)")
+    logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/grid_size} nm ({grid_size} Grid)")
 
     # get the minimum and maximum wavelength of experimental data
     exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
             data_directory=raw_experimental_path
             )
-    logger.info(f"Minimum Delay Experimental        = {exp_min_delay:.6e}")
-    logger.info(f"Maximum Delay Experimental        = {exp_max_delay:.6e}")
-    logger.info(f"Minimum Wavelength Experimental   = {exp_min_wavelength:.6e}")
-    logger.info(f"Maximum Wavelength Experimental   = {exp_max_wavelength:.6e}")
+    logger.info(f"Minimum Delay Experimental        = {exp_min_delay} fs")
+    logger.info(f"Maximum Delay Experimental        = {exp_max_delay} fs")
+    logger.info(f"Minimum Wavelength Experimental   = {exp_min_wavelength} nm")
+    logger.info(f"Maximum Wavelength Experimental   = {exp_max_wavelength} nm")
 
-    logger.info(f"Minimum delta_tau Experimental    = {exp_min_delay/grid_size:.6e} ({grid_size} Grid)")
-    logger.info(f"Maximum delta_tau Experimental    = {exp_max_delay/grid_size:.6e} ({grid_size} Grid)")
-    logger.info(f"Minimum delta_lambda Experimental = {exp_min_wavelength/grid_size:.6e} ({grid_size} Grid)")
-    logger.info(f"Maximum delta_lambda Experimental = {exp_max_wavelength/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Minimum delta_tau Experimental    = {exp_min_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Maximum delta_tau Experimental    = {exp_max_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Minimum delta_lambda Experimental = {exp_min_wavelength/grid_size} nm ({grid_size} Grid)")
+    logger.info(f"Maximum delta_lambda Experimental = {exp_max_wavelength/grid_size} nm ({grid_size} Grid)")
     # write to info file
 
     # create a csv file which sorts the simulated data by TBD_{rms}
@@ -793,11 +794,6 @@ def getDatasetInformation(data_directory, matrix_filename=None):
     else:
         raise ValueError(f"The directory '{data_directory}' contains a mix of files and subdirectories or is empty")
     
-    min_delay = min_delay *c.femto
-    max_delay = max_delay *c.femto
-    min_wavelength = min_wavelength *c.nano
-    max_wavelength = max_wavelength *c.nano
-
     return min_delay, max_delay, min_wavelength, max_wavelength
 
 def getDelayWavelengthFromFile(path):
