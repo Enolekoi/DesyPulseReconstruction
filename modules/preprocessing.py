@@ -731,7 +731,7 @@ def getDatasetInformation(data_directory, matrix_filename=None):
         for index, file_name in enumerate(entries):
             file_path = os.path.join(data_directory, file_name)
             # get the delay, highest and lowest wavelength
-            delay, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
+            delay_points, delta_tau, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
             # Update the minimum timestep
             if delay < max_delay:
                 min_delay = delay                    
@@ -753,13 +753,13 @@ def getDatasetInformation(data_directory, matrix_filename=None):
             subdirectory_path = os.path.join(data_directory, subdirectory)
             file_path = os.path.join(subdirectory_path, matrix_filename)
             # get the delay, highest and lowest wavelength
-            delay, wavelength_lowest, wavelength_highest = getDelayWavelengthFromFile(file_path)
-            # Update the minimum timestep
-            if delay < max_delay:
-                min_delay = delay                    
-            # Update the maximum timestep
-            if delay > min_delay:
-                max_delay = delay
+            delay_highest, delay_lowest, wavelength_highest, wavelength_lowest = getDelayWavelengthFromFile(file_path)
+            # Update the minimum delay value
+            if delay_highest < max_delay:
+                min_delay = delay_highest
+            # Update the maximum delay_value
+            if delay_lowest > min_delay:
+                max_delay = delay_lowest
                 
             # Update maximum and minimum wavelengths
             if wavelength_highest > max_wavelength:
@@ -790,8 +790,9 @@ def getDelayWavelengthFromFile(path):
         header = processHeader(lines)
     
         # Extract the required values
-        delay = header[2]  # Third element
+        number_delays = header[0]  # Third element
         number_wavelength = header[1]  # Second element
+        delta_tau = header[2]  # Third element
         wavelength_step = header[3]  # Fourth element
         center_wavelenght = header[4]  # Fifth element
 
@@ -799,8 +800,12 @@ def getDelayWavelengthFromFile(path):
         wavelength_range = (number_wavelength // 2) * wavelength_step
         wavelength_highest = center_wavelenght + wavelength_range
         wavelength_lowest = center_wavelenght - wavelength_range
+        
+        delay_range = (number_delays // 2) * delta_tau
+        delay_highest = delay_range
+        delay_lowest = -delay_range
 
-        return delay, wavelength_highest, wavelength_lowest
+        return delay_highest, delay_lowest, wavelength_highest, wavelength_lowest
 
 '''
 processHeader()
