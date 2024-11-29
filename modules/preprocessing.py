@@ -787,7 +787,7 @@ def getDatasetInformation(data_directory, matrix_filename=None):
     min_delay = min_delay *c.femto
     max_delay = max_delay *c.femto
     min_wavelength = min_wavelength *c.nano
-    max_wavelength = min_wavelength *c.nano
+    max_wavelength = max_wavelength *c.nano
     # Print the results
     logger.info(f"Min Delay: {min_delay:.4e}")
     logger.info(f"Max Delay: {max_delay:.4e}")
