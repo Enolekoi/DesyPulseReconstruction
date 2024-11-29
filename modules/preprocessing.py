@@ -21,6 +21,7 @@ from modules import config
 from modules import data
 from modules import helper
 
+logger = logging.getLogger(__name__)
 '''
 zeroCrossings()
 
@@ -32,7 +33,7 @@ Inputs:
     tollerance  -> [float] absolute y-values smaller than this will be considered 0
 Outputs:
     x_zero      -> [tensor] x-values where y = 0
-'''
+''' 
 def zeroCrossings(x, y, tollerance=1e-12):
     N = len(x)
     x_zero = []
@@ -830,5 +831,3 @@ def processHeader(lines):
     header = [float(x) for x in header]
     
     return header
-
-
