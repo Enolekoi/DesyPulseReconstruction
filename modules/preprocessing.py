@@ -534,7 +534,7 @@ Description:
     while the raw experimental data has all datapoints in one directory.
     All other directories should be empty
 '''
-def prepare(dataset_directory, experimental_blacklist_path):
+def prepare(dataset_directory, experimental_blacklist_path, grid_size):
     logger.info(f"dataset_directory           = {dataset_directory}")
     # create variables for needed paths
     raw_path        = os.path.join(dataset_directory, "raw")
@@ -589,10 +589,10 @@ def prepare(dataset_directory, experimental_blacklist_path):
     logger.info(f"Minimum Wavelength Simulated      = {sim_min_wavelength:.6e}")
     logger.info(f"Maximum Wavelength Simulated      = {sim_max_wavelength:.6e}")
                                                     
-    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/256:.6e} (256 Grid)")
-    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/256:.6e} (256 Grid)")
-    logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/256:.6e} (256 Grid)")
-    logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/256:.6e} (256 Grid)")
+    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/grid_size:.6e} ({grid_size} Grid)")
 
     # get the minimum and maximum wavelength of experimental data
     exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
@@ -603,10 +603,10 @@ def prepare(dataset_directory, experimental_blacklist_path):
     logger.info(f"Minimum Wavelength Experimental   = {exp_min_wavelength:.6e}")
     logger.info(f"Maximum Wavelength Experimental   = {exp_max_wavelength:.6e}")
 
-    logger.info(f"Minimum delta_tau Experimental    = {exp_min_delay/256:.6e} (256 Grid)")
-    logger.info(f"Maximum delta_tau Experimental    = {exp_max_delay/256:.6e} (256 Grid)")
-    logger.info(f"Minimum delta_lambda Experimental = {exp_min_wavelength/256:.6e} (256 Grid)")
-    logger.info(f"Maximum delta_lambda Experimental = {exp_max_wavelength/256:.6e} (256 Grid)")
+    logger.info(f"Minimum delta_tau Experimental    = {exp_min_delay/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Maximum delta_tau Experimental    = {exp_max_delay/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Minimum delta_lambda Experimental = {exp_min_wavelength/grid_size:.6e} ({grid_size} Grid)")
+    logger.info(f"Maximum delta_lambda Experimental = {exp_max_wavelength/grid_size:.6e} ({grid_size} Grid)")
     # write to info file
 
     # create a csv file which sorts the simulated data by TBD_{rms}
