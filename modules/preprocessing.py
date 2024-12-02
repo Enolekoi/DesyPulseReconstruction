@@ -187,11 +187,11 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
 
     # if nTarget is not even
     if nTarget % 2 !=0:
-        raise ValueError("nTarget must be even")
+        assert ValueError("nTarget must be even")
 
     # if the shape of the spectrogram_matrix is not even
     if shg_matrix.shape[0] != num_delays or shg_matrix.shape[1] != num_wavelength:
-        raise ValueError("shg matrix and header information don't match!")
+        assert ValueError("shg matrix and header information don't match!")
 
     # 1: Symmetrically trim around the center of mass in the delay direction
     # get the sum of all spectrogram values
