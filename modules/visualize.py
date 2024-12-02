@@ -61,7 +61,6 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 raw_delay_axis,
                 raw_wavelength_axis,
                 raw_matrix.T,
-                origin='lower',
                 shading='auto',
                 # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max())
                 )
@@ -73,7 +72,6 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 raw_delay_axis,
                 raw_wavelength_axis,
                 raw_matrix.T,
-                origin='lower',
                 shading='auto',
                 norm=LogNorm(vmin=1e-10, vmax=float( raw_matrix.max()))
                 )
@@ -85,7 +83,6 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 preproc_delay_axis,
                 preproc_wavelength_axis,
                 preproc_matrix.T,
-                origin='lower',
                 shading='auto',
                 # norm=LogNorm(vmin=1e-10, vmax=float( preproc_matrix.max()))
                 )
@@ -97,7 +94,6 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 preproc_delay_axis,
                 preproc_wavelength_axis,
                 preproc_matrix.T,
-                origin='lower',
                 shading='auto',
                 norm=LogNorm(vmin=1e-10, vmax=float( preproc_matrix.max()))
                 )
