@@ -577,7 +577,7 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
         
         # check if the number of files matches the number of directories
         if len(raw_files_with_indices) != len(preproc_dirs_with_indices):
-            raise ValueError("Mismatch between number of input files and output directories!")
+            raise ValueError(f"Mismatch between number of input files ({raw_files_with_indices}) and output directories ({preproc_dirs_with_indices})!")
 
         # itteratae over sorted files and directories
         for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
