@@ -1014,10 +1014,15 @@ def pre(dataset_directory, grid_size=256):
     preproc_simulated_path = os.path.join(preproc_path, "simulated")
     raw_experimental_path = os.path.join(raw_path, "experimental")
     raw_simulated_path = os.path.join(raw_path, "simulated")
+    plot_path = os.path.join(dataset_directory, "plots")
 
     # preprocess the experimental data
         # increment through datapoints and write result in /.preproc/experimental 
-    preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=grid_size):
+    preprocess_experimental(raw_dir=raw_experimental_path, 
+                            preproc_dir=preproc_experimental_path, 
+                            plot_dir=plot_path, 
+                            preproc_filename = "as_gn00.dat", 
+                            grid_size=grid_size)
 
     # create plots of the original and preprocessed experimental SHG-matrixes
         # increment through directories and write result in ./preproc/simulated
