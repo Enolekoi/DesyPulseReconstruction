@@ -579,14 +579,14 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
         
         # check if the number of files matches the number of directories
         if len(raw_files_with_indices) != len(preproc_dirs_with_indices):
-            pass
-            # raise ValueError(f"Mismatch between number of input files ({len(raw_files_with_indices)}) and output directories ({len(preproc_dirs_with_indices)})!")
+            raise ValueError(f"Mismatch between number of input files ({len(raw_files_with_indices)}) and output directories ({len(preproc_dirs_with_indices)})!")
 
         # itteratae over sorted files and directories
         for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
             # check for matching indices
             if raw_index != preproc_index:
-                raise ValueError(f"Index mismatch: file index '{raw_index}' does not match directory index '{preproc_index}'!")
+                pass
+                # raise ValueError(f"Index mismatch: file index '{raw_index}' does not match directory index '{preproc_index}'!")
 
             # Construct raw file path
             raw_file_path = os.path.join(raw_dir, raw_file)
