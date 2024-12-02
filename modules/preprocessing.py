@@ -192,7 +192,9 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     # if the shape of the spectrogram_matrix is not even
     if shg_matrix.shape[0] != num_delays or shg_matrix.shape[1] != num_wavelength:
         warnings.warn("shg matrix and header information don't match! Exiting Funtion.", UserWarning)
-        return
+        resampled_shg_matrix = shg_matrix
+        new_header = header
+        return resampled_shg_matrix, new_header
 
     # 1: Symmetrically trim around the center of mass in the delay direction
     # get the sum of all spectrogram values
@@ -585,10 +587,6 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
         # itteratae over sorted files and directories
         for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
             logger.info(f"Preprocessing Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
-            # check for matching indices
-            if raw_index != preproc_index:
-                pass
-                # raise ValueError(f"Index mismatch: file index '{raw_index}' does not match directory index '{preproc_index}'!")
 
             # Construct raw file path
             raw_file_path = os.path.join(raw_dir, raw_file)
