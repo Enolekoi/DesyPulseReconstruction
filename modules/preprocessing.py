@@ -585,8 +585,8 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
         # itteratae over sorted files and directories
         for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
             logger.info(f"Preprocessing Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
-            logger.info(f"raw_dir = {raw_dir}")
-            logger.info(f"preproc_dir = {preproc_dir}")
+            logger.info(f"Raw path          = {raw_file}")
+            logger.info(f"Preprocessed path = {preproc_subdir}")
 
             # Construct raw file path
             raw_file_path = os.path.join(raw_dir, raw_file)
