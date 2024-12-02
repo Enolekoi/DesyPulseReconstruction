@@ -558,6 +558,8 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
 preprocess_experimental()
 '''
 def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=256):
+    logger.debug(f"raw_dir = {raw_dir}")
+    logger.debug(f"preproc_dir = {preproc_dir}")
     # Regular expression for extracting the indices
     raw_file_pattern = re.compile(r'\D*(\d+)\.txt$')
     preproc_dir_pattern = re.compile(r's(\d+)$')
