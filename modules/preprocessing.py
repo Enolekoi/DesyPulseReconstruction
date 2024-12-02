@@ -505,7 +505,7 @@ def preprocess(shg_path, output_path, N = 256):
     header_line = f"{number_delays} {number_wavelengths} {delta_tau} {delta_lambda} {center_wavelength}"
     shg_lines = '\n'.join(' '.join(map(str, row.tolist() )) for row in shg_matrix)
     
-    with open(full_output_path, 'w') as file:
+    with open(output_path, 'w') as file:
         file.write(header_line + '\n')
         file.write(shg_lines + '\n')
 
