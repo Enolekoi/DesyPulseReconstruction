@@ -45,44 +45,65 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         preproc_delay_axis, preproc_wavelength_axis = helper.generateAxes(preproc_header)
         
         # create a figure with 2 rows and 2 columns
-        fig, axes = plt.subplots(2, 2, figsize=(8,8))
+        fig, axes = plt.subplots(2, 2, figsize=(12,12))
 
+        fig.suptitle(f"Comparison between \n'{raw_filepath}' and \n '{preproc_filepath}'", ha='center')
         # ensure all plots are quadratic
         for ax in axes.flat:
             ax.set_aspect('equal')
+            ax.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+            ax.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+            ax.set_xlabel('Delay in s')
+            ax.set_xlabel('Wavelength in m')
         
         # Plot the raw matrix on a linear scale
-        im1 = axes[0, 0].imshow(raw_matrix, origin='lower', cmap='jet',
-                                extent=[raw_delay_axis[0], raw_delay_axis[-1], raw_wavelength_axis[0], raw_wavelength_axis[-1]])
-        axes[0, 0].set_title(f'SHG-matrix from {raw_filepath} (Linear)')
-        axes[0, 0].set_xlabel('Delay in s')
-        axes[0, 0].set_xlabel('Wavelength in m')
+        im1 = axes[0, 0].pcolormesh(
+                raw_delay_axis,
+                raw_wavelength_axis,
+                raw_matrix.T,
+                origin='lower',
+                shading='auto',
+                # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max())
+                )
+        axes[0, 0].set_title(f'Raw SHG-matrix (Linear)')
         fig.colorbar(im1, ax=axes[0, 0])
 
         # Plot the raw matrix on a logarithmic scale
-        im2 = axes[0, 1].imshow(np.log10(raw_matrix), origin='lower', cmap='jet',
-                                extent=[raw_delay_axis[0], raw_delay_axis[-1], raw_wavelength_axis[0], raw_wavelength_axis[-1]])
-        axes[0, 1].set_title(f'SHG-matrix from {raw_filepath} (Logarithmic)')
-        axes[0, 1].set_xlabel('Delay in s')
-        axes[0, 1].set_xlabel('Wavelength in m')
+        im2 = axes[0, 1].pcolormesh(
+                raw_delay_axis,
+                raw_wavelength_axis,
+                raw_matrix.T,
+                origin='lower',
+                shading='auto',
+                norm=LogNorm(vmin=1e-10, vmax=float( raw_matrix.max()))
+                )
+        axes[0, 1].set_title(f'Raw SHG-matrix (Logarithmic)')
         fig.colorbar(im2, ax=axes[0, 1])
 
-        # Plot the preprocessed matrix on a linear scale
-        im3 = axes[1, 0].imshow(preproc_matrix, origin='lower', cmap='jet',
-                                extent=[preproc_delay_axis[0], preproc_delay_axis[-1], preproc_wavelength_axis[0], preproc_wavelength_axis[-1]])
-        axes[1, 0].set_title(f'SHG-matrix from {preproc_filepath} (Linear)')
-        axes[1, 0].set_xlabel('Delay in s')
-        axes[1, 0].set_xlabel('Wavelength in m')
+        # Plot the preprocessed matrix on a linear scale 
+        im3 = axes[1, 0].pcolormesh(
+                preproc_delay_axis,
+                preproc_wavelength_axis,
+                preproc_matrix.T,
+                origin='lower',
+                shading='auto',
+                # norm=LogNorm(vmin=1e-10, vmax=float( preproc_matrix.max()))
+                )
+        axes[1, 0].set_title(f'Preprocessed SHG-matrix (Linear)')
         fig.colorbar(im3, ax=axes[1, 0])
 
-        # Plot the preprocessed matrix on a logarithmic scale
-        im4 = axes[1, 1].imshow(np.log10(preproc_matrix), origin='lower', cmap='jet',
-                                extent=[preproc_delay_axis[0], preproc_delay_axis[-1], preproc_wavelength_axis[0], preproc_wavelength_axis[-1]])
-        axes[1, 1].set_title(f'SHG-matrix from {preproc_filepath} (Logarithmic)')
-        axes[1, 1].set_xlabel('Delay in s')
-        axes[1, 1].set_xlabel('Wavelength in m')
+        # Plot the preprocessed matrix on a logarithmic scale 
+        im4 = axes[1, 1].pcolormesh(
+                preproc_delay_axis,
+                preproc_wavelength_axis,
+                preproc_matrix.T,
+                origin='lower',
+                shading='auto',
+                norm=LogNorm(vmin=1e-10, vmax=float( preproc_matrix.max()))
+                )
+        axes[1, 1].set_title(f'Preprocessed SHG-matrix (Linear)')
         fig.colorbar(im4, ax=axes[1, 1])
-        
+
         # save the figure
         plt.savefig(save_path)
         plt.close(fig)
