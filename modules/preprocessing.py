@@ -5,6 +5,7 @@ Preprocessing
 ## Imports ##
 #############
 import os
+import re
 import shutil
 import logging
 import torch
@@ -20,6 +21,7 @@ from modules import constants as c
 from modules import config
 from modules import data
 from modules import helper
+from modules import visualize as vis
 
 logger = logging.getLogger(__name__)
 '''
@@ -368,71 +370,71 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     # resampled_shg_matrix = helper.normalizeSHGmatrix(resampled_shg_matrix[0,:,:])
     
     # Create a figure
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 18))
+    # fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 18))
 
     # FIGURE 1
     # fix the axes to a specific exponent representation
-    ax1.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
-    ax1.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # ax1.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    # ax1.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
     # Plot the SHG-matrix
-    c1 = ax1.pcolormesh(
-        delay_axis.numpy(),
-        wavelength_axis.numpy(),
-        shg_matrix.numpy().T,
-        shading='auto',
+    # c1 = ax1.pcolormesh(
+        # delay_axis.numpy(),
+        # wavelength_axis.numpy(),
+        # shg_matrix.numpy().T,
+        # shading='auto',
         # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
-        )
+        # )
 
     # Add labels and title
     # fig.colorbar(c1, label='Intensity')
-    ax1.set_ylabel("Wavelength [m]")
-    ax1.set_xlabel("Time [s]")
-    ax1.set_title("Original SHG-Matrix")
+    # ax1.set_ylabel("Wavelength [m]")
+    # ax1.set_xlabel("Time [s]")
+    # ax1.set_title("Original SHG-Matrix")
     
-    fig.colorbar(c1, ax=ax1, label='Intensity')
+    # fig.colorbar(c1, ax=ax1, label='Intensity')
     # FIGURE 2
     # fix the axes to a specific exponent representation
-    ax2.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
-    ax2.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # ax2.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    # ax2.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
     # Plot the SHG-matrix
-    c2 = ax2.pcolormesh(
-        resampled_delay_axis.numpy(),
-        resampled_wavelength_axis.numpy(),
-        resampled_shg_matrix.numpy().T,
-        shading='auto',
-        # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
+    # c2 = ax2.pcolormesh(
+    #     resampled_delay_axis.numpy(),
+    #     resampled_wavelength_axis.numpy(),
+    #     resampled_shg_matrix.numpy().T,
+    #     shading='auto',
+    #     # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
         )
 
     # Add labels and title
     # fig.colorbar(c2, label='Intensity')
-    ax2.set_ylabel("Wavelength [m]")
-    ax2.set_xlabel("Time [s]")
-    ax2.set_title("Preprocessed SHG-Matrix")
+    # ax2.set_ylabel("Wavelength [m]")
+    # ax2.set_xlabel("Time [s]")
+    # ax2.set_title("Preprocessed SHG-Matrix")
 
-    fig.colorbar(c2, ax=ax2, label='Intensity')
+    # fig.colorbar(c2, ax=ax2, label='Intensity')
 
     # fix the axes to a specific exponent representation
-    ax3.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
-    ax3.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
-    # Plot the SHG-matrix
-    c3 = ax3.pcolormesh(
-        resampled_delay_axis.numpy(),
-        resampled_wavelength_axis.numpy(),
-        resampled_shg_matrix.numpy().T,
-        shading='auto',
-        norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
-        )
+    # ax3.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    # ax3.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # # Plot the SHG-matrix
+    # c3 = ax3.pcolormesh(
+    #     resampled_delay_axis.numpy(),
+    #     resampled_wavelength_axis.numpy(),
+    #     resampled_shg_matrix.numpy().T,
+    #     shading='auto',
+    #     norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
+    #     )
 
     # Add labels and title
     # fig.colorbar(c3, label='Intensity')
-    ax3.set_ylabel("Wavelength [m]")
-    ax3.set_xlabel("Time [s]")
-    ax3.set_title("Preprocessed SHG Matrix (Logarithmic)")
+    # ax3.set_ylabel("Wavelength [m]")
+    # ax3.set_xlabel("Time [s]")
+    # ax3.set_title("Preprocessed SHG Matrix (Logarithmic)")
 
-    fig.colorbar(c3, ax=ax3, label='Intensity')
+    # fig.colorbar(c3, ax=ax3, label='Intensity')
 
-    # Show the plot
-    plt.show()
+    # # Show the plot
+    # plt.show()
 
     return resampled_shg_matrix, new_header
 
@@ -491,15 +493,6 @@ def preprocessFromPath(path, N = 256):
     return shg_matrix, header
 
 def preprocess(shg_path, output_path, N = 256):
-    # extract the filename of the SHG-matrix
-    shg_filename = os.path.basename(shg_path)
-    # split the file name into the file name itself and its extension
-    name, extension = os.path.splitext(shg_filename)
-    # create the filename for the preproocessed SHG-matrix
-    shg_preproc_filename = f"{name}_preproc{extension}"
-    # create the full path of the output SHG-matrix
-    full_output_path = os.path.join(output_path, shg_preproc_filename)
-
     shg_matrix, header = preprocessFromPath(shg_path, N)
     
     # preprocess the header
@@ -515,113 +508,6 @@ def preprocess(shg_path, output_path, N = 256):
     with open(full_output_path, 'w') as file:
         file.write(header_line + '\n')
         file.write(shg_lines + '\n')
-
-    return full_output_path
-
-'''
-prepare()
-
-Description:
-    Expects dataset directory to have the following format:
-        dataset_directory
-        ├─ raw
-        │  ├─ simulated           (these need the data in them)
-        │  └─ experimental        (these need the data in them)
-        └─ preproc
-           ├─ simulated           (empty)
-           └─ experimental        (empty)
-    The raw simulated data has all it's datapoints in seperate directories,
-    while the raw experimental data has all datapoints in one directory.
-    All other directories should be empty
-'''
-def prepare(dataset_directory, experimental_blacklist_path, grid_size):
-    # create variables for needed paths
-    raw_path        = os.path.join(dataset_directory, "raw")
-    preproc_path    = os.path.join(dataset_directory, "preproc")
-    raw_simulated_path          = os.path.join(raw_path,"simulated")
-    raw_experimental_path       = os.path.join(raw_path,"experimental")  
-    preproc_simulated_path      = os.path.join(preproc_path,"simulated")  
-    preproc_experimental_path   = os.path.join(preproc_path,"experimental")  
-
-    logger.info(f"dataset_directory           = {dataset_directory}")
-    logger.info(f"raw path                    = {raw_path}")
-    logger.info(f"preproc path                = {preproc_path}")
-    logger.info(f"raw experimental path       = {raw_experimental_path}")
-    logger.info(f"raw simulated path          = {raw_simulated_path}")
-    logger.info(f"preproc experimental path   = {raw_experimental_path}")
-    logger.info(f"preproc simulated path      = {raw_simulated_path}")
-
-    # remove blacklisted spectrograms from './raw/experimental' directory
-    removeBlacklistFromDirectory(
-            blacklist_path= experimental_blacklist_path,
-            directory_path= raw_experimental_path
-            )
-    # get number of experimental datapoints
-    experimental_directories, experimental_files = helper.countFilesAndDirectories(directory_path=raw_experimental_path)
-    experimental_elements = experimental_directories + experimental_files
-    logger.info(f"Total amount of elements in '{raw_experimental_path}': {experimental_elements}")
-
-    # get number of simulated datapoints
-    simulated_directories, simulated_files = helper.countFilesAndDirectories(directory_path=raw_simulated_path)
-    simulated_elements = simulated_directories + simulated_files
-    logger.info(f"Total amount of elements in '{raw_simulated_path}': {simulated_elements}")
-    
-    # create needed subdirectories for each datapoint in './preproc/experimental'
-    helper.createSubdirectories(
-            base_path= preproc_experimental_path,
-            name_string="s",
-            number_directories= experimental_elements
-            )
-
-    # create needed subdirectories for each datapoint in './preproc/simulated'
-    helper.createSubdirectories(
-            base_path= preproc_simulated_path,
-            name_string="s",
-            number_directories= simulated_elements
-            )
-
-    # get the minimum and maximum wavelength of simulated data
-    sim_min_delay, sim_max_delay, sim_min_wavelength, sim_max_wavelength = getDatasetInformation(
-            data_directory=raw_simulated_path,
-            matrix_filename="as_gn00.dat"
-            )
-    logger.info(f"Minimum Delay Simulated           = {sim_min_delay} fs")
-    logger.info(f"Maximum Delay Simulated           = {sim_max_delay} fs")
-    logger.info(f"Minimum Wavelength Simulated      = {sim_min_wavelength} nm")
-    logger.info(f"Maximum Wavelength Simulated      = {sim_max_wavelength} nm")
-                                                    
-    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/grid_size} fs ({grid_size} Grid)")
-    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/grid_size} fs ({grid_size} Grid)")
-    logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/grid_size} nm ({grid_size} Grid)")
-    logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/grid_size} nm ({grid_size} Grid)")
-
-    # get the minimum and maximum wavelength of experimental data
-    exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
-            data_directory=raw_experimental_path
-            )
-    logger.info(f"Minimum Delay Experimental        = {exp_min_delay} fs")
-    logger.info(f"Maximum Delay Experimental        = {exp_max_delay} fs")
-    logger.info(f"Minimum Wavelength Experimental   = {exp_min_wavelength} nm")
-    logger.info(f"Maximum Wavelength Experimental   = {exp_max_wavelength} nm")
-
-    logger.info(f"Minimum delta_tau Experimental    = {exp_min_delay/grid_size} fs ({grid_size} Grid)")
-    logger.info(f"Maximum delta_tau Experimental    = {exp_max_delay/grid_size} fs ({grid_size} Grid)")
-    logger.info(f"Minimum delta_lambda Experimental = {exp_min_wavelength/grid_size} nm ({grid_size} Grid)")
-    logger.info(f"Maximum delta_lambda Experimental = {exp_max_wavelength/grid_size} nm ({grid_size} Grid)")
-    # write to info file
-
-    # create a csv file which sorts the simulated data by TBD_{rms}
-
-    # create subdirectory for plots of the preprocessed SHG-matrixes
-
-    ''' MOVE BELOW TO SECOND FUNCTION'''
-    # preprocess the experimental data
-
-    # create plots of the original and preprocessed experimental SHG-matrixes
-
-    # preprocess the simulated data
-
-    # create plots of the original and preprocessed simulated SHG-matrixes
 
 '''
 removeBlacklistFromDirectory()
@@ -669,54 +555,63 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
     return deleted_files, failed_files
 
 '''
-preprocess_directory()
+preprocess_experimental()
 '''
-def preprocess_directory(main_directory, target_directory, matrix_name=None, label_name=None):
-    # get files+directories in the target directory
-    target_files = os.listdir(target_directory)
-    target_count = len(target_files)
+def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=256):
+    # Regular expression for extracting the indices
+    raw_file_pattern = re.compile(r'\D*(\d+)\.txt$')
+    preproc_dir_pattern = re.compile(r's(\d+)$')
+    
+    try:
+        # List all input files and directories
+        raw_files = [f for f in os.listdir(raw_dir) if input_file_pattern.search(f)]
+        preproc_dirs = [d for d in os.listdir(raw_dir) if input_file_pattern.search(f)]
 
-    # Determine if main_dir contains files or directories
-    entries= os.listdir(main_directory)
-    if all(os.path.isfile(os.path.join(main_directory, entry)) for entry in entries):
-        # Case 1: Files are directly inside the main directory (experimental data)
-        if len(entries) != target_count:
-            raise ValueError(f"Number of files in '{main_directory}' ({len(entries)}) "
-                             f"does not match number of target subdirectories ({target_directory}).")
-        # itterate over files and preprocess them
-        for index, file_name in enumerate(entries):
-            file_path = os.path.join(main_directory, file_name)
-            logger.info(f"Preprocessing file {index + 1}/{target_count}: {file_path}")
+        # Extract indices and sort the files and directories by index
+        raw_files_with_indices = sorted(
+                [(int(raw_file_pattern.search(f).group(1)), f) for f in raw_files]
+                )
+        preproc_dirs_with_indices = sorted(
+                [(int(preproc_dir_pattern.search(d).group(1)), d) for d in preproc_dirs]
+                )
+        
+        # check if the number of files matches the number of directories
+        if len(raw_files_with_indices) != len(preproc_dirs_with_indices):
+            raise ValueError("Mismatch between number of input files and output directories!")
 
-    elif all(os.path.isdir(os.path.join(main_directory, entry)) for entry in entries):
-        # Case 2: Files are inside subdirectories in the main directory (simulated data)
-        if len(entries) != target_count:
-            raise ValueError(f"Number of subdirectories in '{main_directory}' ({len(entries)}) "
-                             f"does not match number of target subdirectories ({target_directory}).")
+        # itteratae over sorted files and directories
+        for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
+            # check for matching indices
+            if raw_index != preproc_index:
+                raise ValueError(f"Index mismatch: file index '{raw_index}' does not match directory index '{preproc_index}'!")
 
-        # itterate over subdirectories and preprocess the files inside
-        for index, subdirectory in enumerate(entries):
-            subdirectory_path = os.path.join(main_directory, subdirectory)
-            target_subdirectory_path = os.path.join(target_directory, subdirectory)
-            matrix_path = os.path.join(subdirectory_path, matrix_name)
-            label_path = os.path.join(subdirectory_path, label_name)
+            # Construct raw file path
+            raw_file_path = os.path.join(raw_dir, raw_file)
 
-            if not os.path.isfile(matrix_path):
-                raise ValueError(f"File '{matrix_name}' not found in subdirectory")
-            if not os.path.isfile(label_path):
-                raise ValueError(f"File '{label_name}' not found in subdirectory")
+            # Construct preproc file path
+            preproc_file_path = os.path.join(preproc_dir, preproc_subdir, preproc_filename)
 
-            logger.info(f"Preprocessing file {index + 1}/{target_count}: {matrix_path}")
+            # Ensure the preproc directory exists
+            os.makedirs(os.path.dirname(preproc_file_path), exist_ok=True)
 
-            # copy the label
-            destination_path = os.path.join(target_subdirectory_path, label_name)
-            try:
-                shutil.copy(label_path, destination_path)
-                logger.info(f"Copied '{label_path}' to '{destination_path}'")
-            except OSError as e:
-                raise OSError(f"Failed to copy file to '{destination_path}': {e}")
-    else:
-        raise ValueError(f"The directory '{main_directory}' contains a mix of files and subdirectories or is empty")
+            # Call the preprocessing funtion
+            preprocess(
+                    shg_path = raw_file_path,
+                    output_path = preproc_file_path,
+                    N = grid_size
+                    )
+            
+            # Plot the comparison of the raw and preprocessed SHG-matrix
+            plot_filename = f"comparison_{raw_index}.png"
+            plot_path = os.path.join(plot_dir, plot_filename)
+            vis.comparePreproccesSHGMatrix(
+                    raw_filepath=raw_file_path,
+                    preproc_filepath= preproc_file_path,
+                    save_path=plot_path
+                    )
+
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
 
 '''
 getDatasetInformation()
@@ -853,3 +748,284 @@ def processHeader(lines):
     header = [float(x) for x in header]
     
     return header
+
+'''
+writeDatasetInformationToFile()
+'''
+def writeDatasetInformationToFile(
+        file_path,
+        dataset_path,
+        num_datapoints,
+        min_delay, 
+        max_delay, 
+        min_wavelength, 
+        max_wavelength, 
+        grid_size=256
+        ):
+    half_grid = grid_size // 2
+    # check if path is correct
+    if os.path.isdir(os.path.dirname(file_path)):
+        with open(file_path, 'w') as file:
+            file.write(f"Dataset Information for '{dataset_path}'.\n")
+            file.write(f"Amount of datapoints in dataset                  = {num_datapoints}\n")
+            file.write(f"Smallest delay range in dataset                  = {min_delay}\n")
+            file.write(f"Largest delay range in dataset                   = {max_delay}\n")
+            file.write(f"Smallest delta tau in dataset ({grid_size} Grid) = {min_delay/half_grid}\n")
+            file.write(f"Largest delta tau in dataset ({grid_size} Grid)  = {max_delay/half_grid}\n")
+            file.write(f"Smallest wavelength in dataset                   = {min_wavelength}\n")
+            file.write(f"Largest wavelength in dataset                    = {max_wavelength}\n")
+        logger.info(f"File written to {file_path}!")
+    else:
+        raise OSError(f"Path {file_path} is incorrect!")
+
+'''
+getTBDrmsValues
+
+Description:
+    Calculate TBDrms values for all subdirectories, sort them and write them to a file
+
+Inputs:
+    data_directory  -> [string] Base directorie of the training dataset
+    root_directory  -> [string] Root directorie of the project
+    output_filename -> [string] Filename to write the sorted TBDrms values to
+'''                            
+def getTBDrmsValues(data_directory, root_directory, output_filename):
+    data = []
+    
+    logger.info('Stepping through all subdirectories')
+    # step through all directories
+    for subdirectory in os.listdir(data_directory):
+        # get the subdirectory path 
+        subdirectory_path = os.path.join(data_directory, subdirectory)
+
+        # Ensure it's a subdirectory and starts with 's'
+        if os.path.isdir(subdirectory_path) and subdirectory.startswith('s'):
+            # get the path of SimulatedPulseData.txt
+            file_path = os.path.join(subdirectory_path, 'SimulatedPulseData.txt')
+
+            # Check if 'SimulatedPulseData.txt' exists
+            if os.path.exists(file_path):
+                # initialize rmsT and rmsW 
+                rmsT, rmsW = None, None
+
+                # open and read 'SimulatedPulseData.txt'
+                with open(file_path, 'r') as file:
+                    lines = file.readlines()
+                    for line in lines:
+                        # Extract rmsT value
+                        if line.startswith('rmsT;'):
+                            rmsT = float(line.split(';')[1].strip())
+                        # Extract rmsW value
+                        if line.startswith('rmsW;'):
+                            rmsW = float(line.split(';')[1].strip())
+
+                # Check if rmsT and rmsW have values
+                if (rmsT is not None) and (rmsW is not None): 
+                    TBDrms = rmsT*rmsW
+                    # Store values as a tuple (subdirectory, rmsT, rmsW, TBDrms)
+                    data.append([subdirectory, rmsT, rmsW, TBDrms])
+
+    logger.info('Got all data from subdirectories')
+    #####################
+    ## WRITE CSV FILES ##
+    #####################
+    logger.info('Creating sorted CSV-file')
+    sorted_data = sorted(data, key=lambda x: x[3], reverse=False)
+
+    sorted_csv_file = os.path.join(root_directory, output_filename)
+    with open(sorted_csv_file, 'w', newline='') as sorted_csvfile:
+        writer = csv.writer(sorted_csvfile)
+        # write header
+        writer.writerow(['Directory', 'rmsT', 'rmsW', 'TBDrms'])
+        # write data 
+        writer.writerows(sorted_data)
+'''
+createPlotSubdirectories()
+
+Description:
+    Creates directories for plots of the spectrograms
+Inputs:
+    path    -> [string] Path of the parent directory
+'''
+def createPlotSubdirectories(path):
+    try:
+        # Create the main directory if it doesn't exist
+        if not os.path.exists(path):
+            os.makedirs(path)
+            logger.info(f"Created plot directory at '{path}'!")
+        else:
+            logger.info(f"Plot directory already exists at '{path}'")
+        
+        # Create the subdirectories
+        subdir1_path = os.path.join(path, "experimental")
+        subdir2_path = os.path.join(path, "raw")
+
+        os.makedirs(subdir1_path, exist_ok=True)
+        os.makedirs(subdir2_path, exist_ok=True)
+
+        logger.info(f"Subdirectories 'experimental' and 'raw' created in '{path}'.")
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+
+'''
+prepareDirectoriesForPreprocessing()
+
+Description:
+    Prepares the datasets and their directories for preprocessing!
+    Expects dataset directory to have the following format:
+        dataset_directory
+        ├─ raw
+        │  ├─ simulated           (these need the data in them)
+        │  └─ experimental        (these need the data in them)
+        └─ preproc
+           ├─ simulated           (empty)
+           └─ experimental        (empty)
+    The raw simulated data has all it's datapoints in seperate directories,
+    while the raw experimental data has all datapoints in one directory.
+    All other directories should be empty!
+
+Inputs:
+    dataset_directory               -> [string] path of the parent directory
+    grid_size                       -> [int]
+    experimental_blacklist_path     -> [string] path to the blacklist used on experimental data
+
+'''
+def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimental_blacklist_path = None):
+    # create variables for needed paths
+    raw_path        = os.path.join(dataset_directory, "raw")
+    preproc_path    = os.path.join(dataset_directory, "preproc")
+    raw_simulated_path          = os.path.join(raw_path,"simulated")
+    raw_experimental_path       = os.path.join(raw_path,"experimental")  
+    preproc_simulated_path      = os.path.join(preproc_path,"simulated")  
+    preproc_experimental_path   = os.path.join(preproc_path,"experimental")  
+    logger.info(f"dataset_directory           = {dataset_directory}") 
+    logger.info(f"raw path                    = {raw_path}")
+    logger.info(f"preproc path                = {preproc_path}")
+    logger.info(f"raw experimental path       = {raw_experimental_path}")
+    logger.info(f"raw simulated path          = {raw_simulated_path}")
+    logger.info(f"preproc experimental path   = {raw_experimental_path}")
+    logger.info(f"preproc simulated path      = {raw_simulated_path}")
+
+    # remove blacklisted spectrograms from './raw/experimental' directory
+    if experimental_blacklist_path is not None:
+        logger.info(f"Removing files listed in '{experimental_blacklist_path}' from '{raw_experimental_path}'!")
+        removeBlacklistFromDirectory(
+                blacklist_path= experimental_blacklist_path,
+                directory_path= raw_experimental_path
+                )
+    else:
+        logger.info(f"No blacklist for experimental data specified!")
+
+    # get number of experimental datapoints
+    experimental_directories, experimental_files = helper.countFilesAndDirectories(directory_path=raw_experimental_path)
+    experimental_elements = experimental_directories + experimental_files
+    logger.info(f"Total amount of elements in '{raw_experimental_path}': {experimental_elements}")
+
+    # get number of simulated datapoints
+    simulated_directories, simulated_files = helper.countFilesAndDirectories(directory_path=raw_simulated_path)
+    simulated_elements = simulated_directories + simulated_files
+    logger.info(f"Total amount of elements in '{raw_simulated_path}': {simulated_elements}")
+    
+    # create needed subdirectories for each datapoint in './preproc/experimental'
+    helper.createSubdirectories(
+            base_path= preproc_experimental_path,
+            name_string="s",
+            number_directories= experimental_elements
+            )
+
+    # create needed subdirectories for each datapoint in './preproc/simulated'
+    helper.createSubdirectories(
+            base_path= preproc_simulated_path,
+            name_string="s",
+            number_directories= simulated_elements
+            )
+
+    # get the minimum and maximum wavelength of simulated data
+    sim_min_delay, sim_max_delay, sim_min_wavelength, sim_max_wavelength = getDatasetInformation(
+            data_directory=raw_simulated_path,
+            matrix_filename="as_gn00.dat"
+            )
+    logger.info(f"Minimum Delay Simulated           = {sim_min_delay} fs")
+    logger.info(f"Maximum Delay Simulated           = {sim_max_delay} fs")
+    logger.info(f"Minimum Wavelength Simulated      = {sim_min_wavelength} nm")
+    logger.info(f"Maximum Wavelength Simulated      = {sim_max_wavelength} nm")
+                                                    
+    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/grid_size} nm ({grid_size} Grid)")
+    logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/grid_size} nm ({grid_size} Grid)")
+
+    # get the minimum and maximum wavelength of experimental data
+    exp_min_delay, exp_max_delay, exp_min_wavelength, exp_max_wavelength = getDatasetInformation(
+            data_directory=raw_experimental_path
+            )
+    logger.info(f"Minimum Delay Experimental        = {exp_min_delay} fs")
+    logger.info(f"Maximum Delay Experimental        = {exp_max_delay} fs")
+    logger.info(f"Minimum Wavelength Experimental   = {exp_min_wavelength} nm")
+    logger.info(f"Maximum Wavelength Experimental   = {exp_max_wavelength} nm")
+
+    logger.info(f"Minimum delta_tau Experimental    = {exp_min_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Maximum delta_tau Experimental    = {exp_max_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Minimum delta_lambda Experimental = {exp_min_wavelength/grid_size} nm ({grid_size} Grid)")
+    logger.info(f"Maximum delta_lambda Experimental = {exp_max_wavelength/grid_size} nm ({grid_size} Grid)")
+
+    # write to info file for raw experimental data
+    raw_experimental_info_path = os.path.join(raw_path, "experimental_info.txt")
+    writeDatasetInformationToFile(        
+        file_path = raw_experimental_info_path,
+        dataset_path = raw_experimental_path,
+        num_datapoints = experimental_elements,
+        min_delay = exp_min_delay,  
+        max_delay = exp_max_delay, 
+        min_wavelength = exp_min_wavelength, 
+        max_wavelength = exp_max_wavelength, 
+        grid_size = 256)
+
+    # write to info file for raw simulated data
+    raw_simulated_info_path = os.path.join(raw_path, "simulated_info.txt")
+    writeDatasetInformationToFile(        
+        file_path = raw_simulated_info_path,
+        dataset_path = raw_simulated_path,
+        num_datapoints = simulated_elements,
+        min_delay = sim_min_delay,  
+        max_delay = sim_max_delay, 
+        min_wavelength = sim_min_wavelength, 
+        max_wavelength = sim_max_wavelength, 
+        grid_size = 256)
+
+    # create a csv file which sorts the simulated data by TBD_{rms}
+    getTBDrmsValues(
+            data_directory = raw_simulated_path,
+            root_directory = dataset_directory, 
+            output_filename = "TBD_rms.csv"
+            )
+
+    # create subdirectory for plots of the preprocessed SHG-matrixes
+    plot_path = os.path.join(dataset_directory, "plots")
+    createPlotSubdirectories(plot_path)
+
+'''
+pre
+'''
+def pre(dataset_directory, grid_size=256):
+    preproc_path = os.path.join(dataset_directory, "preproc")
+    raw_path = os.path.join(dataset_directory, "raw")
+    preproc_experimental_path = os.path.join(preproc_path, "experimental")
+    preproc_simulated_path = os.path.join(preproc_path, "simulated")
+    raw_experimental_path = os.path.join(raw_path, "experimental")
+    raw_simulated_path = os.path.join(raw_path, "simulated")
+
+    # preprocess the experimental data
+        # increment through datapoints and write result in /.preproc/experimental 
+    preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=grid_size):
+
+    # create plots of the original and preprocessed experimental SHG-matrixes
+        # increment through directories and write result in ./preproc/simulated
+
+    # copy the label of the simulated data to ./preproc/simulated
+
+    # preprocess the simulated data
+
+    # create plots of the original and preprocessed simulated SHG-matrixes
+
+

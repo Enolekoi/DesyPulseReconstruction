@@ -19,6 +19,76 @@ from modules import constants as c
 logger = logging.getLogger(__name__)
 
 '''
+comparePreproccesSHGMatrix()
+
+Description:
+    Plot the raw and preprocessed Spectrogram
+Inputs:
+    raw_filepath        -> [string] Path to raw SHG-matrix
+    preproc_filepath    -> [string] Path to preprocessed SHG-matrix
+    save_path           -> [string] Save the figure to this path
+'''
+def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
+    reader = data.ReadSHGmatrix()
+    try:
+        # get the matrix and header
+        raw_shg_data = reader(raw_filepath)
+        preproc_shg_data = reader(preproc_filepath)
+        
+        raw_matrix, raw_header = raw_shg_data
+        preproc_matrix, preproc_header = raw_shg_data
+        
+        # generate axes from the headers
+        raw_delay_axis, raw_wavelength_axis = helper.generateAxes(raw_header)
+        preproc_delay_axis, preproc_wavelength_axis = helper.generateAxes(preproc_header)
+        
+        # create a figure with 2 rows and 2 columns
+        fig, axes = plt.subplots(2, 2, figsize=(8,8))
+
+        # ensure all plots are quadratic
+        for ax in axes.flat:
+            ax.set_aspect('equal')
+        
+        # Plot the raw matrix on a linear scale
+        im1 = axes[0, 0].imshow(raw_matrix, origin='lower', cmap='jet',
+                                extent=[raw_delay_axis[0], raw_delay_axis[-1], raw_wavelength_axis[0], raw_wavelength_axis[-1]])
+        axes[0, 0].set_title(f'SHG-matrix from {raw_filepath} (Linear)')
+        axes[0, 0].set_xlabel('Delay in s')
+        axes[0, 0].set_xlabel('Wavelength in m')
+        fig.colorbar(im1, ax=axes[0, 0])
+
+        # Plot the raw matrix on a logarithmic scale
+        im2 = axes[0, 1].imshow(np.log10(raw_matrix), origin='lower', cmap='jet',
+                                extent=[raw_delay_axis[0], raw_delay_axis[-1], raw_wavelength_axis[0], raw_wavelength_axis[-1]])
+        axes[0, 1].set_title(f'SHG-matrix from {raw_filepath} (Logarithmic)')
+        axes[0, 1].set_xlabel('Delay in s')
+        axes[0, 1].set_xlabel('Wavelength in m')
+        fig.colorbar(im2, ax=axes[0, 1])
+
+        # Plot the preprocessed matrix on a linear scale
+        im3 = axes[1, 0].imshow(preproc_matrix, origin='lower', cmap='jet',
+                                extent=[preproc_delay_axis[0], preproc_delay_axis[-1], preproc_wavelength_axis[0], preproc_wavelength_axis[-1]])
+        axes[1, 0].set_title(f'SHG-matrix from {preproc_filepath} (Linear)')
+        axes[1, 0].set_xlabel('Delay in s')
+        axes[1, 0].set_xlabel('Wavelength in m')
+        fig.colorbar(im3, ax=axes[1, 0])
+
+        # Plot the preprocessed matrix on a logarithmic scale
+        im4 = axes[1, 1].imshow(np.log10(preproc_matrix), origin='lower', cmap='jet',
+                                extent=[preproc_delay_axis[0], preproc_delay_axis[-1], preproc_wavelength_axis[0], preproc_wavelength_axis[-1]])
+        axes[1, 1].set_title(f'SHG-matrix from {preproc_filepath} (Logarithmic)')
+        axes[1, 1].set_xlabel('Delay in s')
+        axes[1, 1].set_xlabel('Wavelength in m')
+        fig.colorbar(im4, ax=axes[1, 1])
+        
+        # save the figure
+        plt.savefig(save_path)
+        plt.close(fig)
+
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+
+'''
 savePlotTrainingLoss()
 
 Plot the training loss ( Currently UNUSED )
