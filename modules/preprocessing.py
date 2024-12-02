@@ -565,7 +565,7 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
     try:
         # List all input files and directories
         raw_files = [f for f in os.listdir(raw_dir) if raw_file_pattern.search(f)]
-        preproc_dirs = [d for d in os.listdir(raw_dir) if preproc_file_pattern.search(f)]
+        preproc_dirs = [d for d in os.listdir(raw_dir) if preproc_dir_pattern.search(f)]
 
         # Extract indices and sort the files and directories by index
         raw_files_with_indices = sorted(
