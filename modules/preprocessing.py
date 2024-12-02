@@ -561,8 +561,6 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
 preprocess_experimental()
 '''
 def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=256):
-    logger.debug(f"raw_dir = {raw_dir}")
-    logger.debug(f"preproc_dir = {preproc_dir}")
     # Regular expression for extracting the indices
     raw_file_pattern = re.compile(r'\D*(\d+)\.txt$')
     preproc_dir_pattern = re.compile(r's(\d+)$')
@@ -587,6 +585,8 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
         # itteratae over sorted files and directories
         for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
             logger.info(f"Preprocessing Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
+            logger.info(f"raw_dir = {raw_dir}")
+            logger.info(f"preproc_dir = {preproc_dir}")
 
             # Construct raw file path
             raw_file_path = os.path.join(raw_dir, raw_file)
