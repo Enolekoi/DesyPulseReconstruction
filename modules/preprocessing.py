@@ -137,8 +137,8 @@ def windowSHGmatrix(shg_matrix, dimension = 1, standard_deviation_factor = 0.1):
     window_width = int(shg_matrix.size(dimension))
     # calculate the standard deviation used for the gaussian window
     window_standard_deviation = window_width * standard_deviation_factor
-    logger.info(f"Window width                        = {window_width}")
-    logger.info(f"Standard deviation of the window    = {window_standard_deviation}")
+    # logger.info(f"Window width                        = {window_width}")
+    # logger.info(f"Standard deviation of the window    = {window_standard_deviation}")
     # define the window
     window_delay = torch.from_numpy( windows.gaussian(window_width, std=window_standard_deviation)).float()
 
@@ -583,6 +583,7 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
 
         # itteratae over sorted files and directories
         for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
+            logger.info(f"Preprocessing Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
             # check for matching indices
             if raw_index != preproc_index:
                 pass
