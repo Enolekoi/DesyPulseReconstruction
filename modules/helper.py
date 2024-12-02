@@ -516,7 +516,7 @@ def createSubdirectories(base_path, name_string, number_directories):
         # create name of subdirectory
         # format index as 5-digit zero-padded string
         # subdirectory_name = f"{name_string}{i:05d}"
-        subdirectory_name = f"{name_string}{i}"
+        subdirectory_name = f"{name_string}{i+1}"
         subdirectory_path = os.path.join(base_path, subdirectory_name)
         try:
             os.makedirs(subdirectory_path, exist_ok=True)
