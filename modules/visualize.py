@@ -37,6 +37,8 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         
         raw_matrix, raw_header = raw_shg_data
         preproc_matrix, preproc_header = raw_shg_data
+        raw_matrix = np.where(raw_matrix <= 0, 1e-20, raw_matrix)
+        preproc_matrix = np.where(preproc_matrix <= 0, 1e-20, preproc_matrix)
         
         # generate axes from the headers
         raw_delay_axis, raw_wavelength_axis = helper.generateAxes(raw_header)
