@@ -403,7 +403,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     #     resampled_shg_matrix.numpy().T,
     #     shading='auto',
     #     # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max() ))
-        )
+        # )
 
     # Add labels and title
     # fig.colorbar(c2, label='Intensity')
