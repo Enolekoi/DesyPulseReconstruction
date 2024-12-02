@@ -1,6 +1,6 @@
 from modules import preprocessing as pre
 import logging
-import keyboard
+import curses
 
 '''
 Variables and settings
@@ -18,11 +18,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def wait_for_key(key='q'):
-    print(f"Press '{key}' to continue...")
-    while True:
-        if keyboard.is_pressed(key):
-            print(f"'{key}' pressed! Resuming script.")
-            break
+    def main(stdscr):
+        # initialize curses
+        curses.cbreak()     # disable line buffering
+        curses.noecho()     # disable input echoing
+        stdscr.keypad(True) # Enable keyboard for special keys
+        
+        # Instructions for the user
+        stdscr.addstr(0, 0, f"Press '{key}' to continue...")
+        stdscr.refresh
+
+        while True:
+            # Wait for a key press
+            pressed_key = stdscr.getch() # get the pressed key
+            if chr(pressed_key) == key:
+                stdscr.addstr(1, 0, f"Resuming...")
+                print(f"'{key}' pressed! Resuming script.")
+                stdscr.refresh
+                break
+    curses.wrapper(main)
 
 GRID_SIZE = 256
 
@@ -36,5 +50,5 @@ wait_for_key('y')
 
 pre.pre(
     dataset_directory="/mnt/data/desy/dataset/dataset_01/",
-    grid= GRID_SIZE
+    grid_size= GRID_SIZE
     )
