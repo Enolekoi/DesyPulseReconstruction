@@ -46,7 +46,7 @@ pre.prepareDirectoriesForPreprocessing(
         grid_size= GRID_SIZE
         )
 
-wait_for_key('y')
+# wait_for_key('y')
 
 pre.pre(
     dataset_directory="/mnt/data/desy/dataset/dataset_01/",
