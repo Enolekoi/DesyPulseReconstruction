@@ -21,8 +21,8 @@ def wait_for_key(key='q'):
     print(f"Press '{key}' to continue...")
     while True:
         if keyboard.is_pressed(key):
-        print(f"'{key}' pressed! Resuming script.")
-        break
+            print(f"'{key}' pressed! Resuming script.")
+            break
 
 GRID_SIZE = 256
 
