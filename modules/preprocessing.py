@@ -554,6 +554,7 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
         else:
             failed_files.append(file_name)
     logger.info("Finished deletion process.")
+    logger.info(f"Deleted files: {deleted_files}")
     
     return deleted_files, failed_files
 
