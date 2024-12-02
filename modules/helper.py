@@ -9,6 +9,7 @@ Module containing various helper functions
 import logging
 import torch
 import os
+import shutil
 
 from modules import constants as c
 logger = logging.getLogger(__name__)
@@ -538,3 +539,25 @@ def circshift(x, shift, dims=0):
     shift = int( shift % x.size(0)) 
     x_shifted = torch.roll(x, shifts=shift, dims=0) 
     return x_shifted
+
+'''
+removeAllFromDirectory()
+
+Description:
+    removes all files and directories from the specified path
+Inputs:
+    path    -> [string] Path to the directory
+'''
+def removeAllFromDirectory(path):
+    if os.path.exists(path) and os.path.isdir(path):
+        for item in os.listdir(path):
+            item_path = os.path.join(path, item)
+            if os.path.isfile(item_path) or os.path.islink(item_path):   # remove file or symbolic link
+                os.unlink(item_path)
+            if os.path.isdir(item_path):
+                shutil.rmtree(item_path) # remove directories and their content
+        logger.info(f"Removed all files and directories from: '{path}'")
+    else:
+        logger.info(f"'{path}' does not exist or is no directory!")
+
+

@@ -930,6 +930,11 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
     simulated_elements = simulated_directories + simulated_files
     logger.info(f"Total amount of elements in '{raw_simulated_path}': {simulated_elements}")
     
+    # remove ./preproc/experimental/*
+    helper.removeAllFromDirectory(preproc_experimental_path)
+    # remove ./preproc/simulated/*
+    helper.removeAllFromDirectory(preproc_simulated_path)
+
     # create needed subdirectories for each datapoint in './preproc/experimental'
     helper.createSubdirectories(
             base_path= preproc_experimental_path,
