@@ -5,12 +5,18 @@ import curses
 '''
 Variables and settings
 '''
+log_file = "/mnt/data/desy/dataset/dataset_01/preprocessing.log"
+blacklist_path = "./additional/experimental_matrix_blacklist.csv"
+dataset_directory ="/mnt/data/desy/dataset/dataset_01/"
+
+
 # Logger Settings
 logging.basicConfig(
         level=logging.INFO,
         style="{",
         format="{asctime} - {name} - {funcName} - {levelname}: {message}", datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
+            logging.FileHandler(log_file),
             logging.StreamHandler()
             ]
 )
@@ -40,14 +46,14 @@ def wait_for_key(key='q'):
 GRID_SIZE = 512
 
 pre.prepareDirectoriesForPreprocessing(
-        dataset_directory="/mnt/data/desy/dataset/dataset_01/",
-        experimental_blacklist_path="./additional/experimental_matrix_blacklist.csv",
+        dataset_directory=dataset_directory,
+        experimental_blacklist_path=blacklist_path,
         grid_size= GRID_SIZE
         )
 
 # wait_for_key('y')
 
 pre.pre(
-    dataset_directory="/mnt/data/desy/dataset/dataset_01/",
+    dataset_directory=dataset_directory,
     grid_size= GRID_SIZE
     )

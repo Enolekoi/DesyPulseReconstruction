@@ -670,7 +670,7 @@ def preprocess_simulated(
 
         # itteratae over sorted files and directories
         for(raw_index, raw_subdir), (preproc_index, preproc_subdir) in zip(raw_dirs_with_indices, preproc_dirs_with_indices):
-            logger.info(f"Preprocessing Experimental Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
+            logger.info(f"Preprocessing Simulated Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
             logger.info(f"Raw path          = {raw_subdir}")
             logger.info(f"Preprocessed path = {preproc_subdir}")
 
