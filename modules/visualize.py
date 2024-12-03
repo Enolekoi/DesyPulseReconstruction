@@ -36,7 +36,7 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         preproc_shg_data = reader(preproc_filepath)
         
         raw_matrix, raw_header = raw_shg_data
-        preproc_matrix, preproc_header = raw_shg_data
+        preproc_matrix, preproc_header = preproc_shg_data
         raw_matrix = np.where(raw_matrix <= 0, 1e-20, raw_matrix)
         preproc_matrix = np.where(preproc_matrix <= 0, 1e-20, preproc_matrix)
         
@@ -48,9 +48,11 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         fig, axes = plt.subplots(2, 2, figsize=(12,12))
 
         fig.suptitle(f"Comparison between \n'{raw_filepath}' and \n '{preproc_filepath}'", ha='center')
+        print(raw_matrix.shape)
+        print(preproc_matrix.shape)
         # ensure all plots are quadratic
         for ax in axes.flat:
-            ax.set_aspect('equal')
+            # ax.set_aspect('equal')
             ax.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
             ax.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
             ax.set_xlabel('Delay in s')
@@ -97,7 +99,7 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 shading='auto',
                 norm=LogNorm(vmin=1e-10, vmax=float( preproc_matrix.max()))
                 )
-        axes[1, 1].set_title(f'Preprocessed SHG-matrix (Linear)')
+        axes[1, 1].set_title(f'Preprocessed SHG-matrix (Logarithmic)')
         fig.colorbar(im4, ax=axes[1, 1])
 
         # save the figure

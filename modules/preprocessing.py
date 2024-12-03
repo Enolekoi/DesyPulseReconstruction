@@ -6,6 +6,7 @@ Preprocessing
 #############
 import os
 import re
+import shutil
 import warnings
 import logging
 import torch
@@ -14,9 +15,6 @@ import csv
 from scipy.interpolate import RectBivariateSpline
 from scipy.signal import windows
 
-import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
-
 from modules import constants as c
 from modules import config
 from modules import data
@@ -24,6 +22,7 @@ from modules import helper
 from modules import visualize as vis
 
 logger = logging.getLogger(__name__)
+
 '''
 zeroCrossings()
 
@@ -369,8 +368,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
             config.OUTPUT_START_WAVELENGTH,
             config.OUTPUT_END_WAVELENGTH)
 
-    # _, new_header, resampled_shg_matrix, resampled_delay_axis, resampled_wavelength_axis = resample(shg_data)
-    # resampled_shg_matrix = helper.normalizeSHGmatrix(resampled_shg_matrix[0,:,:])
+    _, new_header, resampled_shg_matrix, resampled_delay_axis, resampled_wavelength_axis = resample(shg_data)
     
     # Create a figure
     # fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 18))
@@ -497,7 +495,7 @@ def preprocessFromPath(path, N = 256):
 
 def preprocess(shg_path, output_path, N = 256):
     shg_matrix, header = preprocessFromPath(shg_path, N)
-    
+    print(shg_matrix.shape)
     # preprocess the header
     number_delays       = int(header[0])
     number_wavelengths  = int(header[1])
@@ -595,7 +593,7 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
 
         # itteratae over sorted files and directories
         for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
-            logger.info(f"Preprocessing Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
+            logger.info(f"Preprocessing Experimental Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
             logger.info(f"Raw path          = {raw_file}")
             logger.info(f"Preprocessed path = {preproc_subdir}")
 
@@ -621,6 +619,88 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
             vis.comparePreproccesSHGMatrix(
                     raw_filepath=raw_file_path,
                     preproc_filepath= preproc_file_path,
+                    save_path=plot_path
+                    )
+
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+
+'''
+preprocess_simulated()
+
+Description:
+    Preprocess the simulated data. It's expected, that raw_dir has the spectrogram files directly inside,
+    while preproc_dir has the same amount of subdirectories
+Inputs:
+    raw_dir                     -> [string] Path to directory containing subdirectories with the raw simulated data
+    preproc_dir                 -> [string] Path to directory containing subdirectories for preprocessed data
+    plot_dir                    -> [string] Path to directory, where the comparison of preprocessed and raw spectrograms get saved
+    raw_filename_matrix         -> [string] Path to directory containing subdirectories with the raw simulated data
+    raw_filename_label          -> [string] Path to directory containing subdirectories with the raw simulated data
+    preproc_filename_matrix     -> [string] File name of the preprocessed SHG-matrix
+    preproc_filename_label      -> [string] File name of the preprocessed SHG-matrix
+    grid_size                   -> [int] (optional, default=512) Grid to which the spectrograms get resampled to
+'''
+def preprocess_simulated(
+        raw_dir, preproc_dir, plot_dir,
+        raw_filename_matrix, raw_filename_label,
+        preproc_filename_matrix, preproc_filename_label,
+        grid_size=512):
+
+    # Regular expression for extracting the indices
+    raw_dir_pattern = re.compile(r's(\d+)$')
+    preproc_dir_pattern = re.compile(r's(\d+)$')
+    
+    try:
+        # List all input files and directories
+        raw_dirs = [d for d in os.listdir(raw_dir) if raw_dir_pattern.search(d)]
+        preproc_dirs = [d for d in os.listdir(preproc_dir) if preproc_dir_pattern.search(d)]
+
+        # Extract indices and sort the files and directories by index
+        raw_dirs_with_indices = sorted(
+                [(int(raw_dir_pattern.search(d).group(1)), d) for d in raw_dirs]
+                )
+        preproc_dirs_with_indices = sorted(
+                [(int(preproc_dir_pattern.search(d).group(1)), d) for d in preproc_dirs]
+                )
+        
+        # check if the number of files matches the number of directories
+        if len(raw_dirs_with_indices) != len(preproc_dirs_with_indices):
+            raise ValueError(f"Mismatch between number of input files ({len(raw_dirs_with_indices)}) and output directories ({len(preproc_dirs_with_indices)})!")
+
+        # itteratae over sorted files and directories
+        for(raw_index, raw_subdir), (preproc_index, preproc_subdir) in zip(raw_dirs_with_indices, preproc_dirs_with_indices):
+            logger.info(f"Preprocessing Experimental Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
+            logger.info(f"Raw path          = {raw_subdir}")
+            logger.info(f"Preprocessed path = {preproc_subdir}")
+
+            # Construct raw file paths
+            raw_file_path_matrix = os.path.join(raw_dir, raw_subdir, raw_filename_matrix)
+            raw_file_path_label = os.path.join(raw_dir, raw_subdir, raw_filename_label)
+
+            # Construct preproc file paths
+            preproc_file_path_matrix = os.path.join(preproc_dir, preproc_subdir, preproc_filename_matrix)
+            preproc_file_path_label = os.path.join(preproc_dir, preproc_subdir, preproc_filename_label)
+
+            # Ensure the preproc directory exists
+            os.makedirs(os.path.dirname(preproc_file_path_matrix), exist_ok=True)
+
+            # copy label
+            shutil.copy(raw_file_path_label, preproc_file_path_label)
+
+            # Call the preprocessing funtion
+            preprocess(
+                    shg_path = raw_file_path_matrix,
+                    output_path = preproc_file_path_matrix,
+                    N = grid_size
+                    )
+            
+            # Plot the comparison of the raw and preprocessed SHG-matrix
+            plot_filename = f"comparison_{raw_index}.png"
+            plot_path = os.path.join(plot_dir, plot_filename)
+            vis.comparePreproccesSHGMatrix(
+                    raw_filepath=raw_file_path_matrix,
+                    preproc_filepath= preproc_file_path_matrix,
                     save_path=plot_path
                     )
 
@@ -872,7 +952,7 @@ def createPlotSubdirectories(path):
         
         # Create the subdirectories
         subdir1_path = os.path.join(path, "experimental")
-        subdir2_path = os.path.join(path, "raw")
+        subdir2_path = os.path.join(path, "simulated")
 
         os.makedirs(subdir1_path, exist_ok=True)
         os.makedirs(subdir2_path, exist_ok=True)
@@ -908,11 +988,13 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
     # create variables for needed paths
     raw_path        = os.path.join(dataset_directory, "raw")
     preproc_path    = os.path.join(dataset_directory, "preproc")
+    plots_path      = os.path.join(dataset_directory, "plots")
     raw_simulated_path          = os.path.join(raw_path,"simulated")
     raw_experimental_path       = os.path.join(raw_path,"experimental")  
     preproc_simulated_path      = os.path.join(preproc_path,"simulated")  
     preproc_experimental_path   = os.path.join(preproc_path,"experimental")  
-    logger.info(f"dataset_directory           = {dataset_directory}") 
+    logger.info(f"dataset directory           = {dataset_directory}") 
+    logger.info(f"plots path                  = {plots_path}") 
     logger.info(f"raw path                    = {raw_path}")
     logger.info(f"preproc path                = {preproc_path}")
     logger.info(f"raw experimental path       = {raw_experimental_path}")
@@ -944,6 +1026,8 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
     helper.removeAllFromDirectory(preproc_experimental_path)
     # remove ./preproc/simulated/*
     helper.removeAllFromDirectory(preproc_simulated_path)
+    # remove ./plots
+    helper.removeAllFromDirectory(plots_path)
 
     # create needed subdirectories for each datapoint in './preproc/experimental'
     helper.createSubdirectories(
@@ -1020,30 +1104,44 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
             )
 
     # create subdirectory for plots of the preprocessed SHG-matrixes
-    plot_path = os.path.join(dataset_directory, "plots")
-    createPlotSubdirectories(plot_path)
+    createPlotSubdirectories(plots_path)
 
 '''
 pre
 '''
 def pre(dataset_directory, grid_size=512):
+
     preproc_path = os.path.join(dataset_directory, "preproc")
     raw_path = os.path.join(dataset_directory, "raw")
+
     preproc_experimental_path = os.path.join(preproc_path, "experimental")
     preproc_simulated_path = os.path.join(preproc_path, "simulated")
     raw_experimental_path = os.path.join(raw_path, "experimental")
     raw_simulated_path = os.path.join(raw_path, "simulated")
-    plot_path = os.path.join(dataset_directory, "plots")
+
+    plots_path = os.path.join(dataset_directory, "plots")
+    plots_experimental_path = os.path.join(plots_path, "experimental")
+    plots_simulated_path = os.path.join(plots_path, "simulated")
 
     # preprocess the experimental data
         # increment through datapoints and write result in /.preproc/experimental 
-    preprocess_experimental(raw_dir=raw_experimental_path, 
-                            preproc_dir=preproc_experimental_path, 
-                            plot_dir=plot_path, 
-                            preproc_filename = "as_gn00.dat", 
-                            grid_size=grid_size)
+    preprocess_experimental(
+            raw_dir=raw_experimental_path, 
+            preproc_dir=preproc_experimental_path, 
+            plot_dir=plots_experimental_path, 
+            preproc_filename = "as_gn00.dat", 
+            grid_size=grid_size
+            )
 
     # preprocess the simulated data
         # increment through datapoints and write result in /.preproc/simulated 
-
-
+    preprocess_simulated(
+            raw_dir=raw_simulated_path, 
+            preproc_dir=preproc_simulated_path, 
+            plot_dir=plots_simulated_path, 
+            raw_filename_matrix = "as_gn00.dat", 
+            raw_filename_label = "Es.dat", 
+            preproc_filename_matrix = "as_gn00.dat", 
+            preproc_filename_label = "as_gn00.dat", 
+            grid_size=grid_size
+            )
