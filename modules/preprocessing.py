@@ -560,8 +560,18 @@ def removeBlacklistFromDirectory(blacklist_path, directory_path):
 
 '''
 preprocess_experimental()
+
+Description:
+    Preprocess the experimental data. It's expected, that raw_dir has the spectrogram files directly inside,
+    while preproc_dir has the same amount of subdirectories
+Inputs:
+    raw_dir             -> [string] Path to directory containing the raw experimental SHG-matrixes
+    preproc_dir         -> [string] Path to directory containing subdirectories for preprocessed SHG-matrixes
+    plot_dir            -> [string] Path to directory, where the comparison of preprocessed and raw spectrograms get saved
+    preproc_filename    -> [string] File name of the preprocessed SHG-matrix
+    grid_size           -> [int] (optional, default=512) Grid to which the spectrograms get resampled to
 '''
-def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=256):
+def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=512):
     # Regular expression for extracting the indices
     raw_file_pattern = re.compile(r'\D*(\d+)\.txt$')
     preproc_dir_pattern = re.compile(r's(\d+)$')
@@ -764,7 +774,7 @@ def writeDatasetInformationToFile(
         max_delay, 
         min_wavelength, 
         max_wavelength, 
-        grid_size=256
+        grid_size=512
         ):
     half_grid = grid_size // 2
     # check if path is correct
@@ -988,7 +998,7 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
         max_delay = exp_max_delay, 
         min_wavelength = exp_min_wavelength, 
         max_wavelength = exp_max_wavelength, 
-        grid_size = 256)
+        grid_size = 512)
 
     # write to info file for raw simulated data
     raw_simulated_info_path = os.path.join(raw_path, "simulated_info.txt")
@@ -1000,7 +1010,7 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
         max_delay = sim_max_delay, 
         min_wavelength = sim_min_wavelength, 
         max_wavelength = sim_max_wavelength, 
-        grid_size = 256)
+        grid_size = 512)
 
     # create a csv file which sorts the simulated data by TBD_{rms}
     getTBDrmsValues(
@@ -1016,7 +1026,7 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
 '''
 pre
 '''
-def pre(dataset_directory, grid_size=256):
+def pre(dataset_directory, grid_size=512):
     preproc_path = os.path.join(dataset_directory, "preproc")
     raw_path = os.path.join(dataset_directory, "raw")
     preproc_experimental_path = os.path.join(preproc_path, "experimental")
@@ -1033,13 +1043,7 @@ def pre(dataset_directory, grid_size=256):
                             preproc_filename = "as_gn00.dat", 
                             grid_size=grid_size)
 
-    # create plots of the original and preprocessed experimental SHG-matrixes
-        # increment through directories and write result in ./preproc/simulated
-
-    # copy the label of the simulated data to ./preproc/simulated
-
     # preprocess the simulated data
-
-    # create plots of the original and preprocessed simulated SHG-matrixes
+        # increment through datapoints and write result in /.preproc/simulated 
 
 

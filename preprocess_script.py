@@ -9,8 +9,7 @@ Variables and settings
 logging.basicConfig(
         level=logging.INFO,
         style="{",
-        format="{asctime} - {name} - {funcName} - {levelname}: {message}",
-        datefmt='%d-%m-%Y %H:%M:%S',
+        format="{asctime} - {name} - {funcName} - {levelname}: {message}", datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
             logging.StreamHandler()
             ]
@@ -38,7 +37,7 @@ def wait_for_key(key='q'):
                 break
     curses.wrapper(main)
 
-GRID_SIZE = 256
+GRID_SIZE = 512
 
 pre.prepareDirectoriesForPreprocessing(
         dataset_directory="/mnt/data/desy/dataset/dataset_01/",
