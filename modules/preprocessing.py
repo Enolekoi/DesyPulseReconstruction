@@ -574,56 +574,55 @@ def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, gr
     raw_file_pattern = re.compile(r'\D*(\d+)\.txt$')
     preproc_dir_pattern = re.compile(r's(\d+)$')
     
-    try:
-        # List all input files and directories
-        raw_files = [f for f in os.listdir(raw_dir) if raw_file_pattern.search(f)]
-        preproc_dirs = [d for d in os.listdir(preproc_dir) if preproc_dir_pattern.search(d)]
+    # List all input files and directories
+    raw_files = [f for f in os.listdir(raw_dir) if raw_file_pattern.search(f)]
+    preproc_dirs = [d for d in os.listdir(preproc_dir) if preproc_dir_pattern.search(d)]
 
-        # Extract indices and sort the files and directories by index
-        raw_files_with_indices = sorted(
-                [(int(raw_file_pattern.search(f).group(1)), f) for f in raw_files]
-                )
-        preproc_dirs_with_indices = sorted(
-                [(int(preproc_dir_pattern.search(d).group(1)), d) for d in preproc_dirs]
-                )
-        
-        # check if the number of files matches the number of directories
-        if len(raw_files_with_indices) != len(preproc_dirs_with_indices):
-            raise ValueError(f"Mismatch between number of input files ({len(raw_files_with_indices)}) and output directories ({len(preproc_dirs_with_indices)})!")
+    # Extract indices and sort the files and directories by index
+    raw_files_with_indices = sorted(
+            [(int(raw_file_pattern.search(f).group(1)), f) for f in raw_files]
+            )
+    preproc_dirs_with_indices = sorted(
+            [(int(preproc_dir_pattern.search(d).group(1)), d) for d in preproc_dirs]
+            )
+    
+    # check if the number of files matches the number of directories
+    if len(raw_files_with_indices) != len(preproc_dirs_with_indices):
+        raise ValueError(f"Mismatch between number of input files ({len(raw_files_with_indices)}) and output directories ({len(preproc_dirs_with_indices)})!")
 
-        # itteratae over sorted files and directories
-        for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
-            logger.info(f"Preprocessing Experimental Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
-            logger.info(f"Raw path          = {raw_file}")
-            logger.info(f"Preprocessed path = {preproc_subdir}")
 
-            # Construct raw file path
-            raw_file_path = os.path.join(raw_dir, raw_file)
+    # itteratae over sorted files and directories
+    for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
+        logger.info(f"Preprocessing Experimental Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
+        logger.info(f"Raw path          = {raw_file}")
+        logger.info(f"Preprocessed path = {preproc_subdir}")
 
-            # Construct preproc file path
-            preproc_file_path = os.path.join(preproc_dir, preproc_subdir, preproc_filename)
+        # Construct raw file path
+        raw_file_path = os.path.join(raw_dir, raw_file)
 
-            # Ensure the preproc directory exists
-            os.makedirs(os.path.dirname(preproc_file_path), exist_ok=True)
+        # Construct preproc file path
+        preproc_file_path = os.path.join(preproc_dir, preproc_subdir, preproc_filename)
 
+        # Ensure the preproc directory exists
+        os.makedirs(os.path.dirname(preproc_file_path), exist_ok=True)
+        try:
             # Call the preprocessing funtion
             preprocess(
                     shg_path = raw_file_path,
                     output_path = preproc_file_path,
                     N = grid_size
                     )
-            
+        
             # Plot the comparison of the raw and preprocessed SHG-matrix
             plot_filename = f"comparison_{raw_index}.png"
-            plot_path = os.path.join(plot_dir, plot_filename)
+            plot_path = os.path.join(plot_dir, plot_filename) 
             vis.comparePreproccesSHGMatrix(
-                    raw_filepath=raw_file_path,
-                    preproc_filepath= preproc_file_path,
-                    save_path=plot_path
-                    )
-
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
+                raw_filepath=raw_file_path,
+                preproc_filepath= preproc_file_path,
+                save_path=plot_path
+                )
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
 
 '''
 preprocess_simulated()
