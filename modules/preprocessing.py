@@ -365,12 +365,12 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     resampled_shg_matrix = windowSHGmatrix(
             shg_matrix = resampled_shg_matrix, 
             dimension = 0,    # delay dimension
-            standard_deviation_factor=0.025
+            standard_deviation_factor=0.0125
             )
     resampled_shg_matrix = windowSHGmatrix(
             shg_matrix = resampled_shg_matrix, 
             dimension = 1,    # wavelength dimension
-            standard_deviation_factor=0.025
+            standard_deviation_factor=0.0125
             )   
     # Create a figure
     # fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 18))
