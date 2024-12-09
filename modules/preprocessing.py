@@ -300,7 +300,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
             ]
     
     # get noise level from first and last three columns of the original SHG-matrix
-    noise = torch.cat((shg_matrix[:, :3].flatten(), shg_matrix[:, -3:].flatten()))
+    noise = torch.cat((shg_matrix[:3, :].flatten(), shg_matrix[-3:, :].flatten()))
     # fill the background of the new SHG-matrix with the noise
     resampled_shg_matrix = torch.std(noise) * torch.randn(nTarget, nTarget) + torch.mean(noise)
     # resampled_shg_matrix = torch.zeros(nTarget, nTarget)
