@@ -54,7 +54,7 @@ Options that configure how the resampled SHG-matrixes are created
 OUTPUT_NUM_DELAYS = 512                         # Number of delays the SHG-matrix get resampled to
 OUTPUT_NUM_WAVELENGTH = 512                     # Number of delays the SHG-matrix get resampled to
 OUTPUT_NUM_FREQUENCIES = OUTPUT_NUM_WAVELENGTH  # Number of frequencies the SHG-matrix get resampled to
-OUTPUT_TIMESTEP = 9.79*c.femto                   # Size of timestep between delays [fs]
+OUTPUT_TIMESTEP = 4.89*c.femto                   # Size of timestep between delays [fs]
 OUTPUT_START_WAVELENGTH = 489.85*c.nano            # Smallest wavelength in the dataset [nm]
 OUTPUT_END_WAVELENGTH = 540.04*c.nano              # Largest wavelength in the dataset [nm]
 OUTPUT_START_FREQUENCY = c.c2pi / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
