@@ -46,8 +46,6 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         fig, axes = plt.subplots(2, 2, figsize=(12,12))
 
         fig.suptitle(f"Comparison between \n'{raw_filepath}' and \n '{preproc_filepath}'", ha='center')
-        print(raw_matrix.shape)
-        print(preproc_matrix.shape)
         # ensure all plots are quadratic
         for ax in axes.flat:
             # ax.set_aspect('equal')
@@ -162,8 +160,6 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     ax1.set_title('Training loss over time (linear)')
     
     # Plot learning rates
-    print(np.shape(learning_rates))
-    print(type(learning_rates))
     ax1_learning_rate = ax1.twinx()
     ax1_learning_rate.plot(
             steps,
