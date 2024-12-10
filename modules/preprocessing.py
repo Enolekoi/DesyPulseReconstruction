@@ -1121,17 +1121,6 @@ def pre(dataset_directory, grid_size=512):
     plots_path = os.path.join(dataset_directory, "plots")
     plots_experimental_path = os.path.join(plots_path, "experimental")
     plots_simulated_path = os.path.join(plots_path, "simulated")
-
-    # preprocess the experimental data
-        # increment through datapoints and write result in /.preproc/experimental 
-    preprocess_experimental(
-            raw_dir=raw_experimental_path, 
-            preproc_dir=preproc_experimental_path, 
-            plot_dir=plots_experimental_path, 
-            preproc_filename = "as_gn00.dat", 
-            grid_size=grid_size
-            )
-
     # preprocess the simulated data
         # increment through datapoints and write result in /.preproc/simulated 
     preprocess_simulated(
@@ -1142,5 +1131,14 @@ def pre(dataset_directory, grid_size=512):
             raw_filename_label = "Es.dat", 
             preproc_filename_matrix = "as_gn00.dat", 
             preproc_filename_label = "as_gn00.dat", 
+            grid_size=grid_size
+            )
+    # preprocess the experimental data
+        # increment through datapoints and write result in /.preproc/experimental 
+    preprocess_experimental(
+            raw_dir=raw_experimental_path, 
+            preproc_dir=preproc_experimental_path, 
+            plot_dir=plots_experimental_path, 
+            preproc_filename = "as_gn00.dat", 
             grid_size=grid_size
             )
