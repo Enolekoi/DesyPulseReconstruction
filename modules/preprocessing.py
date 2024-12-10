@@ -1052,8 +1052,8 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
     logger.info(f"Minimum Wavelength Simulated      = {sim_min_wavelength} nm")
     logger.info(f"Maximum Wavelength Simulated      = {sim_max_wavelength} nm")
                                                     
-    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/grid_size} fs ({grid_size} Grid)")
-    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/grid_size} fs ({grid_size} Grid)")
+    logger.info(f"Minimum delta_tau Simulated       = {sim_min_delay/(grid_size//2)} fs ({grid_size} Grid)")
+    logger.info(f"Maximum delta_tau Simulated       = {sim_max_delay/(grid_size//2)} fs ({grid_size} Grid)")
     logger.info(f"Minimum delta_lambda Simulated    = {sim_min_wavelength/grid_size} nm ({grid_size} Grid)")
     logger.info(f"Maximum delta_lambda Simulated    = {sim_max_wavelength/grid_size} nm ({grid_size} Grid)")
 
