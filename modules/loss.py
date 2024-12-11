@@ -86,7 +86,7 @@ class PulseRetrievalLossFunction(nn.Module):
         prediction_real = prediction_analytical.real.to(device)
         prediction_imag = prediction_analytical.imag.to(device)
 
-        if self.use_label == True:
+        if self.use_label:
             # get real and imaginary parts of labels
             label_real = label[:, :half_size].to(device)
             label_imag = label[:, half_size:].to(device)

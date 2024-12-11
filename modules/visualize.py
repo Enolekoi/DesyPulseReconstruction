@@ -52,7 +52,7 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
             ax.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
             ax.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
             ax.set_xlabel('Delay in s')
-            ax.set_xlabel('Wavelength in m')
+            ax.set_ylabel('Wavelength in m')
         
         # Plot the raw matrix on a linear scale
         im1 = axes[0, 0].pcolormesh(
