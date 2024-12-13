@@ -130,7 +130,10 @@ def windowSHGmatrix(shg_matrix, dimension = 1, standard_deviation_factor = 0.1):
         raise ValueError(f"dimension should be either 1 or 0 but is {dimension}")
     if not (standard_deviation_factor > 0):
         raise ValueError(f"standard_deviation_factor needs to be higher than 0, but is {standard_deviation_factor}")
-    shg_matrix_windowed = shg_matrix
+
+    if isinstance(shg_matrix, np.ndarray):
+        # convert to tensor if spectrogram is a numpy array
+        shg_matrix = torch.from_numpy(shg_matrix)
 
     # determine the window width (equals the number of samples across the selected dimension)
     window_width = int(shg_matrix.size(dimension))
@@ -290,10 +293,10 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
             ]
     
     # get noise level from first and last three columns of the original SHG-matrix
-    noise = torch.cat((shg_matrix[:3, :].flatten(), shg_matrix[-3:, :].flatten()))
+    # noise = torch.cat((shg_matrix[:3, :].flatten(), shg_matrix[-3:, :].flatten()))
     # fill the background of the new SHG-matrix with the noise
     # resampled_shg_matrix = torch.std(noise) * torch.randn(nTarget, nTarget) + torch.mean(noise)
-    resampled_shg_matrix = torch.zeros(nTarget, nTarget)
+    # resampled_shg_matrix = torch.zeros(nTarget, nTarget)
 
     # 2D interpolate
     # initialize the interpolator
@@ -311,6 +314,30 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     index_delay_range_max = index_range_new_delay[1] 
     index_wavelength_range_min = index_range_new_wavelength[0]
     index_wavelength_range_max = index_range_new_wavelength[1]
+
+    # use a windowing function
+    shg_interpolated = windowSHGmatrix(
+            shg_matrix = shg_interpolated, 
+            dimension = 0,    # delay dimension
+            standard_deviation_factor=0.08
+            )
+    shg_interpolated = windowSHGmatrix(
+            shg_matrix = shg_interpolated, 
+            dimension = 1,    # wavelength dimension
+            standard_deviation_factor=0.08
+            )
+    # get the upper 5% of the edge
+    width = shg_interpolated.size(0)
+    top_percent_width = int(width * 0.1)
+    left_edge = shg_interpolated[:top_percent_width, 0]
+    right_edge = shg_interpolated[:top_percent_width, -1]
+    noise = torch.cat([left_edge, right_edge], dim=0)
+    # get noise level from first and last three columns of the original SHG-matrix
+    # noise = torch.cat((shg_interpolated[:3, :].flatten(), shg_interpolated[-3:, :].flatten()))
+    # noise = torch.cat((shg_interpolated[:top_5_percent_width, :].flatten(), shg_interpolated[-top_5_percent_width:, :].flatten()))
+    # fill the background of the new SHG-matrix with the noise
+    resampled_shg_matrix = torch.std(noise) * torch.abs(torch.randn(nTarget, nTarget)) + torch.mean(noise)
+    # resampled_shg_matrix = torch.zeros(nTarget, nTarget)
 
     # Embed the interpolated matrix into the larger matrix
     resampled_shg_matrix = resampled_shg_matrix.numpy()
@@ -357,18 +384,6 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
             output_delta_lambda,
             output_center_wavelength
             ]
-
-    # use a windowing function
-    resampled_shg_matrix = windowSHGmatrix(
-            shg_matrix = resampled_shg_matrix, 
-            dimension = 0,    # delay dimension
-            standard_deviation_factor=0.25
-            )
-    resampled_shg_matrix = windowSHGmatrix(
-            shg_matrix = resampled_shg_matrix, 
-            dimension = 1,    # wavelength dimension
-            standard_deviation_factor=0.25
-            )   
 
     return resampled_shg_matrix, output_header
 
