@@ -171,10 +171,12 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     center_wavelength   = header[4] # center wavelength in [m]
 
     # normalize SHG-Matrix
+    logger.info("normalizing SHG-Matrix")
     shg_matrix = helper.normalizeSHGmatrix(shg_matrix)
     shg_matrix_original = shg_matrix
-
+    
     # get the delay and wavelength axis
+    logger.info("Getting Axis")
     delay_axis, wavelength_axis = helper.generateAxes(header)
 
     # if nTarget is not even
@@ -188,6 +190,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
         new_header = header
         raise ValueError("spectrogram dimension aren't even")
 
+    logger.info("Making SHG-matrix symmetrical")
     # 1: Symmetrically trim around the center of mass in the delay direction
     # get the sum of all spectrogram values
     total_int = float(torch.sum(shg_matrix))
@@ -201,7 +204,8 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
         # then multiply by the sum of the values in the current row
         com_delay_index += float((index + 1) * sum_row )
     
-    # device the com_delay_index by the sum of total SHG-matrix values and round it 
+    logger.info("Making SHG-matrix the same side in each direction of the Center of Mass")
+    # devide the com_delay_index by the sum of total SHG-matrix values and round it 
     com_delay_index = round(com_delay_index / total_int)
     # get the minimum of either:
     #   - the number of delays - the center of mass index
@@ -216,7 +220,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     
     assert index_range[0] >= 0
     assert index_range[-1] < num_delays
-
+    
     # Cut a matrix that is equally as large in both directions of com_delay_index
     # This means com_delay_index is exactly in the middle
     symmetric_shg_matrix = shg_matrix[index_range, :]
@@ -241,6 +245,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     symmetric_shg_matrix[:middle_index-1, :] = left_symmetric
     symmetric_shg_matrix[middle_index:, :] = torch.flip(left_symmetric, dims=[0])
 
+    logger.info("Resampling 1")
     # 3: Resampling with tau and lambda estimation
     # estimate full width half mean in both directions (not perfectly exact, but close enough)
     # get the mean the delay
@@ -264,6 +269,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     opt_delay = fwhm_delay / M
     opt_wavelength = fwhm_wavelength / M
 
+    logger.info("Resampling 2")
     # construction of axes for resampling
     index_vector = torch.arange(-nTarget // 2, nTarget // 2)
     resampled_delay_axis = index_vector * opt_delay
@@ -298,6 +304,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     # resampled_shg_matrix = torch.std(noise) * torch.randn(nTarget, nTarget) + torch.mean(noise)
     # resampled_shg_matrix = torch.zeros(nTarget, nTarget)
 
+    logger.info("Resampling 3")
     # 2D interpolate
     # initialize the interpolator
     interpolator = RectBivariateSpline(
@@ -315,6 +322,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     index_wavelength_range_min = index_range_new_wavelength[0]
     index_wavelength_range_max = index_range_new_wavelength[1]
 
+    logger.info("Window")
     # use a windowing function
     shg_interpolated = windowSHGmatrix(
             shg_matrix = shg_interpolated, 
@@ -339,6 +347,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     resampled_shg_matrix = torch.std(noise) * torch.abs(torch.randn(nTarget, nTarget)) + torch.mean(noise)
     # resampled_shg_matrix = torch.zeros(nTarget, nTarget)
 
+    logger.info("Place into larger Matrix")
     # Embed the interpolated matrix into the larger matrix
     resampled_shg_matrix = resampled_shg_matrix.numpy()
     resampled_shg_matrix[index_wavelength_range_min:index_wavelength_range_max,\
@@ -368,6 +377,7 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
             config.OUTPUT_START_WAVELENGTH,
             config.OUTPUT_END_WAVELENGTH)
 
+    logger.info("Final resample")
     _, new_header, resampled_shg_matrix, resampled_delay_axis, resampled_wavelength_axis = resample(shg_data)
     
     # create output header
@@ -633,9 +643,11 @@ def preprocess_simulated(
             # Ensure the preproc directory exists
             os.makedirs(os.path.dirname(preproc_file_path_matrix), exist_ok=True)
             
+            logger.info(f"Copying Label")
             # copy label
             shutil.copy(raw_file_path_label, preproc_file_path_label)
             
+            logger.info(f"Starting Preprocessing")
             # Call the preprocessing funtion
             preprocess(
                     shg_path = raw_file_path_matrix,
