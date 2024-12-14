@@ -122,7 +122,8 @@ class PulseRetrievalLossFunction(nn.Module):
                         )
                 # resample to correct size
                 predicted_shg_data = [predicted_shg, new_header]
-                _, prediction_header, predicted_shg, _, _ = self.shg_transform(predicted_shg_data)
+                resample_outputs = self.shg_transform(predicted_shg_data)
+                _, prediction_header, predicted_shg, _, _ = resample_outputs
                 
                 # get only one channel
                 predicted_shg = predicted_shg[0,:,:]

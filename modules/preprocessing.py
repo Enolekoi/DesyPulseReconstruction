@@ -378,7 +378,8 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
             config.OUTPUT_END_WAVELENGTH)
 
     logger.info("Final resample")
-    _, new_header, resampled_shg_matrix, resampled_delay_axis, resampled_wavelength_axis = resample(shg_data)
+    resample_outputs = resample(shg_data)
+    _, new_header, resampled_shg_matrix, resampled_delay_axis, resampled_wavelength_axis = resample_outputs
     
     # create output header
     output_num_delays = resampled_delay_axis.size(0)

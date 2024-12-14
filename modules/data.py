@@ -214,7 +214,8 @@ class CreateAxisAndRestructure(object):
                 )
 
         print("finished restructuring")
-        return shg_original, header, shg_copy, input_delay_axis, input_wavelength_axis
+        resample_outputs = [shg_original, header, shg_resampled, self.output_delay, self.output_wavelength]
+        return resample_outputs
 
 '''
 ResampleSHGmat()
@@ -301,8 +302,8 @@ class ResampleSHGmatrix(object):
             for i in range(delay_resampled.shape[0])
             ], dim=0)
 
-       
-        return shg_original, header, shg_resampled, self.output_delay, self.output_wavelength
+        resample_outputs = [shg_original, header, shg_resampled, self.output_delay, self.output_wavelength]
+        return resample_outputs
 
 '''
 Create3ChannelShgMatrix()
@@ -315,7 +316,7 @@ class Create3ChannelSHGmatrix(object):
         # initialize normalization with values for the densenet (https://pytorch.org/hub/pytorch_vision_densenet/)
         self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
-    def __call__(self, shg_original, header, shg_resampled, output_delay, output_wavelength):
+    def __call__(self, inputs):
         '''
         Inputs:
             shg_original        -> [tensor] Original SHG-matrix
@@ -331,6 +332,7 @@ class Create3ChannelSHGmatrix(object):
             output_wavelength   -> [tensor] Resampled wavelength axis
         '''
 
+        shg_original, header, shg_resampled, output_delay, output_wavelength = inputs
         # add another dimension to the tensor
         shg_resampled = shg_resampled.unsqueeze(0)
         # repeat the SHG-matrix for 3 times to get 3 channels (shape =[3,h,w])
