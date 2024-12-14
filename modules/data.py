@@ -214,7 +214,7 @@ class CreateAxisAndRestructure(object):
                 )
 
         print("finished restructuring")
-        resample_outputs = [shg_original, header, shg_copy, self.output_delay, self.output_wavelength]
+        resample_outputs = [shg_original, header, shg_copy, input_delay_axis, input_wavelength_axis]
         return resample_outputs
 
 '''
