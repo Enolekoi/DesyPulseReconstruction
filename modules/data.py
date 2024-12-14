@@ -173,6 +173,49 @@ class ReadSHGmatrix(object):
         shg_data = [shg_matrix, shg_header]
         return shg_data
 
+class CreateAxisAndRestructure(object):
+
+    def __init__(self):
+        pass
+
+    def __call__(self, shg_data):
+        '''
+        Description:
+            Takes path of a SHG-matrix and resamples it to the configured size and range of time/wavelength 
+        Inputs:
+            shg_data                -> [shg_matrix [tensor], header [tensor]] Original (not resampled) SHG-Matrix and Header 
+        Outputs:
+            shg_resampled           -> [tensor] Resampled SHG-matrix 
+            self.output_delay       -> [tensor] Resampled delay axis
+            self.output_wavelength  -> [tensor] Resampled wavelength axis
+        '''
+        shg_original, header = shg_data
+        device = shg_original.device
+        # ensure all tensors are of the same type (float32)
+        shg_original = shg_original.float()
+        shg_copy = shg_original
+
+        num_delays =            header[0]
+        num_wavelength =        header[1]
+        delay_step =            header[2]
+        wavelength_step =       header[3]
+        center_wavelength =     header[4]
+
+        # create input_delay_axis and input_wavelength_axis
+        input_delay_axis = helper.generateAxis(
+                N=num_delays,
+                resolution=delay_step,
+                center=0.0
+                )
+        input_wavelength_axis = helper.generateAxis(
+                N=num_wavelength,
+                resolution=wavelength_step,
+                center=center_wavelength
+                )
+
+        return shg_original, header, shg_copy, input_delay_axis, input_wavelength_axis
+
+
 '''
 ResampleSHGmat()
 

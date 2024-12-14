@@ -53,6 +53,7 @@ logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are u
 # Transforms (Inputs)
 # Read the SHG-matrix and their headers
 shg_read = data.ReadSHGmatrix()
+shg_restructure = data.CreateAxisAndRestructure()
 # Resample the SHG-matrix to the same delay and wavelength axes
 shg_resample = data.ResampleSHGmatrix(
     config.OUTPUT_NUM_DELAYS, 
@@ -62,7 +63,7 @@ shg_resample = data.ResampleSHGmatrix(
     config.OUTPUT_END_WAVELENGTH,
     )
 shg_3channel = data.Create3ChannelSHGmatrix()
-shg_transform = transforms.Compose([shg_read, shg_3channel])
+shg_transform = transforms.Compose([shg_read, shg_restructure, shg_3channel])
 
 # Transforms (Labels)
 # Read the Labels
