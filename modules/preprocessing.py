@@ -1102,3 +1102,13 @@ def pre(dataset_directory, grid_size=512):
             preproc_filename = "as_gn00.dat", 
             grid_size=grid_size
             )
+
+def check_for_missing_file(parent_dir, required_filename):
+    missing_file_dirs = []
+
+    for roots, dirs, files in os.walk(parent_dir):
+        for subdir in dirs:
+            subdir_path = os.path.join(root, subdir)
+            if required_filename not in os.listdir(subdir_path):
+                missing_file_dirs.append(subdir_path)
+        break
