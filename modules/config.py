@@ -15,15 +15,15 @@ Training Options
 
 Options that configure parameters for the training process
 '''
-NUM_EPOCHS = 3      # Number of epochs to train the model
-OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
+NUM_EPOCHS = 1      # Number of epochs to train the model
+OUTPUT_SIZE = 512   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 30 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-6    # Learning rate at the beginning of training
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Testing training using hilbert transform for imaginary part and FROG-Error (reduced weight)- with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Testing training using new preprocessed dataset - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
@@ -81,8 +81,9 @@ LogName = "training_"           # base name of logs
 TrainingLossPlotName = "training_loss_" # base name of training loss plots
 PredicitonPlotName = "post_training_prediction_"    # base name of prediction plot
 
-Path = "/mnt/data/desy/frog_simulated/grid_256_v3/" # Path to data used for training 
-TBDrmsFilename = "./TBDrms_grid_256_v3.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
+# Path = "/mnt/data/desy/frog_simulated/grid_256_v3/" # Path to data used for training 
+Path = "/mnt/data/desy/dataset/dataset_01/preproc/simulated/" # Path to data used for training 
+TBDrmsFilename = "/mnt/data/desy/dataset/dataset_01/TBD_rms.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
 ShgFilename = "as_gn00.dat"    # Filename of the file containing the SHG-matrix
 LabelFilename = "Es.dat"        # Filename of the file containing the label
 
