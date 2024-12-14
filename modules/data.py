@@ -174,7 +174,6 @@ class ReadSHGmatrix(object):
         return shg_data
 
 class CreateAxisAndRestructure(object):
-
     def __init__(self):
         pass
 
@@ -214,7 +213,6 @@ class CreateAxisAndRestructure(object):
                 )
 
         return shg_original, header, shg_copy, input_delay_axis, input_wavelength_axis
-
 
 '''
 ResampleSHGmat()
