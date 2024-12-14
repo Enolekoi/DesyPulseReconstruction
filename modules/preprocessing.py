@@ -1108,7 +1108,8 @@ def check_for_missing_file(parent_dir, required_filename):
 
     for roots, dirs, files in os.walk(parent_dir):
         for subdir in dirs:
-            subdir_path = os.path.join(root, subdir)
+            subdir_path = os.path.join(roots, subdir)
             if required_filename not in os.listdir(subdir_path):
                 missing_file_dirs.append(subdir_path)
         break
+    return missing_file_dirs
