@@ -210,7 +210,6 @@ Description:
     Create an amplitude SHG-matrix from the analytical signal with delay and frequency axis.
     For the more common intensity SHG-matrix, take the elementwise squared absolute.
     Because of frequency doubling due to the SHG crystal the product signal is shifted by 2*wCenter
-    A^{shg}_{FROG}(\omega,\tau) = \int_{infty}^{infty} E(t)*E(t-tau)exp(-j\omega t)dt
 Inputs:
     analytical_signal   -> [tensor] analytical time signal
     delta_tau           -> [float] time step between delays
