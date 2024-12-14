@@ -1090,7 +1090,7 @@ def pre(dataset_directory, grid_size=512):
             raw_filename_matrix = "as_gn00.dat", 
             raw_filename_label = "Es.dat", 
             preproc_filename_matrix = "as_gn00.dat", 
-            preproc_filename_label = "as_gn00.dat", 
+            preproc_filename_label = "Es.dat", 
             grid_size=grid_size
             )
     # preprocess the experimental data
