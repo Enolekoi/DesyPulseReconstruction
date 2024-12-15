@@ -69,5 +69,5 @@ missing_as = pre.check_for_missing_file(
     )
 
 
-print(f"Directories where 'Es.dat' files are missing:\n{missing_es})
-print(f"Directories where 'as_gn00.dat' files are missing:\n{missing_as})
+print(f"Directories where 'Es.dat' files are missing:\n{missing_es}")
+print(f"Directories where 'as_gn00.dat' files are missing:\n{missing_as}")
