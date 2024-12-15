@@ -58,15 +58,16 @@ GRID_SIZE = 512
 #     grid_size= GRID_SIZE
 #     )
 
-missing = pre.check_for_missing_file(
+missing_es = pre.check_for_missing_file(
     parent_dir='/mnt/data/desy/dataset/dataset_01/preproc/simulated/',
     required_filename='Es.dat'
     )
 
-missing = pre.check_for_missing_file(
+missing_as = pre.check_for_missing_file(
     parent_dir='/mnt/data/desy/dataset/dataset_01/preproc/simulated/',
     required_filename='as_gn00.dat'
     )
 
 
-# print(missing)
+print(f"Directories where 'Es.dat' files are missing:\n{missing_es})
+print(f"Directories where 'as_gn00.dat' files are missing:\n{missing_as})
