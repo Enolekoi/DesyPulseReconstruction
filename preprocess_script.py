@@ -45,22 +45,28 @@ def wait_for_key(key='q'):
 
 GRID_SIZE = 512
 
-pre.prepareDirectoriesForPreprocessing(
-        dataset_directory=dataset_directory,
-        experimental_blacklist_path=blacklist_path,
-        grid_size= GRID_SIZE
-        )
+# pre.prepareDirectoriesForPreprocessing(
+#         dataset_directory=dataset_directory,
+#         experimental_blacklist_path=blacklist_path,
+#         grid_size= GRID_SIZE
+#         )
 
 # wait_for_key('y')
 
-pre.pre(
-    dataset_directory=dataset_directory,
-    grid_size= GRID_SIZE
+# pre.pre(
+#     dataset_directory=dataset_directory,
+#     grid_size= GRID_SIZE
+#     )
+
+missing = pre.check_for_missing_file(
+    parent_dir='/mnt/data/desy/dataset/dataset_01/preproc/simulated/',
+    required_filename='Es.dat'
     )
 
-# missing = pre.check_for_missing_file(
-#     parent_dir='/mnt/data/desy/dataset/dataset_01/preproc/simulated/',
-#     required_filename='Es.dat'
-#     )
+missing = pre.check_for_missing_file(
+    parent_dir='/mnt/data/desy/dataset/dataset_01/preproc/simulated/',
+    required_filename='as_gn00.dat'
+    )
+
 
 # print(missing)
