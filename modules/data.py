@@ -171,7 +171,6 @@ class ReadSHGmatrix(object):
         shg_matrix = torch.from_numpy(shg_matrix)   # convert to tensor
 
         shg_data = [shg_matrix, shg_header]
-        print("finished reading")
         return shg_data
 
 class CreateAxisAndRestructure(object):
@@ -213,7 +212,6 @@ class CreateAxisAndRestructure(object):
                 center=center_wavelength
                 )
 
-        print("finished restructuring")
         resample_outputs = [shg_original, header, shg_copy, input_delay_axis, input_wavelength_axis]
         return resample_outputs
 
