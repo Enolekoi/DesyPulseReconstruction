@@ -58,13 +58,14 @@ class PulseRetrievalLossFunction(nn.Module):
         self.frog_error_weight = frog_error_weight
         self.mse_weight_sum = real_weight + imag_weight + intensity_weight + phase_weight
          
-        self.shg_transform = data.ResampleSHGmatrix(
+        self.shg_resample = data.ResampleSHGmatrix(
             config.OUTPUT_NUM_DELAYS, 
             config.OUTPUT_TIMESTEP, 
             config.OUTPUT_NUM_FREQUENCIES,
             config.OUTPUT_START_FREQUENCY,
             config.OUTPUT_END_FREQUENCY,
             )
+        self.shg_create3channels = data.Create3ChannelSHGmatrix()
 
     def forward(self, prediction, shg_matrix, header, label=None):
         '''
@@ -122,7 +123,8 @@ class PulseRetrievalLossFunction(nn.Module):
                         )
                 # resample to correct size
                 predicted_shg_data = [predicted_shg, new_header]
-                resample_outputs = self.shg_transform(predicted_shg_data)
+                resample_outputs = self.shg_resample(predicted_shg_data)
+                resample_outputs = self.shg_create3channels(resample_outputs)
                 _, prediction_header, predicted_shg, _, _ = resample_outputs
                 
                 # get only one channel
