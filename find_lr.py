@@ -47,17 +47,23 @@ def find_lr(
     losses, lrs = [], []
 
     # iterate over the training data
-    for i, (inputs, targets, _) in enumerate(train_loader):
+    for i, (shg_matrix, label, header) in enumerate(train_loader):
         logger.info(f"Step {i}/{num}")
         logger.info(f"Learning Rate = {lr}")
         # move the data to the selected device
-        inputs, targets = inputs.to(device), targets.to(device)
+        shg_matrix, label, header = shg_matrix.to(device), label.to(device), header.to(device)
         # zero out gradients
         optimizer.zero_grad()
         # forward pass through the model
-        outputs = model(inputs)
-        # compute the loss
-        loss = criterion(outputs, targets)
+        outputs = model(shg_matrix)
+        # compute the loss 
+        loss = criterion(
+            prediction=outputs, 
+            label=label, 
+            shg_matrix=shg_matrix, 
+            header=header
+            )
+
         # smooth out the loss
         avg_loss = beta * avg_loss + (1 - beta) * loss.item()
         smoothed_loss = avg_loss / (1 - beta ** (i + 1))
