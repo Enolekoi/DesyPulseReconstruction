@@ -58,7 +58,7 @@ def find_lr(
         outputs = model(shg_matrix)
         # compute the loss 
         loss = criterion(
-            prediction=outputs, 
+            prediction=outputs.to(device), 
             label=label, 
             shg_matrix=shg_matrix, 
             header=header
