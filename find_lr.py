@@ -273,7 +273,7 @@ plt.xscale('log')  # Use logarithmic scale for learning rates
 plt.xlabel('Learning Rate (log scale)')
 plt.ylabel('Loss')
 plt.title('Learning Rate Finder')
-plt.savefig("lr_finder_plot.png")  # Save the plot to a file
+plt.savefig("./lr_finder_plot.png")  # Save the plot to a file
 logger.info("Learning Rate Finder complete. Saved plot as 'lr_finder_plot.png'")
 plt.show()  # Display the plot
 
