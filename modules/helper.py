@@ -309,6 +309,7 @@ Outputs:
     axis        -> [tensor] Axis
 '''
 def generateAxis(N, resolution, center=0.0):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # generate indicies
     if N % 2 == 0:
         start = -(N // 2)
@@ -317,7 +318,7 @@ def generateAxis(N, resolution, center=0.0):
         start = -(N//2)
         end = N // 2 
     # generate indices
-    index = torch.arange(start, end + 1)
+    index = torch.arange(start, end + 1).to(device)
     
     # ensure the length is N
     assert len(index) == N
