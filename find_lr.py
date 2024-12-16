@@ -45,6 +45,7 @@ def find_lr(
     best_loss = float('inf')
     # list to store learning rate and losses
     losses, lrs = [], []
+    model.to(device)
 
     # iterate over the training data
     for i, (shg_matrix, label, header) in enumerate(train_loader):
