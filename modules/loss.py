@@ -444,7 +444,6 @@ def findMinimumFrogError(tensor1, tensor2):
         if abs(error) < min_error:
             min_error = error
             best_shift = shift
-            print(f"Best shift = {best_shift}")
             best_shifted_tensor = shifted_tensor
 
     return min_error, best_shifted_tensor
