@@ -16,7 +16,7 @@ Training Options
 Options that configure parameters for the training process
 '''
 NUM_EPOCHS = 1      # Number of epochs to train the model
-OUTPUT_SIZE = 512   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
+OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 30 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-6    # Learning rate at the beginning of training
