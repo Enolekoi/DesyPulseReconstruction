@@ -55,9 +55,9 @@ Options that configure how the resampled SHG-matrixes are created
 OUTPUT_NUM_DELAYS = 512                         # Number of delays the SHG-matrix get resampled to
 OUTPUT_NUM_WAVELENGTH = 512                     # Number of delays the SHG-matrix get resampled to
 OUTPUT_NUM_FREQUENCIES = OUTPUT_NUM_WAVELENGTH  # Number of frequencies the SHG-matrix get resampled to
-OUTPUT_TIMESTEP = 2*4.89*c.femto                   # Size of timestep between delays [fs]
-OUTPUT_START_WAVELENGTH = 489.85*c.nano            # Smallest wavelength in the dataset [nm]
-OUTPUT_END_WAVELENGTH = 540.04*c.nano              # Largest wavelength in the dataset [nm]
+OUTPUT_TIMESTEP = 11*c.femto                   # Size of timestep between delays [fs]
+OUTPUT_START_WAVELENGTH = 478*c.nano            # Smallest wavelength in the dataset [nm]
+OUTPUT_END_WAVELENGTH = 561*c.nano              # Largest wavelength in the dataset [nm]
 OUTPUT_START_FREQUENCY = c.c2pi / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
 OUTPUT_END_FREQUENCY = c.c2pi / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
 
@@ -82,9 +82,8 @@ LogName = "training_"           # base name of logs
 TrainingLossPlotName = "training_loss_" # base name of training loss plots
 PredicitonPlotName = "post_training_prediction_"    # base name of prediction plot
 
-# Path = "/mnt/data/desy/frog_simulated/grid_256_v3/" # Path to data used for training 
-Path = "/mnt/data/desy/dataset/dataset_01/preproc/simulated/" # Path to data used for training 
-TBDrmsFilename = "/mnt/data/desy/dataset/dataset_01/TBD_rms.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
+Path = "/mnt/data/desy/frog_simulated/grid_256_v4/" # Path to data used for training 
+TBDrmsFilename = "./grid_256_v4_TBD.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
 ShgFilename = "as_gn00.dat"    # Filename of the file containing the SHG-matrix
 LabelFilename = "Es.dat"        # Filename of the file containing the label
 
