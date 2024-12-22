@@ -1043,19 +1043,7 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
         max_wavelength = exp_max_wavelength, 
         grid_size = 512)
 
-    # write to info file for raw simulated data
-    raw_simulated_info_path = os.path.join(raw_path, "simulated_info.txt")
-    writeDatasetInformationToFile(        
-        file_path = raw_simulated_info_path,
-        dataset_path = raw_simulated_path,
-        num_datapoints = simulated_elements,
-        min_delay = sim_min_delay,  
-        max_delay = sim_max_delay, 
-        min_wavelength = sim_min_wavelength, 
-        max_wavelength = sim_max_wavelength, 
-        grid_size = 512)
-
-    # create a csv file which sorts the simulated data by TBD_{rms}
+        # create a csv file which sorts the simulated data by TBD_{rms}
     getTBDrmsValues(
             data_directory = raw_simulated_path,
             root_directory = dataset_directory, 

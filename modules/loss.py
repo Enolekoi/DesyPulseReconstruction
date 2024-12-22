@@ -134,11 +134,7 @@ class PulseRetrievalLossFunction(nn.Module):
                 original_shg = helper.normalizeSHGmatrix(original_shg)
                 
                 # calculate_frog_error
-                frog_error = calcFrogError(
-                        t_ref  = original_shg, 
-                        t_meas = predicted_shg
-                        )
-
+                frog_error, predicted_shg = findMinimumFrogError(original_shg, predicted_shg)
             
             '''
             Weighted MSE-Error
@@ -432,3 +428,24 @@ def hilbert(signal, plot=False):
         plt.show()
     
     return analytical_signal
+
+def findMinimumFrogError(tensor1, tensor2):
+    width, height = tensor1.shape
+
+    min_error = float('inf')
+    best_shift = 0
+    best_shifted_tensor = None
+
+    for shift in range(0, height):  # Allow shifting up and down
+        shifted_tensor = torch.roll(tensor2, shifts=shift, dims=1)  # Circular shift along the vertical axis
+        error = calcFrogError(shifted_tensor, tensor1)
+
+        # Update the best shift if the error is lower
+        if abs(error) < min_error:
+            min_error = error
+            best_shift = shift
+            print(f"Best shift = {best_shift}")
+            best_shifted_tensor = shifted_tensor
+
+    return min_error, best_shifted_tensor
+
