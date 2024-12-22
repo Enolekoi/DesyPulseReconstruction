@@ -211,7 +211,6 @@ scheduler = torch.optim.lr_scheduler.OneCycleLR(
     max_lr=config.MAX_LEARNING_RATE,
     total_steps=NUM_STEPS
     )
-scheduler.
 
 # initiaize lists containing all loss values
 training_losses = []
