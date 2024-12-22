@@ -29,13 +29,13 @@ Define Constants
 '''
 GRID_SIZE = 256
 ROOT_DIRECTORY = "./"
-DATA_DIRECTORY = "/mnt/data/desy/frog_simulated/grid_256_v3/"
+DATA_DIRECTORY = "/mnt/data/desy/frog_simulated/grid_256_v4/"
 MATRIX_FILENAME= "as_gn00.dat"
 FILENAME_TBDRMS = "grid_256_v4_TBD.csv"
 FILENAME_DATASET_INFO = os.path.join(ROOT_DIRECTORY, "grid_256_v4_info.txt")
 
-# get number of experimental datapoints
-num_directories, num_files = helper.countFilesAndDirectories(directory_path=DATA_DIRECTORY)
+# get number of experimental datapoints 
+num_files, num_directories = helper.countFilesAndDirectories(directory_path=DATA_DIRECTORY)
 num_elements = num_directories + num_files
 logger.info(f"Total amount of directories in '{DATA_DIRECTORY}': {num_directories}")
 logger.info(f"Total amount of files in       '{DATA_DIRECTORY}': {num_files}")
