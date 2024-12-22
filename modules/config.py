@@ -20,6 +20,7 @@ OUTPUT_SIZE = 512   # Amount of samples used for the reconstructed pulse [model 
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 30 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-6    # Learning rate at the beginning of training
+MAX_LEARNING_RATE = 1e6
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training

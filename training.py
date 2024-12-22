@@ -63,7 +63,7 @@ shg_resample = data.ResampleSHGmatrix(
     config.OUTPUT_END_WAVELENGTH,
     )
 shg_3channel = data.Create3ChannelSHGmatrix()
-shg_transform = transforms.Compose([shg_read, shg_restructure, shg_3channel])
+shg_transform = transforms.Compose([shg_read, shg_resample, shg_3channel])
 
 # Transforms (Labels)
 # Read the Labels
@@ -169,7 +169,6 @@ logger.info(f"Starting training...")
 ########################
 # loss function
 # define and configure the loss function
-# criterion = nn.MSELoss()
 criterion = loss_module.PulseRetrievalLossFunction(
         pulse_threshold = config.PULSE_THRESHOLD,
         penalty = config.PENALTY_FACTOR,
@@ -187,8 +186,7 @@ logger.info(f"Weight Used for MSE of Intensity:     {config.WEIGTH_INTENSITY}")
 logger.info(f"Weight Used for MSE of Phase:         {config.WEIGTH_PHASE}")
 logger.info(f"Weight Used for FROG-Error:           {config.WEIGTH_FROG_ERROR}")
 # define and configure the optimizer used
-# TODO: AdamW probieren
-optimizer = torch.optim.Adam(
+optimizer = torch.optim.AdamW(
         [   
          {'params': model.fc1.parameters()},
          {'params': model.fc2.parameters()}
@@ -196,13 +194,6 @@ optimizer = torch.optim.Adam(
         lr=config.LEARNING_RATE,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
-#optimizer = torch.optim.SGD(
-        # [   
-        # { 'params': model.fc1.parameters()},
-        # {'params': model.fc2.parameters()}
-        # ],
-        # lr=config.LEARNING_RATE,
-	#momentum = 0.9)
 
 # define and configure the scheduler for changing learning rate during training
 # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
@@ -215,9 +206,12 @@ optimizer = torch.optim.Adam(
     # )
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
-    max_lr=0.5e-3,
+    div_factor=5,
+    final_div_factor=2,
+    max_lr=config.MAX_LEARNING_RATE,
     total_steps=NUM_STEPS
     )
+scheduler.
 
 # initiaize lists containing all loss values
 training_losses = []
