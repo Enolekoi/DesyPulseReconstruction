@@ -138,7 +138,7 @@ logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios of train, validation and test data
 test_size = int(0.1 * length_dataset)                       # amount of test data (10%)
-validation_size = int (0.1 * length_dataset)                # amount of validation data (10%) 
+validation_size = int (0.0 * length_dataset)                # amount of validation data (10%) 
 train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
 logger.info(f"Size of training data:   {train_size}")
 logger.info(f"Size of validation data: {validation_size}")

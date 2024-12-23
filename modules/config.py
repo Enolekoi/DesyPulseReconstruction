@@ -20,7 +20,7 @@ OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model 
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 30 # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-6    # Learning rate at the beginning of training
-MAX_LEARNING_RATE = 1e6
+MAX_LEARNING_RATE = 2.31e6
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training
@@ -32,12 +32,12 @@ Loss function options
 Options that configure how the loss function is used
 '''
 PULSE_THRESHOLD = 0.001     # The Pulse is considered to be between the first and last value over the threshold
-PENALTY_FACTOR = 500.0      # Values outside the pulse are surpressed, by weighing their error with this factor
+PENALTY_FACTOR = 50.0      # Values outside the pulse are surpressed, by weighing their error with this factor
 WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
-WEIGTH_IMAG_PART = 1.0      # Weight used for MSE of the imaginary part
-WEIGTH_INTENSITY = 40.0     # Weight used for MSE of the intensity
-WEIGTH_PHASE = 5.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
-WEIGTH_FROG_ERROR = 0.001   # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
+WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
+WEIGTH_INTENSITY = 0.0     # Weight used for MSE of the intensity
+WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
+WEIGTH_FROG_ERROR = 0.000   # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
 Scaling Options
