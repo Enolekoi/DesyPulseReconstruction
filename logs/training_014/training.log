@@ -1,0 +1,42 @@
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Learning rate finder
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Writing into log file: ./logs/training_014/training.log
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v4/
+22-12-2024 12:13:02 - __main__ - <module> - INFO: SHG-matrix used: as_gn00.dat
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Size of output tensor: 512 elements
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Batch size: 10 elements
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Number of epochs: 1
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Initial learning rate: 1e-06
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 20 are used!
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+22-12-2024 12:13:02 - __main__ - <module> - INFO: Loading Model...
+22-12-2024 12:13:03 - __main__ - <module> - INFO: Freezing early layers!
+22-12-2024 12:13:03 - __main__ - <module> - INFO: Loading Model finished!
+22-12-2024 12:13:03 - __main__ - <module> - INFO: Loading Data...
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Size of dataset: 100000
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Size of training data:   80000
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Finished loading data!
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Threshold over which signal is considered part of the pulse: 0.001
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Penalty for signal outside of pulse:  500.0
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Weight Used for MSE of Real part:     5.0
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Weight Used for MSE of imaginary part:1.0
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Weight Used for MSE of Intensity:     40.0
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Weight Used for MSE of Phase:         5.0
+22-12-2024 12:13:06 - __main__ - <module> - INFO: Weight Used for FROG-Error:           0.001
+22-12-2024 12:13:06 - __main__ - find_lr - INFO: Starting learning rate finder
+22-12-2024 12:13:06 - __main__ - find_lr - INFO: Learning Rate = 1e-08
+22-12-2024 12:13:07 - __main__ - find_lr - INFO: Step 0/7999
+22-12-2024 12:13:07 - __main__ - find_lr - INFO: Learning Rate = 1e-08
+22-12-2024 12:13:10 - __main__ - find_lr - INFO: Average Loss  = 4.012840260356637
+22-12-2024 12:13:10 - __main__ - find_lr - INFO: Smoothed Loss = 200.6420130178317
+22-12-2024 12:13:10 - __main__ - find_lr - INFO: New best loss: 200.6420130178317 with learning rate: 1e-08
+22-12-2024 12:13:14 - __main__ - find_lr - INFO: Step 1/7999
+22-12-2024 12:13:14 - __main__ - find_lr - INFO: Learning Rate = 1.0025940909174567e-08
+22-12-2024 12:13:18 - __main__ - find_lr - INFO: Average Loss  = 8.055144675533992
+22-12-2024 12:13:18 - __main__ - find_lr - INFO: Smoothed Loss = 203.41274433166606
+22-12-2024 12:13:18 - __main__ - find_lr - INFO: New best loss: 203.41274433166606 with learning rate: 1.0025940909174567e-08
+22-12-2024 12:13:21 - __main__ - find_lr - INFO: Step 2/7999
+22-12-2024 12:13:21 - __main__ - find_lr - INFO: Learning Rate = 1.0051949111426014e-08
+22-12-2024 12:13:25 - __main__ - find_lr - INFO: Average Loss  = 13.471936934291291
+22-12-2024 12:13:25 - __main__ - find_lr - INFO: Smoothed Loss = 229.08340590210977
+22-12-2024 12:13:28 - __main__ - find_lr - INFO: Step 3/7999
+22-12-2024 12:13:28 - __main__ - find_lr - INFO: Learning Rate = 1.00780247813187e-08
