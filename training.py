@@ -220,10 +220,20 @@ learning_rates = []
 '''
 Training Loop
 '''
+
 # itterate over epochs
 for epoch in range(config.NUM_EPOCHS):
     # place model into training mode
     model.train()       
+    # After the defined unfreeze_epoch, unfreeze the earlier layers and train the whole Model
+    if (epoch == config.UNFREEZE_EPOCH):
+        logger.info("Unfreezing earlier layers")
+        
+        # Unfreeze all layers
+        for param in model.densenet.parameters():
+            param.requires_grad = True
+
+
     # itterate over train data
     for i, (shg_matrix, label, header) in enumerate(train_loader):
         ###############
@@ -268,22 +278,14 @@ for epoch in range(config.NUM_EPOCHS):
         new_lr = scheduler.get_last_lr()[0]
         learning_rates.append(new_lr)
 
-    # After the defined unfreeze_epoch, unfreeze the earlier layers and train the whole Model
-    if (epoch == config.UNFREEZE_EPOCH - 1):
-        logger.info("Unfreezing earlier layers")
-        
-        # Unfreeze all layers
-        for param in model.densenet.parameters():
-            param.requires_grad = True
-
     '''
     Validation loop
     '''
     logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
     model.eval()    # put model into evaluation mode
-    # 
-    with torch.no_grad():   # disable gradient computation for evaluation
-        # itterate over validation data
+    if validation_size!= 0: 
+       with torch.no_grad():   # disable gradient computation for evaluation
+        # itterateover validation data
         for shg_matrix, label, header in validation_loader:
             ###############
             ## Load Data ##
@@ -299,17 +301,17 @@ for epoch in range(config.NUM_EPOCHS):
             outputs = model(shg_matrix)
             # calcultate validation loss
             validation_loss = criterion(
-                    prediction=outputs, 
-                    label=label, 
-                    shg_matrix=shg_matrix, 
-                    header=header
-                    )
+                  prediction=outputs, 
+                  label=label, 
+                  shg_matrix=shg_matrix, 
+                  header=header
+                  )
             # place validation loss into list
             validation_losses.append(validation_loss.item())
 
         # calculate the mean validation loss
         avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
-    logger.info(f"Validation Loss: {avg_val_loss:.10e}")
+        logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # save learning rate and losses to csv files
 with open(config.learning_rate_filepath, 'w', newline='') as file:
