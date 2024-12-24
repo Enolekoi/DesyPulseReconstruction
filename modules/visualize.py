@@ -130,17 +130,18 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     #############################
     ## Linear Scale Plot (ax1) ##
     #############################   
-
+    
     # plot training loss over time
     ax1.plot(steps, training_loss, label='Training loss', color='blue')
     # plot the validation_loss for each epoch
-    for epoch in range(num_epochs):
-        start = epoch * steps_per_epoch
-        end = (epoch +1) * steps_per_epoch
-        if epoch == 0:
-            ax1.hlines(validation_loss[epoch], start, end, label='validation loss', color='red', linestyle='dashed')
-        else:
-            ax1.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
+    if not validation_loss:
+        for epoch in range(num_epochs):
+            start = epoch * steps_per_epoch
+            end = (epoch +1) * steps_per_epoch
+            if epoch == 0:
+                ax1.hlines(validation_loss[epoch], start, end, label='validation loss', color='red', linestyle='dashed')
+            else:
+                ax1.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
     
     # Epoch ticks
     if num_epochs <= max_ticks:
@@ -185,13 +186,14 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     ax2.set_yscale('log')
     
     # plot the validation_loss for each epoch
-    for epoch in range(num_epochs):
-        start = epoch * steps_per_epoch
-        end = (epoch +1) * steps_per_epoch
-        if epoch == 0:
-            ax2.hlines(validation_loss[epoch], start, end, label='validation loss', color='red', linestyle='dashed')
-        else:
-            ax2.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
+    if not validation_loss:
+        for epoch in range(num_epochs):
+            start = epoch * steps_per_epoch
+            end = (epoch +1) * steps_per_epoch
+            if epoch == 0:
+                ax2.hlines(validation_loss[epoch], start, end, label='validation loss', color='red', linestyle='dashed')
+            else:
+                ax2.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
     
     # Epoch ticks
     ax2.set_xticks(epoch_ticks)
