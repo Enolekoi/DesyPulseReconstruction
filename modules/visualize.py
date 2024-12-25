@@ -134,7 +134,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     # plot training loss over time
     ax1.plot(steps, training_loss, label='Training loss', color='blue')
     # plot the validation_loss for each epoch
-    if not validation_loss:
+    if validation_loss:
         for epoch in range(num_epochs):
             start = epoch * steps_per_epoch
             end = (epoch +1) * steps_per_epoch
@@ -186,7 +186,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     ax2.set_yscale('log')
     
     # plot the validation_loss for each epoch
-    if not validation_loss:
+    if validation_loss:
         for epoch in range(num_epochs):
             start = epoch * steps_per_epoch
             end = (epoch +1) * steps_per_epoch
