@@ -18,7 +18,7 @@ Options that configure parameters for the training process
 NUM_EPOCHS = 1      # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
-UNFREEZE_EPOCH = 2  # Epoch after which the whole model is trained (before that only the output layers are trained)
+UNFREEZE_EPOCH = 0  # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 1e-6    # Learning rate at the beginning of training
 MAX_LEARNING_RATE = 2.13e-6
 WEIGHT_DECAY = 1e-5     # TODO find description
@@ -32,10 +32,10 @@ Loss function options
 Options that configure how the loss function is used
 '''
 PULSE_THRESHOLD = 0.001     # The Pulse is considered to be between the first and last value over the threshold
-PENALTY_FACTOR = 50.0      # Values outside the pulse are surpressed, by weighing their error with this factor
-WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
+PENALTY_FACTOR = 20.0      # Values outside the pulse are surpressed, by weighing their error with this factor
+WEIGTH_REAL_PART = 10.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
-WEIGTH_INTENSITY = 0.0     # Weight used for MSE of the intensity
+WEIGTH_INTENSITY = 10.0     # Weight used for MSE of the intensity
 WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
 WEIGTH_FROG_ERROR = 0.000   # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
