@@ -211,7 +211,7 @@ Description:
     Because of frequency doubling due to the SHG crystal the product signal is shifted by 2*wCenter
 Inputs:
     analytical_signal   -> [tensor] analytical time signal
-    delta_tau           -> [float] time step between delays
+    delta_tau           -> [float] time step between delays / Sampling Time
     wCenter             -> [float] angular center frequency
 Outputs:
     shg_matrix          -> [tensor] SHG-matrix
@@ -219,16 +219,19 @@ Outputs:
 def createSHGmat(analytical_signal, delta_tau, wCenter):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     N = len(analytical_signal)
-    E = analytical_signal
+    E = analytical_signal.to(device)
+    # double the frequency because of the SHG-matrix
     wCenter2 = 2 * wCenter
 
     # create a tensor storing indicies -N/2 to N/2
     start = -N // 2
     end = N // 2    
     delay_index_vector = torch.arange(start, end, dtype=torch.float32).to(device)
+    # create delay axis vector (t)
+    delay_axis = delta_tau * delay_index_vector
 
-    # calculate shift factor (TODO explain this)
-    shift_factor = torch.exp(-1j * wCenter2 * delta_tau * delay_index_vector).to(device)
+    # calculate shift factor (e^(-j 2*\omega_c * t ))
+    shift_factor = torch.exp(-1j * wCenter2 * delay_axis).to(device)
     
     # initialize empty SHG-matrix
     shg_matrix = torch.zeros((N, N), dtype=torch.complex128).to(device)
@@ -236,13 +239,13 @@ def createSHGmat(analytical_signal, delta_tau, wCenter):
     # increment over the 
     for (matrix_index, delay_index) in enumerate(delay_index_vector):
         # Shift E-Field for the current delay index
-        E_shifted = helper.circshift(E, delay_index).to(device)
+        E_shifted = helper.circshift(E, delay_index)
         # Calculate the the autocorrelation E(t)*E(t-\tau)
-        E_multiplied = E.to(device) * E_shifted.to(device) # (6.8 Trebino, p. 127)
+        # E_multiplied = E * E_shifted # (6.8 Trebino, p. 127)
         # rearrange and fourier-transform E(t)*E(t-\tau)
-        fft_analytical = fft(fftshift(E_multiplied * shift_factor))
+        # fft_analytical = fft((E * E_shifted * shift_factor))
         # current matrix index is the shifted fft multiplied with the delay step
-        shg_matrix[matrix_index, :] = delta_tau * fftshift(fft_analytical)
+        shg_matrix[matrix_index, :] = delta_tau * fftshift((E * E_shifted * shift_factor))
 
     return shg_matrix
 
