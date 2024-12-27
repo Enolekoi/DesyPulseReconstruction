@@ -7,6 +7,7 @@ Module used for changing training parameters
 ## Imports ##
 #############
 import os
+import re
 import logging
 
 from modules import constants as c
@@ -17,19 +18,14 @@ Options that configure parameters for the training process
 '''
 NUM_EPOCHS = 1      # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
-<<<<<<< HEAD
-BATCH_SIZE = 100     # Amount of data points trained at each step
-UNFREEZE_EPOCH = 2  # Epoch after which the whole model is trained (before that only the output layers are trained)
-=======
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 0  # Epoch after which the whole model is trained (before that only the output layers are trained)
->>>>>>> 732e16b639bf8ae67fb302ad79b8970e063196bc
 LEARNING_RATE = 1e-6    # Learning rate at the beginning of training
 MAX_LEARNING_RATE = 2.13e-6
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Testing training using new preprocessed dataset - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Training using new dataset 1cycle scheduler and no FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
@@ -37,7 +33,7 @@ Loss function options
 Options that configure how the loss function is used
 '''
 PULSE_THRESHOLD = 0.001     # The Pulse is considered to be between the first and last value over the threshold
-PENALTY_FACTOR = 20.0      # Values outside the pulse are surpressed, by weighing their error with this factor
+PENALTY_FACTOR = 10.0      # Values outside the pulse are surpressed, by weighing their error with this factor
 WEIGTH_REAL_PART = 10.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 10.0     # Weight used for MSE of the intensity
@@ -66,6 +62,51 @@ OUTPUT_END_WAVELENGTH = 561*c.nano              # Largest wavelength in the data
 OUTPUT_START_FREQUENCY = c.c2pi / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
 OUTPUT_END_FREQUENCY = c.c2pi / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
 
+logger = logging.getLogger(__name__)
+'''
+getFilepaths()
+
+Description:
+    Search for the highest index of a matching subdirectory and create new directory. Return its path
+Input:
+    root_directory      -> [string] directory containing the subdirectories
+    subdirectory_string -> [string] name of subdirectory without numerical content
+Output:
+    new_directory_path  -> [string] path of newly created subdirectory
+'''
+def getFilepaths(root_directory, subdirectory_string):
+    # Check if root directory exists
+    if not os.path.exists(root_directory):
+        raise FileNotFoundError(f"The specified root directory doesn't exist: {root_directory}")
+
+    # Regex to match subdirectories that start with the 'subdirectory_string' followed by a number
+    pattern = re.compile(f"^{re.escape(subdirectory_string)}(\\d+)$")
+
+    # initialize indices of subdirectories that match the pattern
+    indices = []
+    
+    # find all matching subdirectories and extract their index
+    for entry in os.listdir(root_directory):
+        # get the full path of the entry
+        full_path = os.path.join(root_directory, entry)
+        # check if entry is a directory
+        if os.path.isdir(full_path):
+            # use the pattern to check if the entry fits it
+            match = pattern.match(entry)
+            # get index if the pattern matches
+            if match:
+                indices.append(int(match.group(1)))
+
+    # Determine the next highest index
+    next_index = max(indices, default=0) + 1
+
+    # Create the new directory
+    new_directory_name = f"{subdirectory_string}{next_index}"
+    new_directory_path = os.path.join(root_directory, new_directory_name)
+    os.makedirs(new_directory_path)
+
+    return new_directory_path
+
 '''
 Path Options
 
@@ -74,104 +115,22 @@ The paths used are defined here
 ModelPath = "./logs/training_002/model.pth"  # path of pretrained model used to initialize weights before training
 
 LogDirectory = "./logs/"
-ModelFilename = "model.pth"
-LogFilename = "training.log"
-LossPlotFilename = "loss.png"
-TrainingLossFilename = "training_loss.csv"
-ValidationLossFilename = "validation_loss.csv"
-LearningRateFilename = "learning_rate.csv"
-RandomPredictionFilename = "random_prediction.png"
-
-ModelName = "trained_model_"    # base name of trained models
-LogName = "training_"           # base name of logs 
-TrainingLossPlotName = "training_loss_" # base name of training loss plots
-PredicitonPlotName = "post_training_prediction_"    # base name of prediction plot
+SubDirectoryString = "log_"
+LogSubdiretory = getFilepaths(root_directory = LogDirectory, subdirectory_string=SubDirectoryString)
+LearningRateFilePath        = os.path.join(LogSubdiretory,"learning_rate.csv")
+LossPlotFilePath            = os.path.join(LogSubdiretory,"loss")
+LogFilePath                 = os.path.join(LogSubdiretory,"training.log")
+ModelFilePath               = os.path.join(LogSubdiretory,"model.pth")
+TrainingLossFilePath        = os.path.join(LogSubdiretory,"training_loss.csv")
+ValidationLossFilePath      = os.path.join(LogSubdiretory,"validation_loss.csv")
+TestLossFilePath            = os.path.join(LogSubdiretory,"test_loss.csv")
+RandomPredictionFilePath    = os.path.join(LogSubdiretory,"random_prediction.png")
+MinPredictionFilePath       = os.path.join(LogSubdiretory,"prediction_min")
+MaxPredictionFilePath       = os.path.join(LogSubdiretory,"prediction_max")
+MeanPredictionFilePath      = os.path.join(LogSubdiretory,"prediction_mean")
+LearningRateFinderFilePath  = os.path.join(LogSubdiretory,"lr_finder_plot")
 
 Path = "/mnt/data/desy/frog_simulated/grid_256_v4/" # Path to data used for training 
 TBDrmsFilename = "./grid_256_v4_TBD.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
 ShgFilename = "as_gn00.dat"    # Filename of the file containing the SHG-matrix
 LabelFilename = "Es.dat"        # Filename of the file containing the label
-
-
-logger = logging.getLogger(__name__)
-'''
-getFilepaths()
-Search for the highest log subdirectory index and create new directory. Return a list of paths from the input list
-Input:
-    root_directory      -> directory containing all log subdirectories [string]
-    list_files          -> list of strings containing all file names to be saved in the subdirectory [list(string)]
-Output:
-    list_paths          -> list of strings containing all paths for the files in the subdirectory [list(string)]
-'''
-def getFilepaths(root_directory, list_files):
-    # initialize list of subdirectories
-    subdirs = []
-
-    # Loop through all items in the root directory
-    for item in os.listdir(root_directory):
-        # get the full path of the item
-        item_path = os.path.join(root_directory, item)
-        # check if the item is a directory that starts with 'training_'
-        if os.path.isdir(item_path) and item.startswith("training_"):
-            # check if the directory is not empty
-            if len(os.listdir(item_path)) != 0:
-                # add item to the list of directories
-                subdirs.append(item)
-            else:
-                # do nothing
-                pass
-        else:
-            # do nothing
-            pass
-    
-    # check if subdirs_list is empty
-    if not subdirs:
-        # No "training_xxx" directory exists, set index to 1
-        next_index = 1
-    else:
-        # sort directories by their index and get the highest one
-        max_index = max([
-            int(item.split('_')[1]) for item in subdirs     # split the items in subdirs after the '_' to get the index
-            ])
-        # increment next index
-        next_index = max_index + 1
-
-    # create subdirectory name
-    next_subdir_name = f"training_{next_index:03d}"     # use leading zeros for consistency
-    next_subdir_path = os.path.join(root_directory, next_subdir_name)
-    
-    # create the next subdirectory
-    os.makedirs(next_subdir_path, exist_ok=True)
-
-    list_paths = [
-            os.path.join(next_subdir_path, filename) for filename in list_files
-            ]
-
-    return list_paths
-
-####################
-## get file paths ##
-####################
-# create a list of filenames
-list_filenames = [
-        ModelFilename, 
-        LogFilename, 
-        TrainingLossFilename, 
-        ValidationLossFilename,
-        LossPlotFilename, 
-        RandomPredictionFilename, 
-        LearningRateFilename
-        ]
-
-# save the filepaths into a list
-list_filepaths = getFilepaths(root_directory=LogDirectory, list_files=list_filenames)
-
-# unpack the filepath list
-model_filepath,             \
-log_filepath,               \
-training_loss_filepath,     \
-validation_loss_filepath,   \
-loss_plot_filepath,         \
-random_prediction_filepath, \
-learning_rate_filepath,     \
-= list_filepaths

@@ -1,6 +1,8 @@
 from torch.optim.lr_scheduler import LambdaLR
 import matplotlib.pyplot as plt
+import tikzplotlib
 
+import os
 import logging
 import numpy as np
 import torch
@@ -273,6 +275,10 @@ lrs, losses = find_lr(
     final_lr=10.0  # Large final learning rate
 )
 
+# get correct paths for the plot
+tikz_filepath = os.path.join(config.LearningRateFinderFilePath, ".tex")
+png_filepath = os.path.join(config.LearningRateFinderFilePath, ".png")
+
 # Plot the learning rate vs. loss curve
 plt.figure(figsize=(10, 6))  # Set figure size
 plt.plot(lrs, losses)  # Plot learning rates (x-axis) against losses (y-axis)
@@ -280,8 +286,9 @@ plt.xscale('log')  # Use logarithmic scale for learning rates
 plt.xlabel('Learning Rate (log scale)')
 plt.ylabel('Loss')
 plt.title('Learning Rate Finder')
-plt.savefig("./lr_finder_plot.png")  # Save the plot to a file
-logger.info("Learning Rate Finder complete. Saved plot as 'lr_finder_plot.png'")
+plt.savefig(png_filepath)  # Save the plot to a file
+tikzplotlib.save(tikz_filepath)
+logger.info(f"Learning Rate Finder complete. Saved plot at '{png_filepath}'")
 plt.show()  # Display the plot
 
 # Choose the optimal learning rate (manually or programmatically)

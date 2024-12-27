@@ -32,7 +32,7 @@ logging.basicConfig(
         format="{asctime} - {name} - {funcName} - {levelname}: {message}",
         datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
-            logging.FileHandler(config.log_filepath),
+            logging.FileHandler(config.LogFilePath),
             logging.StreamHandler()
             ]
 )
@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 # Log some information
 logger.info(config.DESCRIPTOR)
 logger.info("Supervised Training")
-logger.info(f"Writing into log file: {config.log_filepath}")
+logger.info(f"Writing into log file: {config.LogFilePath}")
 logger.info(f"Dataset used: {config.Path}")
 logger.info(f"SHG-matrix used: {config.ShgFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
@@ -53,7 +53,6 @@ logger.info(f"Only Pulses with PBDrms lower than {config.TBDRMS_THRESHOLD} are u
 # Transforms (Inputs)
 # Read the SHG-matrix and their headers
 shg_read = data.ReadSHGmatrix()
-shg_restructure = data.CreateAxisAndRestructure()
 # Resample the SHG-matrix to the same delay and wavelength axes
 shg_resample = data.ResampleSHGmatrix(
     config.OUTPUT_NUM_DELAYS, 
@@ -163,7 +162,7 @@ NUM_STEPS = NUM_STEPS_PER_EPOCH * config.NUM_EPOCHS
 '''
 Training 
 '''
-logger.info(f"Starting training...")
+logger.info("Starting training...")
 ########################
 ## loss and optimizer ##
 ########################
@@ -232,7 +231,6 @@ for epoch in range(config.NUM_EPOCHS):
         # Unfreeze all layers
         for param in model.densenet.parameters():
             param.requires_grad = True
-
 
     # itterate over train data
     for i, (shg_matrix, label, header) in enumerate(train_loader):
@@ -313,18 +311,6 @@ for epoch in range(config.NUM_EPOCHS):
         avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
         logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
-# save learning rate and losses to csv files
-with open(config.learning_rate_filepath, 'w', newline='') as file:
-    for item in learning_rates:
-        file.write(f"{item}\n")
-with open(config.training_loss_filepath, 'w', newline='') as file:
-    for item in training_losses:
-        file.write(f"{item}\n")
-with open(config.validation_loss_filepath, 'w', newline='') as file:
-    for item in validation_losses:
-        file.write(f"{item}\n")
-
-
 # plot training loss
 vis.save_plot_training_loss(
         training_loss = training_losses,
@@ -332,17 +318,17 @@ vis.save_plot_training_loss(
         learning_rates = learning_rates,
         train_size = train_size // config.BATCH_SIZE,
         num_epochs = config.NUM_EPOCHS,
-        filepath = f"{config.loss_plot_filepath}"
+        filepath = f"{config.LossPlotFilePath}"
         )
 logger.info("Training finished!")
 
 # Write state_dict of model to file
 try:
-    torch.save(model.state_dict(), config.model_filepath)
+    torch.save(model.state_dict(), config.ModelFilePath)
     logger.info("Saved Model")
 except Exception as e:
     logger.error(f"Error saving model: {e}")
-    logger.error(f"model filepath: {config.model_filepath}")
+    logger.error(f"model filepath: {config.ModelFilePath}")
     logger.error(f"Model: {model.state_dict}")
 
 
@@ -396,7 +382,7 @@ with torch.no_grad():
         prediction_analytical = loss_module.hilbert(prediction.squeeze())
         prediction = torch.cat((prediction_analytical.real, prediction_analytical.imag))
         # plot
-        vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
+        vis.compareTimeDomainComplex(config.RandomPredictionFilePath, label, prediction)
 
     test_loss_indices = [(i, loss) for i, loss  in enumerate(test_losses)]
     average_test_loss = np.mean(test_losses)
@@ -406,7 +392,8 @@ with torch.no_grad():
     min_loss_idx = min(test_loss_indices, key=lambda x: x[1])[0]
     max_loss_idx = max(test_loss_indices, key=lambda x: x[1])[0]
     closest_to_mean_idx = min(test_loss_indices, key=lambda x: abs(x[1] - avg_test_loss))[0]
-
+    
+    # get the spectrogram, label and header with the lowest/highest/mean loss
     shg_min, label_min, header_min = test_data[min_loss_idx]
     shg_max, label_max, header_max = test_data[max_loss_idx]
     shg_mean, label_mean, header_mean = test_data[closest_to_mean_idx]
@@ -414,18 +401,21 @@ with torch.no_grad():
     shg_min =   shg_min.unsqueeze(0).float().to(device)
     shg_max =   shg_max.unsqueeze(0).float().to(device)
     shg_mean = shg_mean.unsqueeze(0).float().to(device)
-
+    
+    # get the predictions
     prediction_min = model(shg_min)
     prediction_max = model(shg_max)
     prediction_mean = model(shg_mean)
-
+    
+    # unscale the labels
     label_min = label_unscaler(label_min.unsqueeze(0)).cpu()
     label_max = label_unscaler(label_max.unsqueeze(0)).cpu()
     label_mean = label_unscaler(label_mean.unsqueeze(0)).cpu()
     prediction_min = label_unscaler(prediction_min.unsqueeze(0)).cpu()
     prediction_max = label_unscaler(prediction_max.unsqueeze(0)).cpu()
     prediction_mean = label_unscaler(prediction_mean.unsqueeze(0)).cpu()
-
+    
+    # get the imaginary part via the hilbert transform
     prediction_min_analytical = loss_module.hilbert(prediction_min.squeeze())
     prediction_min_combinded = torch.cat((prediction_min_analytical.real, prediction_min_analytical.imag))
 
@@ -436,11 +426,26 @@ with torch.no_grad():
     prediction_mean_combined = torch.cat((prediction_mean_analytical.real, prediction_mean_analytical.imag))
     
     logger.info("Create plot of the test value with the lowest loss")
-    vis.compareTimeDomainComplex("./prediction_min.png", label_min, prediction_min_combinded)
+    vis.compareTimeDomainComplex(config.MinPredictionFilePath, label_min, prediction_min_combinded)
     logger.info("Create plot of the test value with the highest loss")
-    vis.compareTimeDomainComplex("./prediction_max.png", label_max, prediction_max_combined)
+    vis.compareTimeDomainComplex(config.MaxPredictionFilePath, label_max, prediction_max_combined)
     logger.info("Create plot of the closest test value to the mean loss")
-    vis.compareTimeDomainComplex("./prediction_mean.png", label_mean, prediction_mean_combined)
+    vis.compareTimeDomainComplex(config.MeanPredictionFilePath, label_mean, prediction_mean_combined)
+
+# save learning rate and losses to csv files
+with open(config.LearningRateFilePath, 'w', newline='') as file:
+    for item in learning_rates:
+        file.write(f"{item}\n")
+with open(config.TrainingLossFilePath, 'w', newline='') as file:
+    for item in training_losses:
+        file.write(f"{item}\n")
+with open(config.ValidationLossFilePath, 'w', newline='') as file:
+    for item in validation_losses:
+        file.write(f"{item}\n")
+with open(config.TestLossFilePath, 'w', newline='') as file:
+    for item in test_losses:
+        file.write(f"{item}\n")
+
 
 logger.info("Test Step finished!")
 

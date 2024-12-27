@@ -6,8 +6,10 @@ Module containing functions used for plotting or visualizing data
 #############
 ## Imports ##
 #############
+import os
 import logging
 import matplotlib
+import tikzplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import numpy as np
@@ -108,13 +110,16 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
 '''
 savePlotTrainingLoss()
 
-Plot the training loss ( Currently UNUSED )
+Description:
+    Plot the training, validation and test losses
 Inputs:
-    loss_values     -> Array containing training loss values
-    filepath        -> File to write plot to
+    loss_values     -> [string] Array containing training loss values
+    filepath        -> [string] File to write plot to (without filepath)
 '''
 def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
-    max_ticks = 10
+    # get correct filepaths
+    tikz_filepath = os.path.join(filepath, ".tex")
+    png_filepath = os.path.join(filepath, ".png")
 
     num_steps = train_size * num_epochs
     if num_steps != len(training_loss):
@@ -144,11 +149,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
                 ax1.hlines(validation_loss[epoch], start, end, color='red', linestyle='dashed')
     
     # Epoch ticks
-    if num_epochs <= max_ticks:
-        epoch_ticks = np.arange(1, num_epochs + 1)
-    else:
-        step = num_epochs // max_ticks
-        epoch_ticks = np.arange(1, num_epochs + 1, step)
+    epoch_ticks = np.arange(1, num_epochs + 1)
 
     epoch_labels = [f'Epoch {tick}' for tick in epoch_ticks]
     ax1.set_xticks(epoch_ticks)
@@ -221,7 +222,8 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     lines_2, labels_2 = ax2_learning_rate.get_legend_handles_labels()
     ax2.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
 
-    plt.savefig(filepath)
+    plt.savefig(png_filepath)
+    tikzplotlib.save(tikz_filepath)
     plt.close()
 
     logger.info(f"Plot writen to {filepath}")
@@ -499,13 +501,19 @@ def plotTimeDomainFromPrediction(filepath, prediction):
 
 '''
 compareTimeDomainComplex()
-Compate Time Domains of label and prediction
+
+Description:
+    Compate Time Domains of label and prediction
 Inputs:
-    filepath    -> path to where the plot is saved
-    label       -> label of data
-    prediction  -> predicted data
+    filepath    -> [string] path to where the plot is saved (without fileending)
+    label       -> [tensor] label of data
+    prediction  -> [tensor] predicted data
 '''
 def compareTimeDomainComplex(filepath, label, prediction):
+    # get correct filepaths
+    tikz_filepath = os.path.join(filepath, ".tex")
+    png_filepath = os.path.join(filepath, ".png")
+
     # ensure correct datatype
     if not isinstance(label, np.ndarray):
         label = label.numpy()
@@ -581,7 +589,8 @@ def compareTimeDomainComplex(filepath, label, prediction):
 
     # Adjust the spacing between plots
     fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
-    plt.savefig(filepath)
+    plt.savefig(png_filepath)
+    tikzplotlib.save(tikz_filepath)
     plt.close()
     logger.info(f"Saved comparison of random prediction and label to {filepath}")
 
