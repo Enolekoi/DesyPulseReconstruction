@@ -203,13 +203,13 @@ optimizer = torch.optim.AdamW(
     # patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
     # threshold=0.0001   # Threshold for measuring the new optimum.
     # )
-scheduler = torch.optim.lr_scheduler.OneCycleLR(
-    optimizer,
-    div_factor=5,
-    final_div_factor=2,
-    max_lr=config.MAX_LEARNING_RATE,
-    total_steps=NUM_STEPS
-    )
+# scheduler = torch.optim.lr_scheduler.OneCycleLR(
+#     optimizer,
+#     div_factor=5,
+#     final_div_factor=2,
+#     max_lr=config.MAX_LEARNING_RATE,
+#     total_steps=NUM_STEPS
+#     )
 
 # initiaize lists containing all loss values
 training_losses = []
@@ -266,15 +266,15 @@ for epoch in range(config.NUM_EPOCHS):
         optimizer.zero_grad()
 
         # log information for current batch
-        logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {NUM_STEPS_PER_EPOCH}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
+        logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {NUM_STEPS_PER_EPOCH}, Loss = {loss.item():.10e}") # LR = {scheduler.get_last_lr()[0]:.4e}")
         # Write loss into array
         training_losses.append(loss.item())
         
         # Step the learning rate
-        scheduler.step()
+        # scheduler.step()
         # write new learning rate in variable and save it to list
-        new_lr = scheduler.get_last_lr()[0]
-        learning_rates.append(new_lr)
+        # new_lr = scheduler.get_last_lr()[0]
+        # learning_rates.append(new_lr)
 
     '''
     Validation loop
@@ -312,14 +312,14 @@ for epoch in range(config.NUM_EPOCHS):
         logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # plot training loss
-vis.save_plot_training_loss(
-        training_loss = training_losses,
-        validation_loss = validation_losses,
-        learning_rates = learning_rates,
-        train_size = train_size // config.BATCH_SIZE,
-        num_epochs = config.NUM_EPOCHS,
-        filepath = f"{config.LossPlotFilePath}"
-        )
+# vis.save_plot_training_loss(
+#         training_loss = training_losses,
+#         validation_loss = validation_losses,
+#         learning_rates = learning_rates,
+#         train_size = train_size // config.BATCH_SIZE,
+#         num_epochs = config.NUM_EPOCHS,
+#         filepath = f"{config.LossPlotFilePath}"
+#         )
 logger.info("Training finished!")
 
 # Write state_dict of model to file
