@@ -210,42 +210,44 @@ Description:
     For the more common intensity SHG-matrix, take the elementwise squared absolute.
     Because of frequency doubling due to the SHG crystal the product signal is shifted by 2*wCenter
 Inputs:
-    analytical_signal   -> [tensor] analytical time signal
-    delta_tau           -> [float] time step between delays / Sampling Time
+    E                   -> [tensor] analytical time signal
+    delta_tau           -> [float] time step between delays / sampling time
     wCenter             -> [float] angular center frequency
 Outputs:
     shg_matrix          -> [tensor] SHG-matrix
 '''
 def createSHGmat(analytical_signal, delta_tau, wCenter):
+    # get correct device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # get the amount of samples of the analytical_signal and rename it
     N = len(analytical_signal)
     E = analytical_signal.to(device)
+
     # double the frequency because of the SHG-matrix
     wCenter2 = 2 * wCenter
 
     # create a tensor storing indicies -N/2 to N/2
     start = -N // 2
     end = N // 2    
-    delay_index_vector = torch.arange(start, end, dtype=torch.float32).to(device)
-    # create delay axis vector (t)
-    delay_axis = delta_tau * delay_index_vector
+    delay_index_tensor = torch.arange(start, end, dtype=torch.float32).to(device)
 
-    # calculate shift factor (e^(-j 2*\omega_c * t ))
-    shift_factor = torch.exp(-1j * wCenter2 * delay_axis).to(device)
+    # create time tensor (t)
+    time_axis = delta_tau * delay_index_tensor
+
+    # calculate shift factor e^(-j 2*\omega_c * t)
+    shift_factor = torch.exp(-1j * wCenter2 * time_axis).to(device)
     
     # initialize empty SHG-matrix
     shg_matrix = torch.zeros((N, N), dtype=torch.complex128).to(device)
     
     # increment over the 
-    for (matrix_index, delay_index) in enumerate(delay_index_vector):
+    for (matrix_index, delay_index) in enumerate(delay_index_tensor):
         # Shift E-Field for the current delay index
         E_shifted = helper.circshift(E, delay_index)
-        # Calculate the the autocorrelation E(t)*E(t-\tau)
-        # E_multiplied = E * E_shifted # (6.8 Trebino, p. 127)
-        # rearrange and fourier-transform E(t)*E(t-\tau)
-        # fft_analytical = fft((E * E_shifted * shift_factor))
-        # current matrix index is the shifted fft multiplied with the delay step
-        shg_matrix[matrix_index, :] = delta_tau * fftshift(fft(E * E_shifted * shift_factor))
+        # Calculate the the argument of the fft E(t)*E(t-\tau)*shift_factor
+        argument = E * E_shifted * shift_factor
+        # current matrix index is the shifted fft of E(t)*E(t-\tau)*shift_factor
+        shg_matrix[matrix_index, :] = fftshift(fft(argument))
 
     return shg_matrix
 
@@ -323,36 +325,31 @@ calcFrogError()
 Description:
     Calculate the FROG-Error out of two FROG-Traces
 Inputs:
-    t_ref       -> [tensor] reference FROG-Trace
-    t_meas      -> [tensor] FROG-Trace to compare
+    I_k         -> [tensor] retrieved FROG-Trace to compare
+    I_m         -> [tensor] measured FROG-Trace to compare to
 Outputs:
     frog_error  -> [float] FROG-Error
 '''
-def calcFrogError(t_ref, t_meas):
-    device = t_ref.device
-    t_meas.to(device)
-    # print(f"Max value of Tmeas = {torch.max(t_meas)}")
-    # print(t_meas.shape)
-    M, N = t_meas.shape
-    # print(f"M = {M}")
-    # print(f"N = {N}")
-    # print(f"Tmeas = {t_meas}")
-    sum1 = torch.sum(t_meas* t_ref)
-    # print(f"Tmeas * Tref = {sum1}")
-    sum2 = torch.sum(t_ref* t_ref)
-    # print(f"Tref * Tref =  {sum2}")
-    mu = sum1 / sum2 # pypret gl. 13 (s. 497)
-    # print(f"mu = {mu}")
-    # print(f"Tmeas-mu*Tref = {t_meas - mu*t_ref}")
-    r = torch.sum(t_meas - mu*t_ref)**2    # pypret gl. 11 (s. 497) 
-    # print(f"r = {r}")
-    if(r != 0.0):
-        normFactor = M * N * torch.max(t_meas)**2    # pypret gl. 12 (s. 497)
-        # print(f"norm factor = {normFactor}")
-        frog_error = torch.sqrt(r / normFactor)     # pypret gl. 12 (s. 497)
-    else:
-        frog_error = 0.0
-    # print(f"FROG Error = {frog_error}")
+def calcFrogError(I_k, I_m):
+    # get correct device
+    device = I_k.device
+    # ensure all tensors are on the same device
+    I_m.to(device)
+    # get the shape of the measured spectrogram
+    M, N = I_m.shape
+    
+    # calculate \mu [pypret gl. 13 (s. 497)]
+    mu_numerator = torch.sum(I_m* I_k)
+    mu_denominator = torch.sum(I_k* I_k)
+    mu = mu_numerator / mu_denominator 
+    
+    # calculate normalization factor
+    norm_factor = 1 / (M * N)
+    # calculate the magnitude squared difference between the spectrograms
+    mag_squared_difference = torch.abs(I_m - mu*I_k)**2
+    # calculate the FROG-Error
+    frog_error = torch.sqrt(norm_factor * torch.sum(mag_squared_difference))
+
     return frog_error
 
 '''

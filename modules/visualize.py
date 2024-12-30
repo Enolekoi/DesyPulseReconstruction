@@ -9,7 +9,6 @@ Module containing functions used for plotting or visualizing data
 import os
 import logging
 import matplotlib
-import tikzplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import numpy as np
@@ -118,7 +117,7 @@ Inputs:
 '''
 def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
     # get correct filepaths
-    tikz_filepath = f"{filepath}.tex"
+    # tikz_filepath = f"{filepath}.tex"
     png_filepath = f"{filepath}.png"
 
     num_steps = train_size * num_epochs
@@ -223,7 +222,7 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     ax2.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
 
     plt.savefig(png_filepath)
-    tikzplotlib.save(tikz_filepath)
+    # tikzplotlib.save(tikz_filepath)
     plt.close()
 
     logger.info(f"Plot writen to {filepath}")
@@ -511,7 +510,7 @@ Inputs:
 '''
 def compareTimeDomainComplex(filepath, label, prediction):
     # get correct filepaths
-    tikz_filepath = f"{filepath}.tex"
+    # tikz_filepath = f"{filepath}.tex"
     png_filepath =  f"{filepath}.png"
 
     # ensure correct datatype
@@ -590,7 +589,7 @@ def compareTimeDomainComplex(filepath, label, prediction):
     # Adjust the spacing between plots
     fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
     plt.savefig(png_filepath)
-    tikzplotlib.save(tikz_filepath)
+    # tikzplotlib.save(tikz_filepath)
     plt.close()
     logger.info(f"Saved comparison of random prediction and label to {filepath}")
 
