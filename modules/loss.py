@@ -245,7 +245,7 @@ def createSHGmat(analytical_signal, delta_tau, wCenter):
         # rearrange and fourier-transform E(t)*E(t-\tau)
         # fft_analytical = fft((E * E_shifted * shift_factor))
         # current matrix index is the shifted fft multiplied with the delay step
-        shg_matrix[matrix_index, :] = delta_tau * fftshift((E * E_shifted * shift_factor))
+        shg_matrix[matrix_index, :] = delta_tau * fftshift(fft(E * E_shifted * shift_factor))
 
     return shg_matrix
 

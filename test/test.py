@@ -12,8 +12,8 @@ import torch
 import matplotlib.pyplot as plt
 
 # Define Paths
-PathSpec = "./additional/samples/as_gn00.dat"
-PathLabel = "./additional/samples/Es.dat"
+PathSpec = "./additional/samples/s1/as_gn00.dat"
+PathLabel = "./additional/samples/s1/Es.dat"
 
 # Initialize transforms for the spectrograms
 shg_reader = data.ReadSHGmatrix()

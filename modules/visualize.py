@@ -118,8 +118,8 @@ Inputs:
 '''
 def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
     # get correct filepaths
-    tikz_filepath = os.path.join(filepath, ".tex")
-    png_filepath = os.path.join(filepath, ".png")
+    tikz_filepath = f"{filepath}.tex"
+    png_filepath = f"{filepath}.png"
 
     num_steps = train_size * num_epochs
     if num_steps != len(training_loss):
@@ -511,8 +511,8 @@ Inputs:
 '''
 def compareTimeDomainComplex(filepath, label, prediction):
     # get correct filepaths
-    tikz_filepath = os.path.join(filepath, ".tex")
-    png_filepath = os.path.join(filepath, ".png")
+    tikz_filepath = f"{filepath}.tex"
+    png_filepath =  f"{filepath}.png"
 
     # ensure correct datatype
     if not isinstance(label, np.ndarray):
