@@ -193,11 +193,8 @@ optimizer = torch.optim.AdamW(
         lr=config.LEARNING_RATE,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
-# Lambda-Funktion für die lineare Reduktion der Lernrate
 def linear_lr_lambda(step):
-    initial_lr = config.LEARNING_RATE  # Skalierungsfaktor bei Beginn
-    final_lr = 0.1*config.LEARNING_RATE    # Skalierungsfaktor am Ende
-    return initial_lr + (final_lr - initial_lr) * (step / NUM_STEPS)
+    return 1.0 + (0.1 - 1.0) * (step / NUM_STEPS)
 
 # Scheduler erstellen
 scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=linear_lr_lambda)
