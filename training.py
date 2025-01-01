@@ -274,7 +274,7 @@ for epoch in range(config.NUM_EPOCHS):
         optimizer.zero_grad()
 
         # log information for current batch
-        logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {NUM_STEPS_PER_EPOCH}, Loss = {loss.item():.10e}") # LR = {scheduler.get_last_lr()[0]:.4e}")
+        logger.info(f"Epoch {epoch+1} / {config.NUM_EPOCHS}, Step {i+1} / {NUM_STEPS_PER_EPOCH}, Loss = {loss.item():.10e}, LR = {scheduler.get_last_lr()[0]:.4e}")
         # Write loss into array
         training_losses.append(loss.item())
         
