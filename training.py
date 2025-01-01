@@ -193,6 +193,14 @@ optimizer = torch.optim.AdamW(
         lr=config.LEARNING_RATE,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
+# Lambda-Funktion für die lineare Reduktion der Lernrate
+def linear_lr_lambda(step):
+    initial_lr = config.LEARNING_RATE  # Skalierungsfaktor bei Beginn
+    final_lr = 0.1*config.LEARNING_RATE    # Skalierungsfaktor am Ende
+    return initial_lr + (final_lr - initial_lr) * (step / NUM_STEPS)
+
+# Scheduler erstellen
+scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=linear_lr_lambda)
 
 # define and configure the scheduler for changing learning rate during training
 # scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
@@ -271,10 +279,10 @@ for epoch in range(config.NUM_EPOCHS):
         training_losses.append(loss.item())
         
         # Step the learning rate
-        # scheduler.step()
+        scheduler.step()
         # write new learning rate in variable and save it to list
-        # new_lr = scheduler.get_last_lr()[0]
-        # learning_rates.append(new_lr)
+        new_lr = scheduler.get_last_lr()[0]
+        learning_rates.append(new_lr)
 
     '''
     Validation loop
@@ -312,14 +320,14 @@ for epoch in range(config.NUM_EPOCHS):
         logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # plot training loss
-# vis.save_plot_training_loss(
-#         training_loss = training_losses,
-#         validation_loss = validation_losses,
-#         learning_rates = learning_rates,
-#         train_size = train_size // config.BATCH_SIZE,
-#         num_epochs = config.NUM_EPOCHS,
-#         filepath = f"{config.LossPlotFilePath}"
-#         )
+vis.save_plot_training_loss(
+        training_loss = training_losses,
+        validation_loss = validation_losses,
+        learning_rates = learning_rates,
+        train_size = train_size // config.BATCH_SIZE,
+        num_epochs = config.NUM_EPOCHS,
+        filepath = f"{config.LossPlotFilePath}"
+        )
 logger.info("Training finished!")
 
 # Write state_dict of model to file
