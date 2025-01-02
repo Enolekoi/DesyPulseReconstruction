@@ -193,28 +193,15 @@ optimizer = torch.optim.AdamW(
         lr=config.LEARNING_RATE,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
-def linear_lr_lambda(step):
-    return 1.0 + (0.1 - 1.0) * (step / NUM_STEPS)
-
-# Scheduler erstellen
-scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=linear_lr_lambda)
 
 # define and configure the scheduler for changing learning rate during training
-# scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
-# scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    # optimizer, 
-    # mode='min', 
-    # factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
-    # patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
-    # threshold=0.0001   # Threshold for measuring the new optimum.
-    # )
-# scheduler = torch.optim.lr_scheduler.OneCycleLR(
-#     optimizer,
-#     div_factor=5,
-#     final_div_factor=2,
-#     max_lr=config.MAX_LEARNING_RATE,
-#     total_steps=NUM_STEPS
-#     )
+scheduler = torch.optim.lr_scheduler.OneCycleLR(
+    optimizer,
+    div_factor=5,
+    final_div_factor=2,
+    max_lr=config.MAX_LEARNING_RATE,
+    total_steps=NUM_STEPS
+    )
 
 # initiaize lists containing all loss values
 training_losses = []

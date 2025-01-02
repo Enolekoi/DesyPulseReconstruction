@@ -90,20 +90,16 @@ Outputs:
     complex_signal_noambig  -> [tensor] complex signal without the complex conjugation and mirroring ambiguity
 '''
 def removeConjugationAmbiguity(complex_signal, center_index):
-    # calculate the intensity of the signal
-    intensity = complex_signal.real**2 + complex_signal.imag**2
+    # calculate the phase of the signal
     phase = unwrap_phase(complex_signal.real, complex_signal.imag)
 
-    # Calculate the mean of the pulse before and after the center index
+    # Calculate the mean of the pulses phase before and after the center index
     mean_first_half = torch.mean(phase[:center_index])
     mean_second_half = torch.mean(phase[center_index:])
-    mean_phase = torch.mean(phase)
-    sum_phase = torch.sum(phase)
-    # if the weight of the signal is in the second half of the signal
-    # if mean_second_half > mean_first_half:
-    if sum_phase < 0.0:
+    # if the weight of the phase is in the second half of the signal
+    if mean_second_half > mean_first_half:
         # conjugate the signal
-        complex_signal_noambig = complex_signal.conj()
+        complex_signal_noambig = torch.flip(complex_signal,dims=[0]).conj()
     # if the weight of the signal is in the first half of the signal
     else:   
         # do nothing

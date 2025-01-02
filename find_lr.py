@@ -286,6 +286,7 @@ plt.xscale('log')  # Use logarithmic scale for learning rates
 plt.xlabel('Learning Rate (log scale)')
 plt.ylabel('Loss')
 plt.title('Learning Rate Finder')
+plt.grid(True)
 plt.savefig(png_filepath)  # Save the plot to a file
 tikzplotlib.save(tikz_filepath)
 logger.info(f"Learning Rate Finder complete. Saved plot at '{png_filepath}'")
