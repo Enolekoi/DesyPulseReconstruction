@@ -16,7 +16,7 @@ Training Options
 
 Options that configure parameters for the training process
 '''
-NUM_EPOCHS = 1      # Number of epochs to train the model
+NUM_EPOCHS = 10      # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 0  # Epoch after which the whole model is trained (before that only the output layers are trained)
@@ -25,7 +25,7 @@ MAX_LEARNING_RATE = 2.13e-6
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Training using new dataset linear decreasing LR and no FROG-Error - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Training using new dataset (1/10) and no FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options

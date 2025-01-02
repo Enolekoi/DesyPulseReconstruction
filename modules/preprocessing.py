@@ -88,28 +88,27 @@ calcFWHM()
 Description:
     Calculate Full Width Half Maximum value
 Inputs:
-    yd      -> [tensor] Signal of which the FWHM is to be calculated
-    tt      -> [tensor] Axis of the signal
+    signal  -> [tensor] Signal of which the FWHM is to be calculated
+    axis    -> [tensor] Axis of the signal
 Outputs:
     fwhm    -> [float] full width half maximum
 '''
-def calcFWHM(yd, tt):
-    # find the maximum value and its index of yd
-    x_m = np.max(yd.numpy())
-    # index_m = np.argmax(yd)
+def calcFWHM(signal, axis):
+    # find the maximum value of signal
+    max_signal = np.max(signal.numpy())
 
     # substract the half of the maximum from yd
-    yd_half_maximum = yd - x_m / 2
+    signal_half_maximum = signal - max_signal / 2
     # get the zero crossings relative to half its maximum
-    xz = zeroCrossings(tt, yd_half_maximum)
+    zero_crossings = zeroCrossings(axis, signal_half_maximum)
 
     # if there are less than 2 zero crossings, return -1 and print a message
-    if len(xz) < 2:
+    if len(zero_crossings) < 2:
         logger.info("FWHM cannot be calculated, since there are fewer than 2 half-maximum points")
         return -1
     else:
         # calculate the full width half maximum as the difference between the highest and lowest zero crossing
-        fwhm = np.max(xz) - np.min(xz)
+        fwhm = np.max(zero_crossings) - np.min(zero_crossings)
         return fwhm
 
 '''
@@ -139,8 +138,6 @@ def windowSHGmatrix(shg_matrix, dimension = 1, standard_deviation_factor = 0.1):
     window_width = int(shg_matrix.size(dimension))
     # calculate the standard deviation used for the gaussian window
     window_standard_deviation = window_width * standard_deviation_factor
-    # logger.info(f"Window width                        = {window_width}")
-    # logger.info(f"Standard deviation of the window    = {window_standard_deviation}")
     # define the window
     window_delay = torch.from_numpy( windows.gaussian(window_width, std=window_standard_deviation)).float()
 
