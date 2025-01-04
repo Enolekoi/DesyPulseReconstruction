@@ -199,8 +199,8 @@ optimizer = torch.optim.AdamW(
 # define and configure the scheduler for changing learning rate during training
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
-    div_factor=5,
-    final_div_factor=2,
+    div_factor=10,
+    final_div_factor=1,
     max_lr=config.MAX_LEARNING_RATE,
     total_steps=NUM_STEPS
     )
