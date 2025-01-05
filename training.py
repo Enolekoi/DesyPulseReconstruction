@@ -138,8 +138,8 @@ logger.info(f"Size of dataset: {length_dataset}")
 # get ratios of train, validation and test data
 test_size = int(0.1 * length_dataset)                       # amount of test data (10%)
 # train_size = int(0.1 * length_dataset)                       # amount of test data (10%)
-# validation_size = int (0.1 * length_dataset)                # amount of validation data (10%) 
-validation_size = 0
+validation_size = int (0.1 * length_dataset)                # amount of validation data (10%) 
+# validation_size = 0
 # validation_size = length_dataset - test_size - train_size   # amount of training and validation data (80%)
 train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
 logger.info(f"Size of training data:   {train_size}")
@@ -307,14 +307,14 @@ for epoch in range(config.NUM_EPOCHS):
         logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # plot training loss
-# vis.save_plot_training_loss(
-#         training_loss = training_losses,
-#         validation_loss = validation_losses,
-#         learning_rates = learning_rates,
-#         train_size = train_size // config.BATCH_SIZE,
-#         num_epochs = config.NUM_EPOCHS,
-#         filepath = f"{config.LossPlotFilePath}"
-#         )
+vis.save_plot_training_loss(
+        training_loss = training_losses,
+        validation_loss = validation_losses,
+        learning_rates = learning_rates,
+        train_size = train_size // config.BATCH_SIZE,
+        num_epochs = config.NUM_EPOCHS,
+        filepath = f"{config.LossPlotFilePath}"
+        )
 logger.info("Training finished!")
 
 # Write state_dict of model to file
