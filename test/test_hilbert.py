@@ -14,7 +14,8 @@ import numpy as np
 import scipy
 import torch.fft as trafo
 
-PATH = "./additional/samples/Es.dat"
+# PATH = "./additional/samples/Es.dat"
+PATH = "./additional/samples/new/s1/Es.dat"
 
 label_reader = data.ReadLabelFromEs(config.OUTPUT_SIZE)
 label_corr = data.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
