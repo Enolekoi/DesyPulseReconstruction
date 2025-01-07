@@ -22,10 +22,10 @@ BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 0  # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 2.13e-5    # Learning rate at the beginning of training
 MAX_LEARNING_RATE = 2.13e-5
-WEIGHT_DECAY = 1e-1     # TODO find description
+WEIGHT_DECAY = 1e-8     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Training using weight decay 1e-1 insead of 1e-5, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Training using weight decay 1e-8 insead of 1e-5, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
