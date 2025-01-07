@@ -92,6 +92,8 @@ class PulseRetrievalLossFunction(nn.Module):
         prediction_tensor = self.remove_ambiguities(prediction_tensor)
         prediction_real = prediction_tensor[:, :half_size].to(device)
         prediction_imag = prediction_tensor[:, half_size:].to(device)
+        print(f"shape of prediction_real = {prediction_real.shape}")
+        print(f"shape of prediction_imag = {prediction_imag.shape}")
 
 
         if self.use_label:
