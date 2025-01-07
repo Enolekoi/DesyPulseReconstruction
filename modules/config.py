@@ -37,7 +37,7 @@ PENALTY_FACTOR = 5.0      # Values outside the pulse are surpressed, by weighing
 WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 10.0     # Weight used for MSE of the intensity
-WEIGTH_PHASE = 5.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
+WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
 WEIGTH_FROG_ERROR = 0.000   # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
