@@ -89,7 +89,9 @@ class PulseRetrievalLossFunction(nn.Module):
         prediction_imag = prediction_analytical.imag.to(device)
         # remove the ambiguities
         prediction_tensor = torch.cat([prediction_real, prediction_imag],dim=1)
+        print(f"shape of prediction_tensor = {prediction_tensor.shape}")
         prediction_tensor = self.remove_ambiguities(prediction_tensor)
+        print(f"shape of prediction_tensor (after removing ambiguities) = {prediction_tensor.shape}")
         prediction_real = prediction_tensor[:, :half_size].to(device)
         prediction_imag = prediction_tensor[:, half_size:].to(device)
         print(f"shape of prediction_real = {prediction_real.shape}")
