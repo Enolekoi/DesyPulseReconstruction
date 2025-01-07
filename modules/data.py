@@ -476,6 +476,7 @@ class RemoveAmbiguitiesFromLabel(object):
             output_label = torch.cat([real, imag], dim=1)
         else:
             output_label = torch.cat([real, imag])
+
         return output_label
 
 
