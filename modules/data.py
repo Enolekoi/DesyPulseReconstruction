@@ -453,9 +453,12 @@ class RemoveAmbiguitiesFromLabel(object):
         Outputs:
             output_label    -> [tensor] List of arrays containing real and imag part of time signal, without ambiguities
         '''
-        print(f"label shape = {label.shape}")
-        real_part = label[:self.number_elements]
-        imag_part = label[self.number_elements:]
+        if label.ndimensions() != 1:
+            imag_part = label[:, self.number_elements:]
+            real_part = label[:, :self.number_elements]
+        else:
+            real_part = label[:self.number_elements]
+            imag_part = label[self.number_elements:]
 
         complex_signal = torch.complex(real_part, imag_part)
 
