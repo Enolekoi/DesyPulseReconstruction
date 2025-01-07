@@ -400,6 +400,9 @@ Inputs:
     prediction  -> predicted signal
 '''
 def plotTimeDomainFromPrediction(filepath, prediction):
+    # define class for removing ambiguities
+
+    remove_ambiguities = data.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
     matplotlib.use('TkAgg')  # Or use 'Qt5Agg', 'MacOSX' depending on your system
     if not isinstance(prediction, np.ndarray):
         prediction = prediction.numpy()

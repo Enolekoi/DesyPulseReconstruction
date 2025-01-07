@@ -376,6 +376,7 @@ with torch.no_grad():
         # calculate the imaginary part of the signal and make it the shape of the label
         prediction_analytical = loss_module.hilbert(prediction.squeeze())
         prediction = torch.cat((prediction_analytical.real, prediction_analytical.imag))
+        prediction = label_remove_ambiguieties(prediction)
         # plot
         vis.compareTimeDomainComplex(config.RandomPredictionFilePath, label, prediction)
 
@@ -412,16 +413,19 @@ with torch.no_grad():
     
     # get the imaginary part via the hilbert transform
     prediction_min_analytical = loss_module.hilbert(prediction_min.squeeze())
-    prediction_min_combinded = torch.cat((prediction_min_analytical.real, prediction_min_analytical.imag))
+    prediction_min_combined = torch.cat((prediction_min_analytical.real, prediction_min_analytical.imag))
+    prediction_min_combined = label_remove_ambiguieties(prediction_min_combined)
 
     prediction_max_analytical = loss_module.hilbert(prediction_max.squeeze())
     prediction_max_combined = torch.cat((prediction_max_analytical.real, prediction_max_analytical.imag))
+    prediction_max_combined = label_remove_ambiguieties(prediction_max_combined)
 
     prediction_mean_analytical = loss_module.hilbert(prediction_mean.squeeze())
     prediction_mean_combined = torch.cat((prediction_mean_analytical.real, prediction_mean_analytical.imag))
+    prediction_mean_combined = label_remove_ambiguieties(prediction_mean_combined)
     
     logger.info("Create plot of the test value with the lowest loss")
-    vis.compareTimeDomainComplex(config.MinPredictionFilePath, label_min, prediction_min_combinded)
+    vis.compareTimeDomainComplex(config.MinPredictionFilePath, label_min, prediction_min_combined)
     logger.info("Create plot of the test value with the highest loss")
     vis.compareTimeDomainComplex(config.MaxPredictionFilePath, label_max, prediction_max_combined)
     logger.info("Create plot of the closest test value to the mean loss")

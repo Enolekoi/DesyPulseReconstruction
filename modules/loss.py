@@ -57,7 +57,7 @@ class PulseRetrievalLossFunction(nn.Module):
         self.phase_weight = phase_weight
         self.frog_error_weight = frog_error_weight
         self.mse_weight_sum = real_weight + imag_weight + intensity_weight + phase_weight
-         
+        self.remove_ambiguities = data.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
         self.shg_resample = data.ResampleSHGmatrix(
             config.OUTPUT_NUM_DELAYS, 
             config.OUTPUT_TIMESTEP, 
@@ -80,12 +80,19 @@ class PulseRetrievalLossFunction(nn.Module):
         batch_size, half_size = prediction.shape
         # create the analytical signal using the hilbert transformation
         prediction_analytical = torch.zeros(batch_size, half_size, dtype=torch.complex64)
+
         for i in range(batch_size):
             prediction_analytical[i] = hilbert(prediction[i], plot=False).to(device)
 
         # get real and imaginary parts of predictions
         prediction_real = prediction_analytical.real.to(device)
         prediction_imag = prediction_analytical.imag.to(device)
+        # remove the ambiguities
+        prediction_tensor = torch.cat([prediction_real, prediction_imag])
+        prediction_tensor = self.remove_ambiguities(prediction_tensor)
+        prediction_real = prediction_tensor[:, :half_size].to(device)
+        prediction_imag = prediction_tensor[:, half_size:].to(device)
+
 
         if self.use_label:
             # get real and imaginary parts of labels
