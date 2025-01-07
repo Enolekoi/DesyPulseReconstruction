@@ -87,15 +87,11 @@ class PulseRetrievalLossFunction(nn.Module):
         # get real and imaginary parts of predictions
         prediction_real = prediction_analytical.real.to(device)
         prediction_imag = prediction_analytical.imag.to(device)
-        # remove the ambiguities
+        # remove the ambiguities and get corrected prediction real and imaginary parts
         prediction_tensor = torch.cat([prediction_real, prediction_imag],dim=1)
-        print(f"shape of prediction_tensor = {prediction_tensor.shape}")
         prediction_tensor = self.remove_ambiguities(prediction_tensor)
-        print(f"shape of prediction_tensor (after removing ambiguities) = {prediction_tensor.shape}")
         prediction_real = prediction_tensor[:, :half_size].to(device)
         prediction_imag = prediction_tensor[:, half_size:].to(device)
-        print(f"shape of prediction_real = {prediction_real.shape}")
-        print(f"shape of prediction_imag = {prediction_imag.shape}")
 
 
         if self.use_label:
