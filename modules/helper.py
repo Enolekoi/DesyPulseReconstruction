@@ -126,10 +126,13 @@ def removePhaseShiftAmbiguity(complex_signal, center_index):
     # get phase at center index
     if complex_signal.ndimension() != 1:
         center_phase = phase[: ,center_index]
+        print(f"center phase shape {center_phase.shape}")
+        print(f"center phase shape {phase.shape}")
+        phase = phase - center_phase
     else:
         center_phase = phase[center_index]
-    # remove the absolute phase shift from the whole phase tensor
-    phase = phase - center_phase
+        # remove the absolute phase shift from the whole phase tensor
+        phase = phase - center_phase
 
     # reconstruct real and imaginary parts
     # get the magnitude
