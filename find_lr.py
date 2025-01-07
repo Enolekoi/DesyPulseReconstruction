@@ -209,8 +209,8 @@ length_dataset = len(data_loader)
 logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios of train, validation and test data
-test_size = int(0.1 * length_dataset)                       # amount of test data (10%)
-validation_size = int (0.1 * length_dataset)                # amount of validation data (10%) 
+test_size = 0                       # amount of test data (10%)
+validation_size = 80000                # amount of validation data (10%) 
 train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
 logger.info(f"Size of training data:   {train_size}")
 
@@ -275,7 +275,7 @@ lrs, losses = find_lr(
 )
 
 # get correct paths for the plot
-png_filepath = os.path.join(config.LearningRateFinderFilePath, ".png")
+png_filepath = f"{config.LearningRateFinderFilePath}.png"
 
 # Plot the learning rate vs. loss curve
 plt.figure(figsize=(10, 6))  # Set figure size
