@@ -453,7 +453,7 @@ class RemoveAmbiguitiesFromLabel(object):
         Outputs:
             output_label    -> [tensor] List of arrays containing real and imag part of time signal, without ambiguities
         '''
-        if label.ndimensions() != 1:
+        if label.ndimension() != 1:
             imag_part = label[:, self.number_elements:]
             real_part = label[:, :self.number_elements]
         else:
