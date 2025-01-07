@@ -37,7 +37,7 @@ PENALTY_FACTOR = 5.0      # Values outside the pulse are surpressed, by weighing
 WEIGTH_REAL_PART = 5.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 10.0     # Weight used for MSE of the intensity
-WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
+WEIGTH_PHASE = 5.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
 WEIGTH_FROG_ERROR = 0.000   # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
@@ -130,8 +130,8 @@ MaxPredictionFilePath       = f"{LogSubdiretory}/prediction_max"
 MeanPredictionFilePath      = f"{LogSubdiretory}/prediction_mean"
 LearningRateFinderFilePath  = f"{LogSubdiretory}/lr_finder_plot"
 
-# Path = "/mnt/data/desy/frog_simulated/grid_256_v4/" # Path to data used for training 
-Path = "/mnt/data/desy/dataset/training_data/"
+Path = "/mnt/data/desy/frog_simulated/grid_256_v4/" # Path to data used for training 
+# Path = "/mnt/data/desy/dataset/training_data/"
 TBDrmsFilename = "./grid_256_v4_TBD.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
 ShgFilename = "as_gn00.dat"    # Filename of the file containing the SHG-matrix
 LabelFilename = "Es.dat"        # Filename of the file containing the label
