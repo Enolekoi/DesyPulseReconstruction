@@ -124,7 +124,7 @@ def removePhaseShiftAmbiguity(complex_signal, center_index):
     # phase = unwrap_phase(complex_signal.real, complex_signal.imag)
     print(complex_signal.ndimension)
     # get phase at center index
-    if complex_signal.ndimension > 1:
+    if complex_signal.ndimension == 2:
         center_phase = phase[: ,center_index]
     else:
         center_phase = phase[center_index]
