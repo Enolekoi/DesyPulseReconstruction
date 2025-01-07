@@ -472,7 +472,10 @@ class RemoveAmbiguitiesFromLabel(object):
         real = complex_signal.real
         imag = complex_signal.imag
 
-        output_label = torch.cat([real, imag])
+        if label.ndimension() != 1:
+            output_label = torch.cat([real, imag], dim=1)
+        else:
+            output_label = torch.cat([real, imag])
         return output_label
 
 
