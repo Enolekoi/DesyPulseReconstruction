@@ -1,6 +1,5 @@
 from torch.optim.lr_scheduler import LambdaLR
 import matplotlib.pyplot as plt
-import tikzplotlib
 
 import os
 import logging
@@ -276,7 +275,6 @@ lrs, losses = find_lr(
 )
 
 # get correct paths for the plot
-tikz_filepath = os.path.join(config.LearningRateFinderFilePath, ".tex")
 png_filepath = os.path.join(config.LearningRateFinderFilePath, ".png")
 
 # Plot the learning rate vs. loss curve
@@ -288,7 +286,6 @@ plt.ylabel('Loss')
 plt.title('Learning Rate Finder')
 plt.grid(True)
 plt.savefig(png_filepath)  # Save the plot to a file
-tikzplotlib.save(tikz_filepath)
 logger.info(f"Learning Rate Finder complete. Saved plot at '{png_filepath}'")
 plt.show()  # Display the plot
 
