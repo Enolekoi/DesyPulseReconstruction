@@ -105,7 +105,7 @@ logging.basicConfig(
         format="{asctime} - {name} - {funcName} - {levelname}: {message}",
         datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
-            logging.FileHandler(config.log_filepath),
+            logging.FileHandler(config.LogFilePath),
             logging.StreamHandler()
             ]
 )
@@ -113,7 +113,7 @@ logger = logging.getLogger(__name__)
 
 # Log some information
 logger.info("Learning rate finder")
-logger.info(f"Writing into log file: {config.log_filepath}")
+logger.info(f"Writing into log file: {config.LogFilePath}")
 logger.info(f"Dataset used: {config.Path}")
 logger.info(f"SHG-matrix used: {config.ShgFilename}")
 logger.info(f"Size of output tensor: {2*config.OUTPUT_SIZE} elements")
