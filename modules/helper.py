@@ -122,9 +122,9 @@ def removePhaseShiftAmbiguity(complex_signal, center_index):
     # calculate the phase of the signal [rad]
     phase = torch.angle(complex_signal)
     # phase = unwrap_phase(complex_signal.real, complex_signal.imag)
-    print(complex_signal.ndimension)
+    print(complex_signal.ndimension())
     # get phase at center index
-    if complex_signal.ndimension == 2:
+    if complex_signal.ndimension() != 1:
         center_phase = phase[: ,center_index]
     else:
         center_phase = phase[center_index]
