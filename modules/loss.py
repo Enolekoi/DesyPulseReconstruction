@@ -347,15 +347,21 @@ def calcFrogError(I_k, I_m):
     
     # calculate \mu [pypret gl. 13 (s. 497)]
     mu_numerator = torch.sum(I_m* I_k)
+    print(f"mu_numerator = {mu_numerator}")
     mu_denominator = torch.sum(I_k* I_k)
+    print(f"mu_denominator = {mu_denominator}")
     mu = mu_numerator / mu_denominator 
+    print(f"mu = {mu}")
     
     # calculate normalization factor
     norm_factor = 1 / (M * N)
+    print(f"norm_factor = {norm_factor}")
     # calculate the magnitude squared difference between the spectrograms
     mag_squared_difference = torch.abs(I_m - mu*I_k)**2
+    print(f"mag_squared_difference = {mag_squared_difference}")
     # calculate the FROG-Error
     frog_error = torch.sqrt(norm_factor * torch.sum(mag_squared_difference))
+    print(f"frog_error = {frog_error}")
 
     return frog_error
 
