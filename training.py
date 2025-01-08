@@ -172,9 +172,10 @@ logger.info("Starting training...")
 # loss function
 # define and configure the loss function
 criterion = loss_module.PulseRetrievalLossFunction(
+        use_label=False,
         pulse_threshold = config.PULSE_THRESHOLD,
         penalty = config.PENALTY_FACTOR,
-        real_weight = config.WEIGTH_REAL_PART,
+        real_weight = config.WEIGTH_REAL_PART, 
         imag_weight = config.WEIGTH_IMAG_PART,
         intensity_weight = config.WEIGTH_INTENSITY,
         phase_weight = config.WEIGTH_PHASE,

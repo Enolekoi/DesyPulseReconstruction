@@ -202,9 +202,9 @@ class PulseRetrievalLossFunction(nn.Module):
                 mse_loss += (mse_real_mean + mse_imag_mean + mse_intensity_mean + mse_phase_mean) / self.mse_weight_sum
 
             # calculate weighted mean loss of mse loss and frog error
-            print(f"mse_loss = {mse_loss}")
-            print(f"frog_error = {frog_error}")
-            print(f"frog_error_weight = {self.frog_error_weight}")
+            # print(f"mse_loss = {mse_loss}")
+            # print(f"frog_error = {frog_error}")
+            # print(f"frog_error_weight = {self.frog_error_weight}")
             loss += mse_loss + frog_error*self.frog_error_weight
 
         # devide by batch size 
