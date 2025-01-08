@@ -141,7 +141,7 @@ class PulseRetrievalLossFunction(nn.Module):
                 original_shg = helper.normalizeSHGmatrix(original_shg)
                 
                 # calculate_frog_error
-                frog_error, predicted_shg = findMinimumFrogError(original_shg, predicted_shg)
+                frog_error, predicted_shg = calculate_frog_error(original_shg, predicted_shg)
             
             '''
             Weighted MSE-Error

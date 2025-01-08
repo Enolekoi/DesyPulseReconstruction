@@ -80,7 +80,7 @@ original_shg = helper.normalizeSHGmatrix(original_shg)
 new_shg = helper.normalizeSHGmatrix(new_shg)
 
 # calculate the FROG-error
-frog_error = loss.calcFrogError(t_ref = original_shg, t_meas = new_shg)
+frog_error = loss.calcFrogError(I_k = original_shg, I_m = new_shg)
 print(f"FROG-Error = {frog_error}")
 
 '''
