@@ -237,6 +237,7 @@ NUM_STEPS = NUM_STEPS_PER_EPOCH * config.NUM_EPOCHS
 # define and configure the loss function
 # criterion = nn.MSELoss()
 criterion = loss_module.PulseRetrievalLossFunction(
+        use_label=False,
         pulse_threshold = config.PULSE_THRESHOLD,
         penalty = config.PENALTY_FACTOR,
         real_weight = config.WEIGTH_REAL_PART,
