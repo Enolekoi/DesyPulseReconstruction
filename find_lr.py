@@ -175,7 +175,7 @@ model.float().to(device).eval()
 
 # Freeze the layers of the densenet
 for param in model.densenet.parameters():
-    param.requires_grad = False
+    param.requires_grad = True
 
 # Only allow gradients on the last layers after the densenet
 for param in model.fc1.parameters():
@@ -183,7 +183,7 @@ for param in model.fc1.parameters():
 for param in model.fc2.parameters():
     param.requires_grad = True
 
-logger.info("Freezing early layers!")
+# logger.info("Freezing early layers!")
 logger.info("Loading Model finished!")
 
 '''
@@ -210,7 +210,7 @@ logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios of train, validation and test data
 test_size = 0                       # amount of test data (10%)
-validation_size = 80000                # amount of validation data (10%) 
+validation_size = 90000                # amount of validation data (10%) 
 train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
 logger.info(f"Size of training data:   {train_size}")
 
