@@ -34,7 +34,7 @@ Options that configure how the loss function is used
 '''
 PULSE_THRESHOLD = 0.001     # The Pulse is considered to be between the first and last value over the threshold
 PENALTY_FACTOR = 2.0      # Values outside the pulse are surpressed, by weighing their error with this factor
-WEIGTH_REAL_PART = 2.0      # Weight used for MSE of the real part
+WEIGTH_REAL_PART = 8.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 10.0     # Weight used for MSE of the intensity
 WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
