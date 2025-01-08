@@ -290,5 +290,5 @@ logger.info(f"Learning Rate Finder complete. Saved plot at '{png_filepath}'")
 plt.show()  # Display the plot
 
 # Choose the optimal learning rate (manually or programmatically)
-optimal_lr = lrs[np.argmin(losses) // 2]  # Example heuristic: take half the learning rate at minimum loss
+optimal_lr = lrs[np.argmin(losses)]  # Example heuristic: take the learning rate at minimum loss
 logger.info(f"Selected optimal learning rate: {optimal_lr}")
