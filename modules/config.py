@@ -33,10 +33,10 @@ Loss function options
 Options that configure how the loss function is used
 '''
 PULSE_THRESHOLD = 1e-3      # The Pulse is considered to be between the first and last value over the threshold
-PENALTY_FACTOR = 0.0        # Values outside the pulse are surpressed, by weighing their error with this factor
-WEIGTH_REAL_PART = 0.0      # Weight used for MSE of the real part
-WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
-WEIGTH_INTENSITY = 0.0      # Weight used for MSE of the intensity
+PENALTY_FACTOR = 1.0        # Values outside the pulse are surpressed, by weighing their error with this factor
+WEIGTH_REAL_PART = 1.0      # Weight used for MSE of the real part
+WEIGTH_IMAG_PART = 1.0      # Weight used for MSE of the imaginary part
+WEIGTH_INTENSITY = 1.0      # Weight used for MSE of the intensity
 WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
 WEIGTH_FROG_ERROR = 1.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
