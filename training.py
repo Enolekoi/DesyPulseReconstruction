@@ -138,8 +138,8 @@ logger.info(f"Size of dataset: {length_dataset}")
 # get ratios of train, validation and test data
 test_size = int(0.1 * length_dataset)                       # amount of test data (10%)
 # train_size = int(0.1 * length_dataset)                       # amount of test data (10%)
-# validation_size = int (0.1 * length_dataset)                # amount of validation data (10%) 
-validation_size = 0
+validation_size = int (0.1 * length_dataset)                # amount of validation data (10%) 
+# validation_size = 0
 # validation_size = length_dataset - test_size - train_size   # amount of training and validation data (80%)
 train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
 logger.info(f"Size of training data:   {train_size}")
@@ -272,40 +272,40 @@ for epoch in range(config.NUM_EPOCHS):
         new_lr = scheduler.get_last_lr()[0]
         learning_rates.append(new_lr)
 
-    # '''
-    # Validation loop
-    # '''
-    # logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
-    # model.eval()    # put model into evaluation mode
-    # if validation_size!= 0: 
-    #    with torch.no_grad():   # disable gradient computation for evaluation
-    #     # itterateover validation data
-    #     for shg_matrix, label, header in validation_loader:
-    #         ###############
-    #         ## Load Data ##
-    #         ###############
-    #         # convert shg_matrix and label to float and send them to the device
-    #         shg_matrix = shg_matrix.float().to(device)
-    #         label = label.float().to(device)
+    '''
+    Validation loop
+    '''
+    logger.info(f"Starting Validation for epoch {epoch+1} / {config.NUM_EPOCHS}")
+    model.eval()    # put model into evaluation mode
+    if validation_size!= 0: 
+       with torch.no_grad():   # disable gradient computation for evaluation
+        # itterateover validation data
+        for shg_matrix, label, header in validation_loader:
+            ###############
+            ## Load Data ##
+            ###############
+            # convert shg_matrix and label to float and send them to the device
+            shg_matrix = shg_matrix.float().to(device)
+            label = label.float().to(device)
 
-    #         ##################
-    #         ## Forward pass ## 
-    #         ##################
-    #         # calculate prediction
-    #         outputs = model(shg_matrix)
-    #         # calcultate validation loss
-    #         validation_loss = criterion(
-    #               prediction=outputs, 
-    #               label=label, 
-    #               shg_matrix=shg_matrix, 
-    #               header=header
-    #               )
-    #         # place validation loss into list
-    #         validation_losses.append(validation_loss.item())
+            ##################
+            ## Forward pass ## 
+            ##################
+            # calculate prediction
+            outputs = model(shg_matrix)
+            # calcultate validation loss
+            validation_loss = criterion(
+                  prediction=outputs, 
+                  label=label, 
+                  shg_matrix=shg_matrix, 
+                  header=header
+                  )
+            # place validation loss into list
+            validation_losses.append(validation_loss.item())
 
-    #     # calculate the mean validation loss
-    #     avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
-    #     logger.info(f"Validation Loss: {avg_val_loss:.10e}")
+        # calculate the mean validation loss
+        avg_val_loss = np.mean(validation_losses)  # calculate validation loss for this epoch
+        logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # plot training loss
 vis.save_plot_training_loss(
