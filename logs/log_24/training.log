@@ -1,0 +1,77 @@
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Learning rate finder
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Writing into log file: ./logs/log_24/training.log
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v4/
+10-01-2025 11:40:47 - __main__ - <module> - INFO: SHG-matrix used: as_gn00.dat
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Size of output tensor: 512 elements
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Batch size: 10 elements
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Number of epochs: 1
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Initial learning rate: 0.003471
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Only Pulses with PBDrms lower than 20 are used!
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Device used (cuda/cpu): cuda
+10-01-2025 11:40:47 - __main__ - <module> - INFO: Loading Model...
+10-01-2025 11:40:48 - __main__ - <module> - INFO: Loading Model finished!
+10-01-2025 11:40:48 - __main__ - <module> - INFO: Loading Data...
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Size of dataset: 100000
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Size of training data:   10000
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Finished loading data!
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Threshold over which signal is considered part of the pulse: 0.001
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Penalty for signal outside of pulse:  0.0
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Weight Used for MSE of Real part:     0.0
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Weight Used for MSE of imaginary part:0.0
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Weight Used for MSE of Intensity:     0.0
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Weight Used for MSE of Phase:         0.0
+10-01-2025 11:40:51 - __main__ - <module> - INFO: Weight Used for FROG-Error:           1.0
+10-01-2025 11:40:51 - __main__ - find_lr - INFO: Starting learning rate finder
+10-01-2025 11:40:51 - __main__ - find_lr - INFO: Learning Rate = 1e-08
+10-01-2025 11:40:52 - __main__ - find_lr - INFO: Step 0/999
+10-01-2025 11:40:52 - __main__ - find_lr - INFO: Learning Rate = 1e-08
+10-01-2025 11:40:54 - __main__ - find_lr - INFO: Average Loss  = 0.006024628281593328
+10-01-2025 11:40:54 - __main__ - find_lr - INFO: Smoothed Loss = 0.30123141407966614
+10-01-2025 11:40:54 - __main__ - find_lr - INFO: New best loss: 0.30123141407966614 with learning rate: 1e-08
+10-01-2025 11:40:58 - __main__ - find_lr - INFO: Step 1/999
+10-01-2025 11:40:58 - __main__ - find_lr - INFO: Learning Rate = 1.0209606623060467e-08
+10-01-2025 11:41:00 - __main__ - find_lr - INFO: Average Loss  = 0.011976822030544291
+10-01-2025 11:41:00 - __main__ - find_lr - INFO: Smoothed Loss = 0.30244500077131986
+10-01-2025 11:41:00 - __main__ - find_lr - INFO: New best loss: 0.30244500077131986 with learning rate: 1.0209606623060467e-08
+10-01-2025 11:41:04 - __main__ - find_lr - INFO: Step 2/999
+10-01-2025 11:41:04 - __main__ - find_lr - INFO: Learning Rate = 1.0423606739764016e-08
+10-01-2025 11:41:06 - __main__ - find_lr - INFO: Average Loss  = 0.01730962607836725
+10-01-2025 11:41:06 - __main__ - find_lr - INFO: Smoothed Loss = 0.2943413494484972
+10-01-2025 11:41:06 - __main__ - find_lr - INFO: New best loss: 0.2943413494484972 with learning rate: 1.0423606739764016e-08
+10-01-2025 11:41:09 - __main__ - find_lr - INFO: Step 3/999
+10-01-2025 11:41:09 - __main__ - find_lr - INFO: Learning Rate = 1.0642092440647243e-08
+10-01-2025 11:41:11 - __main__ - find_lr - INFO: Average Loss  = 0.02254569106603147
+10-01-2025 11:41:11 - __main__ - find_lr - INFO: Smoothed Loss = 0.2904180947666761
+10-01-2025 11:41:11 - __main__ - find_lr - INFO: New best loss: 0.2904180947666761 with learning rate: 1.0642092440647243e-08
+10-01-2025 11:41:15 - __main__ - find_lr - INFO: Step 4/999
+10-01-2025 11:41:15 - __main__ - find_lr - INFO: Learning Rate = 1.0865157746525383e-08
+10-01-2025 11:41:17 - __main__ - find_lr - INFO: Average Loss  = 0.02767021359839432
+10-01-2025 11:41:17 - __main__ - find_lr - INFO: Smoothed Loss = 0.2879937871757277
+10-01-2025 11:41:17 - __main__ - find_lr - INFO: New best loss: 0.2879937871757277 with learning rate: 1.0865157746525383e-08
+10-01-2025 11:41:21 - __main__ - find_lr - INFO: Step 5/999
+10-01-2025 11:41:21 - __main__ - find_lr - INFO: Learning Rate = 1.1092898648952229e-08
+10-01-2025 11:41:23 - __main__ - find_lr - INFO: Average Loss  = 0.03268544657828038
+10-01-2025 11:41:23 - __main__ - find_lr - INFO: Smoothed Loss = 0.2863185727388115
+10-01-2025 11:41:23 - __main__ - find_lr - INFO: New best loss: 0.2863185727388115 with learning rate: 1.1092898648952229e-08
+10-01-2025 11:41:27 - __main__ - find_lr - INFO: Step 6/999
+10-01-2025 11:41:27 - __main__ - find_lr - INFO: Learning Rate = 1.132541315152812e-08
+10-01-2025 11:41:29 - __main__ - find_lr - INFO: Average Loss  = 0.0375950998875061
+10-01-2025 11:41:29 - __main__ - find_lr - INFO: Smoothed Loss = 0.2850824789141452
+10-01-2025 11:41:29 - __main__ - find_lr - INFO: New best loss: 0.2850824789141452 with learning rate: 1.132541315152812e-08
+10-01-2025 11:41:32 - __main__ - find_lr - INFO: Step 7/999
+10-01-2025 11:41:32 - __main__ - find_lr - INFO: Learning Rate = 1.1562801312073762e-08
+10-01-2025 11:41:34 - __main__ - find_lr - INFO: Average Loss  = 0.04240334803624036
+10-01-2025 11:41:34 - __main__ - find_lr - INFO: Smoothed Loss = 0.2841343262897322
+10-01-2025 11:41:34 - __main__ - find_lr - INFO: New best loss: 0.2841343262897322 with learning rate: 1.1562801312073762e-08
+10-01-2025 11:41:38 - __main__ - find_lr - INFO: Step 8/999
+10-01-2025 11:41:38 - __main__ - find_lr - INFO: Learning Rate = 1.1805165285688053e-08
+10-01-2025 11:41:40 - __main__ - find_lr - INFO: Average Loss  = 0.047113005909004024
+10-01-2025 11:41:40 - __main__ - find_lr - INFO: Smoothed Loss = 0.2833826871304206
+10-01-2025 11:41:40 - __main__ - find_lr - INFO: New best loss: 0.2833826871304206 with learning rate: 1.1805165285688053e-08
+10-01-2025 11:41:44 - __main__ - find_lr - INFO: Step 9/999
+10-01-2025 11:41:44 - __main__ - find_lr - INFO: Learning Rate = 1.2052609368708427e-08
+10-01-2025 11:41:46 - __main__ - find_lr - INFO: Average Loss  = 0.05172592789016629
+10-01-2025 11:41:46 - __main__ - find_lr - INFO: Smoothed Loss = 0.2827678433701659
+10-01-2025 11:41:46 - __main__ - find_lr - INFO: New best loss: 0.2827678433701659 with learning rate: 1.2052609368708427e-08
+10-01-2025 11:41:50 - __main__ - find_lr - INFO: Step 10/999
+10-01-2025 11:41:50 - __main__ - find_lr - INFO: Learning Rate = 1.230524004359262e-08
