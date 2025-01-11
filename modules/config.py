@@ -32,7 +32,7 @@ Loss function options
 
 Options that configure how the loss function is used
 '''
-USE_LABEL = False
+USE_LABEL = True
 PULSE_THRESHOLD = 1e-3      # The Pulse is considered to be between the first and last value over the threshold
 PENALTY_FACTOR = 0.0        # Values outside the pulse are surpressed, by weighing their error with this factor
 WEIGTH_REAL_PART = 1.0      # Weight used for MSE of the real part
