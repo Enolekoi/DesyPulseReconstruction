@@ -16,7 +16,7 @@ Training Options
 
 Options that configure parameters for the training process
 '''
-NUM_EPOCHS = 1      # Number of epochs to train the model
+NUM_EPOCHS = 5      # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 0  # Epoch after which the whole model is trained (before that only the output layers are trained)
@@ -25,7 +25,7 @@ MAX_LEARNING_RATE = 0.03471
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Training unsupervised after loading model, new dataset and FROG-Error - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Training supervised after unsupervised, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
@@ -35,11 +35,11 @@ Options that configure how the loss function is used
 USE_LABEL = False
 PULSE_THRESHOLD = 1e-3      # The Pulse is considered to be between the first and last value over the threshold
 PENALTY_FACTOR = 0.0        # Values outside the pulse are surpressed, by weighing their error with this factor
-WEIGTH_REAL_PART = 0.0      # Weight used for MSE of the real part
-WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
-WEIGTH_INTENSITY = 0.0      # Weight used for MSE of the intensity
+WEIGTH_REAL_PART = 1.0      # Weight used for MSE of the real part
+WEIGTH_IMAG_PART = 1.0      # Weight used for MSE of the imaginary part
+WEIGTH_INTENSITY = 1.0      # Weight used for MSE of the intensity
 WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
-WEIGTH_FROG_ERROR = 1.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
+WEIGTH_FROG_ERROR = 0.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
 Scaling Options
