@@ -95,7 +95,7 @@ model = models.CustomDenseNetReconstruction(
     num_outputs=config.OUTPUT_SIZE
     )
 # Define location of pretrained weights
-model.load_state_dict(torch.load('./logs/log_26/model.pth', weights_only=True))
+model.load_state_dict(torch.load('./logs/log_4/model.pth', weights_only=True))
 
 # set the model to float, send it to the selected device and put it in evaluation mode
 model.float().to(device).eval()
