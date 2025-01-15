@@ -150,7 +150,7 @@ logger.info(f"Size of validation data: {validation_size}")
 logger.info(f"Size of test data:       {test_size}")
 
 # split the dataset accordingly
-train_data, validation_data, test_data = random_split(data_loader, [train_size, rest_size, validation_size, test_size])   # split data
+train_data, rest_data, validation_data, test_data = random_split(data_loader, [train_size, rest_size, validation_size, test_size])   # split data
 
 # define the data loaders for training and validation
 train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)
