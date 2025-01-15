@@ -138,17 +138,19 @@ logger.info(f"Size of dataset: {length_dataset}")
 # get ratios of train, validation and test data
 # test_size = int(0.1 * length_dataset)                       # amount of test data (10%)
 test_size = int(1000)
+train_size = int(49006)
 # train_size = int(0.1 * length_dataset)                       # amount of test data (10%)
 # validation_size = int (0.1 * length_dataset)                # amount of validation data (10%) 
 validation_size = 0
 # validation_size = length_dataset - test_size - train_size   # amount of training and validation data (80%)
 train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
+rest_size = length_dataset - test_size - train_size   # amount of training and validation data (80%)
 logger.info(f"Size of training data:   {train_size}")
 logger.info(f"Size of validation data: {validation_size}")
 logger.info(f"Size of test data:       {test_size}")
 
 # split the dataset accordingly
-train_data, validation_data, test_data = random_split(data_loader, [train_size, validation_size, test_size])   # split data
+train_data, validation_data, test_data = random_split(data_loader, [train_size, rest_size, validation_size, test_size])   # split data
 
 # define the data loaders for training and validation
 train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)
