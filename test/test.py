@@ -87,6 +87,7 @@ print(f"FROG-Error = {frog_error}")
 Plot
 '''
 fig, axs = plt.subplots(3, figsize=(10,14))
+# fig, ax = plt.subplots(1, figsize=(7,7))
 # Simuliertes Spektrogram (original)
 ax = axs[0]
 cax0 = ax.pcolormesh(
@@ -95,9 +96,13 @@ cax0 = ax.pcolormesh(
         original_shg.numpy().T,
         shading='auto'
         )
-ax.set_title('Originales Spektrum')
-ax.set_xlabel('Time [fs]')
-ax.set_ylabel('Wavelength [nm]')
+ax.ticklabel_format(axis='y',
+                    scilimits=[-9,-9])
+ax.ticklabel_format(axis='x',
+                    scilimits=[-15,-15])
+ax.set_title('Spektrogramm')
+ax.set_xlabel('Verzögerung [s]')
+ax.set_ylabel('Wellenlänge [m]')
 fig.colorbar(cax0, ax=ax)
 
 # Simuliertes Spektrogram (rekonstruiert)
@@ -107,26 +112,34 @@ cax1 = ax.pcolormesh(new_output_time.numpy(),
                      new_shg.numpy().T,
                      shading='auto'
                      )
-ax.set_title('Aus Label erstelltes Spektrogramm')
-ax.set_xlabel('Time [fs]')
-ax.set_ylabel('Wavelength [nm]')
+ax.ticklabel_format(axis='y',
+                    scilimits=[-9,-9])
+ax.ticklabel_format(axis='x',
+                    scilimits=[-15,-15])
+ax.set_title('Spektrogramm, aus Zielsignal erstellt')
+ax.set_xlabel('Verzögerung [s]')
+ax.set_ylabel('Wellenlänge [m]')
 fig.colorbar(cax1, ax=ax)
 
-# 
 ax = axs[2]
 cax2 = ax.pcolormesh(new_output_time.numpy(),
                      new_output_wavelength.numpy(),
                      new_shg.numpy().T-original_shg.numpy().T,
                      shading='auto'
                      )
-ax.set_title('Differenz')
-ax.set_xlabel('Time [fs]')
-ax.set_ylabel('Wavelength [nm]')
+ax.ticklabel_format(axis='y',
+                    scilimits=[-9,-9])
+ax.ticklabel_format(axis='x',
+                    scilimits=[-15,-15])
+ax.set_title('Vergleich der Spektrogramme')
+ax.set_xlabel('Verzögerung [s]')
+ax.set_ylabel('Wellenlänge [m]')
 fig.colorbar(cax2, ax=ax)
 # Layout anpassen 
 plt.tight_layout()
 
 # Zeige die Plots an
 plt.savefig("comparison_shg.png")
+# plt.savefig("shg.png")
 plt.show()
 # plt.close()
