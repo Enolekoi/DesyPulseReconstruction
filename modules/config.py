@@ -24,8 +24,8 @@ LEARNING_RATE = 2.13e-06    # Learning rate at the beginning of training
 MAX_LEARNING_RATE = 2.13e-05
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
-TBDRMS_THRESHOLD = 1.063   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Training supervised 90% TBD, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
+TBDRMS_THRESHOLD = 20   # Only data with a TBDrms higher than this threshold is used for training
+DESCRIPTOR = f"Training supervised 100% TBD, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
