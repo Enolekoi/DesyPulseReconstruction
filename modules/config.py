@@ -16,7 +16,7 @@ Training Options
 
 Options that configure parameters for the training process
 '''
-NUM_EPOCHS = 20     # Number of epochs to train the model
+NUM_EPOCHS = 1      # Number of epochs to train the model
 OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 BATCH_SIZE = 10     # Amount of data points trained at each step
 UNFREEZE_EPOCH = 0  # Epoch after which the whole model is trained (before that only the output layers are trained)
@@ -25,7 +25,7 @@ MAX_LEARNING_RATE = 2.13e-05
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 0.5514   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Training supervised 100% TBD, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Training supervised 50% TBD, new dataset and FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
@@ -39,7 +39,7 @@ WEIGTH_REAL_PART = 10.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
 WEIGTH_INTENSITY = 10.0      # Weight used for MSE of the intensity
 WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
-WEIGTH_FROG_ERROR = 0.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
+WEIGTH_FROG_ERROR = 10.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
 Scaling Options

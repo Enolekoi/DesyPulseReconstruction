@@ -25,6 +25,7 @@ class CustomDenseNetReconstruction(nn.Module):
         # Get the number of features before the last layer
         num_features = self.densenet.classifier.in_features
         # Create a Layer with the number of features before the last layer and 256 outputs (2 arrays of 128 Elements)
+        print(num_features)
         self.densenet.classifier = nn.Linear(num_features, 2048)
         self.fc1 = nn.Linear(2048, 1024)
         self.fc2 = nn.Linear(1024, num_outputs)

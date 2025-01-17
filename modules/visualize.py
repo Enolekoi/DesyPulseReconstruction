@@ -46,14 +46,14 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         # create a figure with 2 rows and 2 columns
         fig, axes = plt.subplots(2, 2, figsize=(12,12))
 
-        fig.suptitle(f"Comparison between \n'{raw_filepath}' and \n '{preproc_filepath}'", ha='center')
+        fig.suptitle(f"Vergleich zwischen original - und vorverarbeitetem Spektrogramm")
         # ensure all plots are quadratic
         for ax in axes.flat:
             # ax.set_aspect('equal')
             ax.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
             ax.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
-            ax.set_xlabel('Delay in s')
-            ax.set_ylabel('Wavelength in m')
+            ax.set_xlabel('Verzögerung in s')
+            ax.set_ylabel('Wellenlänge in m')
         
         # Plot the raw matrix on a linear scale
         im1 = axes[0, 0].pcolormesh(
@@ -63,7 +63,7 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 shading='auto',
                 # norm=LogNorm(vmin=1e-10, vmax=float( resampled_shg_matrix.max())
                 )
-        axes[0, 0].set_title(f'Raw SHG-matrix (Linear)')
+        axes[0, 0].set_title(f'Unvorverarbeitetes Spektrogramm (Linear)')
         fig.colorbar(im1, ax=axes[0, 0])
 
         # Plot the raw matrix on a logarithmic scale
@@ -74,7 +74,7 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 shading='auto',
                 norm=LogNorm(vmin=1e-10, vmax=float( raw_matrix.max()))
                 )
-        axes[0, 1].set_title(f'Raw SHG-matrix (Logarithmic)')
+        axes[0, 1].set_title(f'Unvorverarbeitetes Spektrogramm (Logarithmisch)')
         fig.colorbar(im2, ax=axes[0, 1])
 
         # Plot the preprocessed matrix on a linear scale 
@@ -85,7 +85,7 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 shading='auto',
                 # norm=LogNorm(vmin=1e-10, vmax=float( preproc_matrix.max()))
                 )
-        axes[1, 0].set_title(f'Preprocessed SHG-matrix (Linear)')
+        axes[1, 0].set_title(f'Vorverarbeitetes Spektrogramm (Linear)')
         fig.colorbar(im3, ax=axes[1, 0])
 
         # Plot the preprocessed matrix on a logarithmic scale 
@@ -96,7 +96,7 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
                 shading='auto',
                 norm=LogNorm(vmin=1e-10, vmax=float( preproc_matrix.max()))
                 )
-        axes[1, 1].set_title(f'Preprocessed SHG-matrix (Logarithmic)')
+        axes[1, 1].set_title(f'Vorverarbeitetes Spektrogramm (Logarithmisch)')
         fig.colorbar(im4, ax=axes[1, 1])
 
         # save the figure

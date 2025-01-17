@@ -12,7 +12,8 @@ import torch
 import matplotlib.pyplot as plt
 
 # Define Paths
-PathSpec = "./additional/samples/s1/as_gn00.dat"
+# PathSpec = "./additional/samples/s1/as_gn00.dat"
+PathSpec = "./additional/samples/spectrogram_1616.txt"
 PathLabel = "./additional/samples/s1/Es.dat"
 
 # Initialize transforms for the spectrograms
@@ -54,22 +55,23 @@ delta_tau           = original_header[2]
 delta_lambda        = original_header[3]
 center_wavelength   = original_header[4]
 
-assert num_delays == num_wavelength
+delay, wave = helper.generateAxes(original_header)
+# assert num_delays == num_wavelength
 N = num_wavelength
 
 '''
 create the new spectrogram from header and label (time domain signal)
 '''
-new_shg, new_header = loss.createSHGmatFromAnalytical(
-        analytical_signal=label_analytical,
-        header=original_header
-        )
+# new_shg, new_header = loss.createSHGmatFromAnalytical(
+#         analytical_signal=label_analytical,
+#         header=original_header
+#         )
 
 # resample new SHG-matrix
-shg_data = [new_shg, new_header]
+# shg_data = [new_shg, new_header]
 
-new_shg_not_resampled, new_header,\
-new_shg, new_output_time, new_output_wavelength = shg_transform(shg_data)
+# new_shg_not_resampled, new_header,\
+# new_shg, new_output_time, new_output_wavelength = shg_transform(shg_data)
 
 # get original SHG-matrix (without 3 identical channels)
 # original_shg = original_shg[1, :, :]
@@ -77,23 +79,25 @@ new_shg, new_output_time, new_output_wavelength = shg_transform(shg_data)
 
 # normalize to [0, 1]
 original_shg = helper.normalizeSHGmatrix(original_shg)
-new_shg = helper.normalizeSHGmatrix(new_shg)
+# new_shg = helper.normalizeSHGmatrix(new_shg)
 
 # calculate the FROG-error
-frog_error = loss.calcFrogError(I_k = original_shg, I_m = new_shg)
-print(f"FROG-Error = {frog_error}")
+# frog_error = loss.calcFrogError(I_k = original_shg, I_m = new_shg)
+# print(f"FROG-Error = {frog_error}")
 
 '''
 Plot
 '''
-fig, axs = plt.subplots(3, figsize=(10,14))
-# fig, ax = plt.subplots(1, figsize=(7,7))
+# fig, axs = plt.subplots(3, figsize=(10,14))
+fig, ax = plt.subplots(1, figsize=(7,7))
 # Simuliertes Spektrogram (original)
-ax = axs[0]
+# ax = axs[0]
 cax0 = ax.pcolormesh(
-        original_output_time.numpy(),
-        original_output_wavelength.numpy(),
-        original_shg.numpy().T,
+        delay.numpy(),
+        wave.numpy(),
+        # original_output_time.numpy(),
+        # original_output_wavelength.numpy(),
+        original_shg_not_resampled.numpy().T,
         shading='auto'
         )
 ax.ticklabel_format(axis='y',
@@ -106,40 +110,40 @@ ax.set_ylabel('Wellenlänge [m]')
 fig.colorbar(cax0, ax=ax)
 
 # Simuliertes Spektrogram (rekonstruiert)
-ax = axs[1]
-cax1 = ax.pcolormesh(new_output_time.numpy(),
-                     new_output_wavelength.numpy(),
-                     new_shg.numpy().T,
-                     shading='auto'
-                     )
-ax.ticklabel_format(axis='y',
-                    scilimits=[-9,-9])
-ax.ticklabel_format(axis='x',
-                    scilimits=[-15,-15])
-ax.set_title('Spektrogramm, aus Zielsignal erstellt')
-ax.set_xlabel('Verzögerung [s]')
-ax.set_ylabel('Wellenlänge [m]')
-fig.colorbar(cax1, ax=ax)
+# ax = axs[1]
+# cax1 = ax.pcolormesh(new_output_time.numpy(),
+#                      new_output_wavelength.numpy(),
+#                      new_shg.numpy().T,
+#                      shading='auto'
+#                      )
+# ax.ticklabel_format(axis='y',
+#                     scilimits=[-9,-9])
+# ax.ticklabel_format(axis='x',
+#                     scilimits=[-15,-15])
+# ax.set_title('Spektrogramm, aus Zielsignal erstellt')
+# ax.set_xlabel('Verzögerung [s]')
+# ax.set_ylabel('Wellenlänge [m]')
+# fig.colorbar(cax1, ax=ax)
 
-ax = axs[2]
-cax2 = ax.pcolormesh(new_output_time.numpy(),
-                     new_output_wavelength.numpy(),
-                     new_shg.numpy().T-original_shg.numpy().T,
-                     shading='auto'
-                     )
-ax.ticklabel_format(axis='y',
-                    scilimits=[-9,-9])
-ax.ticklabel_format(axis='x',
-                    scilimits=[-15,-15])
-ax.set_title('Vergleich der Spektrogramme')
-ax.set_xlabel('Verzögerung [s]')
-ax.set_ylabel('Wellenlänge [m]')
-fig.colorbar(cax2, ax=ax)
+# ax = axs[2]
+# cax2 = ax.pcolormesh(new_output_time.numpy(),
+#                      new_output_wavelength.numpy(),
+#                      new_shg.numpy().T-original_shg.numpy().T,
+#                      shading='auto'
+#                      )
+# ax.ticklabel_format(axis='y',
+#                     scilimits=[-9,-9])
+# ax.ticklabel_format(axis='x',
+#                     scilimits=[-15,-15])
+# ax.set_title('Vergleich der Spektrogramme')
+# ax.set_xlabel('Verzögerung [s]')
+# ax.set_ylabel('Wellenlänge [m]')
+# fig.colorbar(cax2, ax=ax)
 # Layout anpassen 
 plt.tight_layout()
 
 # Zeige die Plots an
-plt.savefig("comparison_shg.png")
+plt.savefig("shg_exp.png")
 # plt.savefig("shg.png")
 plt.show()
 # plt.close()
