@@ -134,5 +134,5 @@ LearningRateFinderFilePath  = f"{LogSubdiretory}/lr_finder_plot"
 Path = "/mnt/data/desy/frog_simulated/grid_256_v4/" # Path to data used for training 
 # Path = "/mnt/data/desy/dataset/training_data/"
 TBDrmsFilename = "./grid_256_v4_TBD.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
-ShgFilename = "as_gn10.dat"    # Filename of the file containing the SHG-matrix
+ShgFilename = "as_gn01.dat"    # Filename of the file containing the SHG-matrix
 LabelFilename = "Es.dat"        # Filename of the file containing the label

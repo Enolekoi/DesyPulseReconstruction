@@ -1,4 +1,4 @@
-19-01-2025 11:20:48 - __main__ - <module> - INFO: Training supervised 50% TBD, lowest noise level, new dataset and no FROG-Error - with 1 Epochs
+19-01-2025 11:20:48 - __main__ - <module> - INFO: Training supervised 50% TBD, mid noise level, new dataset and no FROG-Error - with 1 Epochs
 19-01-2025 11:20:48 - __main__ - <module> - INFO: Supervised Training
 19-01-2025 11:20:48 - __main__ - <module> - INFO: Writing into log file: ./logs/log_40/training.log
 19-01-2025 11:20:48 - __main__ - <module> - INFO: Dataset used: /mnt/data/desy/frog_simulated/grid_256_v4/
