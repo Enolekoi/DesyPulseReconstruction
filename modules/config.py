@@ -25,7 +25,7 @@ MAX_LEARNING_RATE = 2.13e-05
 WEIGHT_DECAY = 1e-5     # TODO find description
 GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 0.5514   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Training supervised 50% TBD, lowest noise level, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Training supervised 50% TBD, highest noise level, new dataset and no FROG-Error - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
@@ -134,5 +134,5 @@ LearningRateFinderFilePath  = f"{LogSubdiretory}/lr_finder_plot"
 Path = "/mnt/data/desy/frog_simulated/grid_256_v4/" # Path to data used for training 
 # Path = "/mnt/data/desy/dataset/training_data/"
 TBDrmsFilename = "./grid_256_v4_TBD.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
-ShgFilename = "as_gn01.dat"    # Filename of the file containing the SHG-matrix
+ShgFilename = "as_gn30.dat"    # Filename of the file containing the SHG-matrix
 LabelFilename = "Es.dat"        # Filename of the file containing the label
