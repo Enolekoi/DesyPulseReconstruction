@@ -37,9 +37,9 @@ PULSE_THRESHOLD = 1e-3      # The Pulse is considered to be between the first an
 PENALTY_FACTOR = 10.0        # Values outside the pulse are surpressed, by weighing their error with this factor
 WEIGTH_REAL_PART = 10.0      # Weight used for MSE of the real part
 WEIGTH_IMAG_PART = 0.0      # Weight used for MSE of the imaginary part
-WEIGTH_INTENSITY = 10.0      # Weight used for MSE of the intensity
+WEIGTH_INTENSITY = 0.0      # Weight used for MSE of the intensity
 WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered, when there is a pulse)
-WEIGTH_FROG_ERROR = 10.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
+WEIGTH_FROG_ERROR = 0.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
 Scaling Options
