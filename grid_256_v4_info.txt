@@ -1,8 +1,0 @@
-Dataset Information for '/mnt/data/desy/frog_simulated/grid_256_v4/'.
-Amount of datapoints in dataset                  = 100000
-Smallest delay range in dataset                  = 1408.0
-Largest delay range in dataset                   = 1408.0
-Smallest delta tau in dataset (256 Grid) = 11.0
-Largest delta tau in dataset (256 Grid)  = 11.0
-Smallest wavelength in dataset                   = 478.82000000000005
-Largest wavelength in dataset                    = 560.1

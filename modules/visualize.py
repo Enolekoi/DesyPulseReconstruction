@@ -42,7 +42,6 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         # generate axes from the headers
         raw_delay_axis, raw_wavelength_axis = helper.generateAxes(raw_header)
         preproc_delay_axis, preproc_wavelength_axis = helper.generateAxes(preproc_header)
-        
         # create a figure with 2 rows and 2 columns
         fig, axes = plt.subplots(2, 2, figsize=(12,12))
 
@@ -359,9 +358,9 @@ def compareTimeDomain(filepath, label, prediction):
     fig, axs = plt.subplots(3,1, figsize=(8,14))
 
     # Plotting the Intensity
-    axs[0].plot(orig_intensity, label="original pulse", color="green")
-    axs[0].plot(pred_intensity, label="predicted pulse", color="red")
-    axs[0].set_title("Comparison of the intensities of the E-Field")
+    axs[0].plot(orig_intensity, label="Zielsignal", color="green")
+    axs[0].plot(pred_intensity, label="Vorhergesagtes Signal", color="red")
+    axs[0].set_title("Vergleich der Intensities of the E-Field")
     axs[0].set_ylabel("Intensity of E-Field")
     axs[0].set_xlabel("Time in fs")
     axs[0].grid(True)
@@ -547,33 +546,33 @@ def compareTimeDomainComplex(filepath, label, prediction):
     fig, axs = plt.subplots(4,1, figsize=(10,16))
 
     # Plotting the real part
-    axs[0].plot(orig_real, label="original pulse", color="green")
-    axs[0].plot(pred_real, label="predicted pulse", color="red")
-    axs[0].set_title("Comparison of the real part of the E-Field")
-    axs[0].set_xlabel("Time in fs")
+    axs[0].plot(orig_real, label="Zielsignal", color="green")
+    axs[0].plot(pred_real, label="Vorhersage", color="red")
+    axs[0].set_title("Vergleich des Realteils des E-Felds")
+    axs[0].set_xlabel("Zeit in fs")
     axs[0].grid(True)
     axs[0].legend()
 
     # Plotting the imaginary part
-    axs[1].plot(orig_imag, label="original pulse", color="green")
-    axs[1].plot(pred_imag, label="predicted pulse", color="red")
-    axs[1].set_title("Comparison of the imaginary part of the E-Field")
-    axs[1].set_xlabel("Time in fs")
+    axs[1].plot(orig_imag, label="Zielsignal", color="green")
+    axs[1].plot(pred_imag, label="Vorhersage", color="red")
+    axs[1].set_title("Vergleich des Imaginärteils des E-Felds")
+    axs[1].set_xlabel("Zeit in fs")
     axs[1].grid(True)
     axs[1].legend()
     
     # Plotting the Phase
-    axs[2].plot(orig_phase, label="original phase", color="green")
-    axs[2].plot(pred_phase, label="predicted phase", color="blue")
-    axs[2].set_title("Comparison of phase and intensity of the E-Field")
-    axs[2].set_ylabel("Phase (rad)")
-    axs[2].set_xlabel("Time in fs")
+    axs[2].plot(orig_phase, label="Zielsignal", color="green")
+    axs[2].plot(pred_phase, label="Vorhersage", color="blue")
+    axs[2].set_title("Vergleich der Phase und Intensität des E-Felds")
+    axs[2].set_ylabel("Phase in rad")
+    axs[2].set_xlabel("Zeit in fs")
     axs[2].grid(True)
     
     ax_intensity = axs[2].twinx()
-    ax_intensity.plot(orig_intensity, label="original intensity", color="red")
-    ax_intensity.plot(pred_intensity, label="predicted intensity", color="orange")
-    ax_intensity.set_ylabel("Intensity")
+    ax_intensity.plot(orig_intensity, label="Zielsignal", color="red")
+    ax_intensity.plot(pred_intensity, label="Vorhersage", color="orange")
+    ax_intensity.set_ylabel("Intensität")
     # ax_intensity.legend(loc='best')
 
     # Combine legends from both axes
@@ -584,9 +583,9 @@ def compareTimeDomainComplex(filepath, label, prediction):
     # Plot Intensity difference
     intensity_diff = orig_intensity - pred_intensity
     axs[3].plot(intensity_diff, color="blue")
-    axs[3].set_title("Intensity difference of the original and predicted pulse")
-    axs[3].set_ylabel("Intensity difference of the original and predicted pulse")
-    axs[3].set_xlabel("Time in fs")
+    axs[3].set_title("Differenz der Intensitäten des E-Felds")
+    axs[3].set_ylabel("Differenz")
+    axs[3].set_xlabel("Zeit in fs")
     axs[3].grid(True)
 
     # Adjust the spacing between plots
