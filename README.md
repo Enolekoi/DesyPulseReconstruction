@@ -1,5 +1,5 @@
 # DenseNet Femtosecond Laser Pulse Reconstruction
-A DenseNet that uses FROG-traces (spectrograms) to predict the corresponding time domain pulse
+A DenseNet that uses FROG-traces to predict the corresponding time domain pulse
 
 ## Dependencies
 - `python`
@@ -9,12 +9,14 @@ A DenseNet that uses FROG-traces (spectrograms) to predict the corresponding tim
 - `pandas`
 
 ## Training
-To train the model execute:
-```$ python training.py```
-Most parameters for training can be changed in `./config.py`.
+To train the model supervised execute:
+```$ python training.py``` 
+To train the model unsupervised execute:
+```$ python training_unsupervised.py``` 
+The hyperparameters for training can be changed in `./config.py`.
 
 ## Files
-The labview and additional directories contain not up to date files, that will be replaced later.
+The labview directories contains a subvi that allows the integration of the `./prediction.py` script.
 
 Some test scripts are placed inside the `./test/` directory. They can be called by `python -m test.module_name`
 
@@ -26,15 +28,17 @@ Python modules are placed inside the `./modules/` directory:
 - `./modules/loss.py` contains functions needed for the loss function
 - `./modules/models.py` contains custom models used for training
 - `./modules/preprocessing.py` contains functions for preprocessing experimental data
-- `./modules/tbdrms.py` contains functions and classes for predicting the TBDrms values
 - `./modules/visualize.py` contains functions for visualizing data
  
-
-Each Training creates a new directory in `./logs/` called `/training_xxx/` which contains the following files:
+Each training cycle creates a new directory in `./logs/` called `/log_xxx/` which contains the following files:
 - The model after training get saved to the `./model.pth/` file
 - The log file is saved to the `./training.log` file
 - A plot of the training loss, average validation loss and learning rate is saved to the `./loss.png` file
-- After training, a random spectrogram from the test dataset is selected and a time domain pulse is reconstructed. It is then compared to the (label) time domain signal and saved to the `random_prediction.png` file
+- After training, some spectrograms from the test dataset are selected and a time domain pulses are reconstructed. They are then compared to the (label) time domain signal and saved to the, `prediction_max`, `prediction_mean`, `prediction_min` and `random_prediction.png` files
 - CSV files containing learning rate, training loss and validation loss are saved to the `learning_rate.csv`, `training_loss.csv` and `validation_loss.csv` files
 
-The training dataset is expected to be in the `/mnt/data/desy/frog_simulated/grid_256_v3/` directory (this can be changed in `./modules/config.py`)
+## Additional scripts
+- `./datasetInformation.py` is a script for gathering informations regarding the dataset. It outputs the minimum and maximum values of the delay and wavelength, which will be written into a selectable location. It will also create a CSV-file which contains all TBD values and their corresponding subdirectories.
+- `./find_lr.py` is a script which determines an optimal learning rate for training.
+- `./prediction.py` is script for predicting a single pulse using a selected model.
+- `./preprocess_script.py` is a script for preprocessing spectrograms. It is currently not used.
