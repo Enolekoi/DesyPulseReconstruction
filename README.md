@@ -1,5 +1,10 @@
 # DenseNet Femtosecond Laser Pulse Reconstruction
 A DenseNet that uses FROG-traces to predict the corresponding time domain pulse
+[The git repository is found here](https://github.com/Enolekoi/DesyPulseReconstruction)
+
+## Branches
+- `abgabe` is the main branch
+- `dev` is the development branch, there are more example log files found here
 
 ## Dependencies
 - `python`
