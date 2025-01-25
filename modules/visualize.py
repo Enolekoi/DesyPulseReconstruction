@@ -15,15 +15,120 @@ import numpy as np
 
 from modules import helper
 from modules import data
+from modules import config
 from modules import constants as c
 
 logger = logging.getLogger(__name__)
+
+'''
+compareIntensity()
+
+Description:
+    Compate Time Domains of label and prediction
+
+Inputs:
+    filepath    -> [string] path to where the plot is saved
+    label       -> [tensor] label of data
+    prediction  -> [tensor] predicted data
+'''
+def compareIntensity(filepath, label, prediction):
+    # ensure correct datatype
+    if not isinstance(label, np.ndarray):
+        label = label.cpu().numpy()
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.cpu().numpy()
+    label = np.squeeze(label)
+    prediction = np.squeeze(prediction)
+    
+    length_label = len(label)
+    if not (length_label == len(prediction)):
+        logger.error("Label and prediction don't have the same size")
+        return
+
+    fig, axs = plt.subplots(2,1, figsize=(8,14))
+
+    # Plotting the Phase
+    axs[0].plot(label, label="original pulse", color="green")
+    axs[0].plot(prediction, label="predicted pulse", color="red")
+    axs[0].set_title("Comparison of the Intensity of the E-Field")
+    axs[0].set_ylabel("Intensity of E-Field")
+    axs[0].set_xlabel("Time in fs")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Plot Intensity difference
+    intensity_diff = label - prediction
+    axs[1].plot(intensity_diff, color="blue")
+    axs[1].set_title("Intensity difference of the original and predicted pulse")
+    axs[1].set_ylabel("Intensity difference of the original and predicted pulse")
+    axs[1].set_xlabel("Time in fs")
+    axs[1].grid(True)
+
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
+    plt.savefig(filepath)
+    plt.close()
+    logger.info(f"Saved comparison of random prediction and label to {filepath}")
+
+'''
+comparePhase()
+
+Description:
+    Compate Time Domains of label and prediction
+
+Inputs:
+    filepath    -> [string] path to where the plot is saved
+    label       -> [tensor] label of data
+    prediction  -> [tensor] predicted data
+'''
+def comparePhase(filepath, label, prediction):
+    # ensure correct datatype
+    if not isinstance(label, np.ndarray):
+        label = label.numpy()
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.numpy()
+    label = np.squeeze(label)
+    prediction = np.squeeze(prediction)
+    
+    length_label = len(label)
+    if not (length_label == len(prediction)):
+        logger.error("Label and prediction don't have the same size")
+        return
+
+    label = np.unwrap(label)
+    prediction = np.unwrap(prediction)
+
+    fig, axs = plt.subplots(2,1, figsize=(8,14))
+
+    # Plotting the Phase
+    axs[0].plot(label, label="original pulse", color="green")
+    axs[0].plot(prediction, label="predicted pulse", color="red")
+    axs[0].set_title("Comparison of the Phase of the E-Field")
+    axs[0].set_ylabel("Intensity of E-Field")
+    axs[0].set_xlabel("Time in fs")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Plot Phase difference
+    phase_diff = label - prediction
+    axs[1].plot(phase_diff, color="blue")
+    axs[1].set_title("Phase difference of the original and predicted pulse")
+    axs[1].set_ylabel("Phase difference of the original and predicted pulse")
+    axs[1].set_xlabel("Time in fs")
+    axs[1].grid(True)
+
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
+    plt.savefig(filepath)
+    plt.close()
+    logger.info(f"Saved comparison of random prediction and label to {filepath}")
 
 '''
 comparePreproccesSHGMatrix()
 
 Description:
     Plot the raw and preprocessed Spectrogram
+
 Inputs:
     raw_filepath        -> [string] Path to raw SHG-matrix
     preproc_filepath    -> [string] Path to preprocessed SHG-matrix
@@ -106,15 +211,335 @@ def comparePreproccesSHGMatrix(raw_filepath, preproc_filepath, save_path):
         logger.error(f"An error occurred: {e}")
 
 '''
+compareTimeDomain()
+
+Description:
+    Compate Time Domains of label and prediction
+
+Inputs:
+    filepath    -> [string] path to where the plot is saved
+    label       -> [tensor] label of data
+    prediction  -> [tensor] predicted data
+'''
+def compareTimeDomain(filepath, label, prediction):
+    # ensure correct datatype
+    if not isinstance(label, np.ndarray):
+        label = label.numpy()
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.numpy()
+    label = np.squeeze(label)
+    prediction = np.squeeze(prediction)
+    
+    length_label = len(label)
+    if not (length_label == len(prediction)):
+        logger.error("Label and prediction don't have the same size")
+        return
+    half_size = int(length_label //2)
+
+    orig_intensity = label[:half_size]
+    orig_phase = label[half_size:]
+    pred_intensity = prediction[:half_size]
+    pred_phase = prediction[half_size:]
+    
+    orig_phase = np.unwrap(orig_phase)
+    pred_phase = np.unwrap(pred_phase)
+
+    fig, axs = plt.subplots(3,1, figsize=(8,14))
+
+    # Plotting the Intensity
+    axs[0].plot(orig_intensity, label="Zielsignal", color="green")
+    axs[0].plot(pred_intensity, label="Vorhergesagtes Signal", color="red")
+    axs[0].set_title("Vergleich der Intensities of the E-Field")
+    axs[0].set_ylabel("Intensity of E-Field")
+    axs[0].set_xlabel("Time in fs")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Plotting the Phase
+    axs[1].plot(orig_phase, label="original pulse", color="green")
+    axs[1].plot(pred_phase, label="predicted pulse", color="red")
+    axs[1].set_title("Comparison of the phase of the E-Field")
+    axs[1].set_ylabel("Phase of E-Field")
+    axs[1].set_xlabel("Time in fs")
+    axs[1].grid(True)
+    axs[1].legend()
+
+    # Plot Intensity difference
+    intensity_diff = orig_intensity - pred_intensity
+    axs[2].plot(intensity_diff, color="blue")
+    axs[2].set_title("Intensity difference of the original and predicted pulse")
+    axs[2].set_ylabel("Intensity difference of the original and predicted pulse")
+    axs[2].set_xlabel("Time in fs")
+    axs[2].grid(True)
+
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
+    plt.savefig(filepath)
+    plt.close()
+    logger.info(f"Saved comparison of random prediction and label to {filepath}")
+
+'''
+compareTimeDomainComplex()
+
+Description:
+    Compate Time Domains of label and prediction
+
+Inputs:
+    filepath    -> [string] path to where the plot is saved (without fileending)
+    label       -> [tensor] label of data
+    prediction  -> [tensor] predicted data
+'''
+def compareTimeDomainComplex(filepath, label, prediction):
+    # get correct filepaths
+    # tikz_filepath = f"{filepath}.tex"
+    png_filepath =  f"{filepath}.png"
+
+    # ensure correct datatype
+    if not isinstance(label, np.ndarray):
+        label = label.numpy()
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.numpy()
+    label = np.squeeze(label)
+    prediction = np.squeeze(prediction)
+    
+    length_label = len(label)
+    if not (length_label == len(prediction)):
+        logger.error("Label and prediction don't have the same size")
+        logger.error(f"Label length:      {len(label)}")
+        logger.error(f"Prediction length: {len(prediction)}")
+        return
+    half_size = int(length_label //2)
+    orig_real = label[:half_size]
+    orig_imag = label[half_size:]
+    pred_real = prediction[:half_size]
+    pred_imag = prediction[half_size:]
+
+    orig_intensity = orig_real*orig_real + orig_imag*orig_imag
+    pred_intensity = pred_real*pred_real + pred_imag*pred_imag
+    orig_phase = np.mod(np.arctan2(orig_imag, orig_real), 2*np.pi)
+    pred_phase = np.mod(np.arctan2(pred_imag, pred_real), 2*np.pi)
+
+    orig_phase = np.unwrap(orig_phase)
+    pred_phase = np.unwrap(pred_phase)
+
+    fig, axs = plt.subplots(4,1, figsize=(10,16))
+
+    # Plotting the real part
+    axs[0].plot(orig_real, label="Zielsignal", color="green")
+    axs[0].plot(pred_real, label="Vorhersage", color="red")
+    axs[0].set_title("Vergleich des Realteils des E-Felds")
+    axs[0].set_xlabel("Zeit in fs")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Plotting the imaginary part
+    axs[1].plot(orig_imag, label="Zielsignal", color="green")
+    axs[1].plot(pred_imag, label="Vorhersage", color="red")
+    axs[1].set_title("Vergleich des Imaginärteils des E-Felds")
+    axs[1].set_xlabel("Zeit in fs")
+    axs[1].grid(True)
+    axs[1].legend()
+    
+    # Plotting the Phase
+    axs[2].plot(orig_phase, label="Zielsignal", color="green")
+    axs[2].plot(pred_phase, label="Vorhersage", color="blue")
+    axs[2].set_title("Vergleich der Phase und Intensität des E-Felds")
+    axs[2].set_ylabel("Phase in rad")
+    axs[2].set_xlabel("Zeit in fs")
+    axs[2].grid(True)
+    
+    ax_intensity = axs[2].twinx()
+    ax_intensity.plot(orig_intensity, label="Zielsignal", color="red")
+    ax_intensity.plot(pred_intensity, label="Vorhersage", color="orange")
+    ax_intensity.set_ylabel("Intensität")
+    # ax_intensity.legend(loc='best')
+
+    # Combine legends from both axes
+    lines_1, labels_1 = axs[2].get_legend_handles_labels()
+    lines_2, labels_2 = ax_intensity.get_legend_handles_labels()
+    axs[2].legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
+
+    # Plot Intensity difference
+    intensity_diff = orig_intensity - pred_intensity
+    axs[3].plot(intensity_diff, color="blue")
+    axs[3].set_title("Differenz der Intensitäten des E-Felds")
+    axs[3].set_ylabel("Differenz")
+    axs[3].set_xlabel("Zeit in fs")
+    axs[3].grid(True)
+
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
+    plt.savefig(png_filepath)
+    # tikzplotlib.save(tikz_filepath)
+    plt.close()
+    logger.info(f"Saved comparison of random prediction and label to {filepath}")
+
+'''
+plotSpectrogram()
+
+Description:
+    plotting Spectrogram
+
+Inputs:
+    path    -> [string] path to save the spectrogram to
+'''
+def plotSpectrogram(path):
+    # reader
+    reader = data.ReadSHGmatrix()
+    shg_data = reader(path)
+    shg_matrix, header = shg_data
+
+    delay_axis, wavelength_axis = helper.generateAxes(header)
+
+    # Create a figure
+    plt.figure(figsize=(10, 18))
+
+    # FIGURE 1
+    # fix the axes to a specific exponent representation
+    plt.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
+    # Plot the SHG-matrix
+    plt.pcolormesh(
+        delay_axis.numpy(),
+        wavelength_axis.numpy(),
+        shg_matrix.numpy().T,
+        shading='auto',
+        norm=LogNorm(vmin=1e-10, vmax=float( shg_matrix.max() ))
+        )
+
+    # Add labels and title
+    # fig.colorbar(c1, label='Intensity')
+    plt.ylabel("Wavelength [m]")
+    plt.xlabel("Time [s]")
+    plt.title("SHG-Matrix")
+    
+    plt.colorbar(label='Intensity')
+    plt.show()
+    return
+
+'''
+plotTimeDomainFromPrediction()
+
+Description:
+    Plot time domains of a prediction
+
+Inputs:
+    filepath    -> [string] path to where the plot is saved
+    prediction  -> [tensor] predicted signal
+'''
+def plotTimeDomainFromPrediction(filepath, prediction):
+    # define class for removing ambiguities
+
+    remove_ambiguities = data.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
+    matplotlib.use('TkAgg')  # Or use 'Qt5Agg', 'MacOSX' depending on your system
+    if not isinstance(prediction, np.ndarray):
+        prediction = prediction.numpy()
+    # get the real and imaginary parts
+    prediction = prediction.squeeze()
+
+    prediction_length = len(prediction)
+    
+    half_size = int(prediction_length //2)
+    pred_real = prediction[:half_size].squeeze()
+    pred_imag = prediction[half_size:].squeeze()
+    
+    # create the delay axis
+    delay_axis = helper.generateAxis(
+            N = 256,
+            resolution = 1.5*c.femto,
+            center = 0.0
+            ).numpy()
+
+    # calculate the intensity and phase
+    pred_intensity = pred_real*pred_real + pred_imag*pred_imag
+    
+    pred_phase = np.mod(np.arctan2(pred_imag, pred_real), 2*np.pi)
+    pred_phase = np.unwrap(pred_phase)
+    
+    # calculate the spectral intensity and phase
+    pred_complex = pred_real + 1j * pred_imag
+    # compute the fft
+    pred_fft = np.fft.fft(pred_complex) 
+    # calculate the spectral intensity and phase
+    fft_intensity = np.sqrt(np.abs(pred_fft))
+    fft_phase = np.mod(np.arctan2(pred_fft.imag, pred_fft.real), 2*np.pi)
+    fft_phase = np.unwrap(fft_phase)
+    # create a frequency axis for plotting
+    n = pred_complex.size
+    n_half = n // 2
+    freq_axis = np.fft.fftfreq(n, d=(1/1.5*c.femto) )
+
+    fft_intensity = fft_intensity[n_half:]
+    fft_phase =         fft_phase[n_half:]
+    freq_axis =         freq_axis[:n_half]
+
+    fig, axs = plt.subplots(4,1, figsize=(10,16))
+
+    # Plotting the real part
+    axs[0].plot(delay_axis, pred_real, label="Retrieved real part", color="red")
+    axs[0].set_title("Retrieved real part of the E-Field")
+    axs[0].set_xlabel("Delays in [s]")
+    axs[0].set_ylabel("Amplitude")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Plotting the imgainary part
+    axs[1].plot(delay_axis,pred_imag, label="Retrieved imaginary part", color="red")
+    axs[1].set_title("Retrieved imaginary part of the E-Field")
+    axs[1].set_xlabel("Delays in [s]")
+    axs[0].set_ylabel("Amplitude")
+    axs[1].grid(True)
+    axs[1].legend()
+    
+    # Plotting the Phase
+    axs[2].plot(delay_axis,pred_phase, label="Retrieved phase", color="blue")
+    axs[2].set_title("Retrieved intensity and phase of the E-Field")
+    axs[2].set_ylabel("Phase in [rad]")
+    axs[2].set_xlabel("Delays in [s]")
+    axs[2].grid(True)
+    
+    ax_intensity = axs[2].twinx()
+    ax_intensity.plot(delay_axis, pred_intensity, label="Retrieved intensity", color="orange")
+    ax_intensity.set_ylabel("Intensity")
+    # ax_intensity.legend(loc='best')
+
+    # Combine legends from both axes
+    lines_1, labels_1 = axs[2].get_legend_handles_labels()
+    lines_2, labels_2 = ax_intensity.get_legend_handles_labels()
+    axs[2].legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
+
+    # Plot Intensity difference
+    axs[3].plot(freq_axis,fft_phase, label="Retrieved spectral phase", color="blue")
+    axs[3].set_title("Retrieved spectral intensity and phase")
+    axs[3].set_ylabel("Phase in [rad]")
+    axs[3].set_xlabel("Frequency")
+    axs[3].grid(True)
+
+    ax_fft_intensity = axs[3].twinx()
+    ax_fft_intensity.plot(freq_axis,fft_intensity, label="Retrieved spectral intensity", color="orange")
+    ax_fft_intensity.set_ylabel("Intensity")
+
+    lines_3, labels_3 = axs[3].get_legend_handles_labels()
+    lines_4, labels_4 = ax_fft_intensity.get_legend_handles_labels()
+    axs[3].legend(lines_3 + lines_4, labels_3 + labels_4, loc='upper right')
+
+    # Adjust the spacing between plots
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
+    plt.savefig(filepath)
+    plt.close()
+    logger.info(f"Saved plot of prediction to {filepath}")
+
+'''
 savePlotTrainingLoss()
 
 Description:
     Plot the training, validation and test losses
+
 Inputs:
     loss_values     -> [string] Array containing training loss values
     filepath        -> [string] File to write plot to (without filepath)
 '''
-def save_plot_training_loss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
+def savePlotTrainingLoss(training_loss, validation_loss, learning_rates, train_size, num_epochs, filepath):
     # get correct filepaths
     # tikz_filepath = f"{filepath}.tex"
     png_filepath = f"{filepath}.png"
@@ -225,410 +650,3 @@ def save_plot_training_loss(training_loss, validation_loss, learning_rates, trai
     plt.close()
 
     logger.info(f"Plot writen to {filepath}")
-
-'''
-compareIntensity()
-Compate Time Domains of label and prediction
-Inputs:
-    filepath    -> path to where the plot is saved
-    label       -> label of data
-    prediction  -> predicted data
-'''
-def compareIntensity(filepath, label, prediction):
-    # ensure correct datatype
-    if not isinstance(label, np.ndarray):
-        label = label.cpu().numpy()
-    if not isinstance(prediction, np.ndarray):
-        prediction = prediction.cpu().numpy()
-    label = np.squeeze(label)
-    prediction = np.squeeze(prediction)
-    
-    length_label = len(label)
-    if not (length_label == len(prediction)):
-        logger.error("Label and prediction don't have the same size")
-        return
-
-    fig, axs = plt.subplots(2,1, figsize=(8,14))
-
-    # Plotting the Phase
-    axs[0].plot(label, label="original pulse", color="green")
-    axs[0].plot(prediction, label="predicted pulse", color="red")
-    axs[0].set_title("Comparison of the Intensity of the E-Field")
-    axs[0].set_ylabel("Intensity of E-Field")
-    axs[0].set_xlabel("Time in fs")
-    axs[0].grid(True)
-    axs[0].legend()
-
-    # Plot Intensity difference
-    intensity_diff = label - prediction
-    axs[1].plot(intensity_diff, color="blue")
-    axs[1].set_title("Intensity difference of the original and predicted pulse")
-    axs[1].set_ylabel("Intensity difference of the original and predicted pulse")
-    axs[1].set_xlabel("Time in fs")
-    axs[1].grid(True)
-
-    # Adjust the spacing between plots
-    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
-    plt.savefig(filepath)
-    plt.close()
-    logger.info(f"Saved comparison of random prediction and label to {filepath}")
-
-'''
-comparePhase()
-Compate Time Domains of label and prediction
-Inputs:
-    filepath    -> path to where the plot is saved
-    label       -> label of data
-    prediction  -> predicted data
-'''
-def comparePhase(filepath, label, prediction):
-    # ensure correct datatype
-    if not isinstance(label, np.ndarray):
-        label = label.numpy()
-    if not isinstance(prediction, np.ndarray):
-        prediction = prediction.numpy()
-    label = np.squeeze(label)
-    prediction = np.squeeze(prediction)
-    
-    length_label = len(label)
-    if not (length_label == len(prediction)):
-        logger.error("Label and prediction don't have the same size")
-        return
-
-    label = np.unwrap(label)
-    prediction = np.unwrap(prediction)
-
-    fig, axs = plt.subplots(2,1, figsize=(8,14))
-
-    # Plotting the Phase
-    axs[0].plot(label, label="original pulse", color="green")
-    axs[0].plot(prediction, label="predicted pulse", color="red")
-    axs[0].set_title("Comparison of the Phase of the E-Field")
-    axs[0].set_ylabel("Intensity of E-Field")
-    axs[0].set_xlabel("Time in fs")
-    axs[0].grid(True)
-    axs[0].legend()
-
-    # Plot Phase difference
-    phase_diff = label - prediction
-    axs[1].plot(phase_diff, color="blue")
-    axs[1].set_title("Phase difference of the original and predicted pulse")
-    axs[1].set_ylabel("Phase difference of the original and predicted pulse")
-    axs[1].set_xlabel("Time in fs")
-    axs[1].grid(True)
-
-    # Adjust the spacing between plots
-    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
-    plt.savefig(filepath)
-    plt.close()
-    logger.info(f"Saved comparison of random prediction and label to {filepath}")
-
-
-'''
-compareTimeDomain()
-Compate Time Domains of label and prediction
-Inputs:
-    filepath    -> path to where the plot is saved
-    label       -> label of data
-    prediction  -> predicted data
-'''
-def compareTimeDomain(filepath, label, prediction):
-    # ensure correct datatype
-    if not isinstance(label, np.ndarray):
-        label = label.numpy()
-    if not isinstance(prediction, np.ndarray):
-        prediction = prediction.numpy()
-    label = np.squeeze(label)
-    prediction = np.squeeze(prediction)
-    
-    length_label = len(label)
-    if not (length_label == len(prediction)):
-        logger.error("Label and prediction don't have the same size")
-        return
-    half_size = int(length_label //2)
-
-    orig_intensity = label[:half_size]
-    orig_phase = label[half_size:]
-    pred_intensity = prediction[:half_size]
-    pred_phase = prediction[half_size:]
-    
-    orig_phase = np.unwrap(orig_phase)
-    pred_phase = np.unwrap(pred_phase)
-
-    fig, axs = plt.subplots(3,1, figsize=(8,14))
-
-    # Plotting the Intensity
-    axs[0].plot(orig_intensity, label="Zielsignal", color="green")
-    axs[0].plot(pred_intensity, label="Vorhergesagtes Signal", color="red")
-    axs[0].set_title("Vergleich der Intensities of the E-Field")
-    axs[0].set_ylabel("Intensity of E-Field")
-    axs[0].set_xlabel("Time in fs")
-    axs[0].grid(True)
-    axs[0].legend()
-
-    # Plotting the Phase
-    axs[1].plot(orig_phase, label="original pulse", color="green")
-    axs[1].plot(pred_phase, label="predicted pulse", color="red")
-    axs[1].set_title("Comparison of the phase of the E-Field")
-    axs[1].set_ylabel("Phase of E-Field")
-    axs[1].set_xlabel("Time in fs")
-    axs[1].grid(True)
-    axs[1].legend()
-
-    # Plot Intensity difference
-    intensity_diff = orig_intensity - pred_intensity
-    axs[2].plot(intensity_diff, color="blue")
-    axs[2].set_title("Intensity difference of the original and predicted pulse")
-    axs[2].set_ylabel("Intensity difference of the original and predicted pulse")
-    axs[2].set_xlabel("Time in fs")
-    axs[2].grid(True)
-
-    # Adjust the spacing between plots
-    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
-    plt.savefig(filepath)
-    plt.close()
-    logger.info(f"Saved comparison of random prediction and label to {filepath}")
-
-'''
-plotTimeDomainFromPrediction()
-
-Description:
-    Plot time domains of a prediction
-Inputs:
-    filepath    -> path to where the plot is saved
-    prediction  -> predicted signal
-'''
-def plotTimeDomainFromPrediction(filepath, prediction):
-    # define class for removing ambiguities
-
-    remove_ambiguities = data.RemoveAmbiguitiesFromLabel(config.OUTPUT_SIZE)
-    matplotlib.use('TkAgg')  # Or use 'Qt5Agg', 'MacOSX' depending on your system
-    if not isinstance(prediction, np.ndarray):
-        prediction = prediction.numpy()
-    # get the real and imaginary parts
-    prediction = prediction.squeeze()
-
-    prediction_length = len(prediction)
-    
-    half_size = int(prediction_length //2)
-    pred_real = prediction[:half_size].squeeze()
-    pred_imag = prediction[half_size:].squeeze()
-    
-    # create the delay axis
-    delay_axis = helper.generateAxis(
-            N = 256,
-            resolution = 1.5*c.femto,
-            center = 0.0
-            ).numpy()
-
-    # calculate the intensity and phase
-    pred_intensity = pred_real*pred_real + pred_imag*pred_imag
-    
-    pred_phase = np.mod(np.arctan2(pred_imag, pred_real), 2*np.pi)
-    pred_phase = np.unwrap(pred_phase)
-    
-    # calculate the spectral intensity and phase
-    pred_complex = pred_real + 1j * pred_imag
-    # compute the fft
-    pred_fft = np.fft.fft(pred_complex) 
-    # calculate the spectral intensity and phase
-    fft_intensity = np.sqrt(np.abs(pred_fft))
-    fft_phase = np.mod(np.arctan2(pred_fft.imag, pred_fft.real), 2*np.pi)
-    fft_phase = np.unwrap(fft_phase)
-    # create a frequency axis for plotting
-    n = pred_complex.size
-    n_half = n // 2
-    freq_axis = np.fft.fftfreq(n, d=(1/1.5*c.femto) )
-
-    fft_intensity = fft_intensity[n_half:]
-    fft_phase =         fft_phase[n_half:]
-    freq_axis =         freq_axis[:n_half]
-
-    fig, axs = plt.subplots(4,1, figsize=(10,16))
-
-    # Plotting the real part
-    axs[0].plot(delay_axis, pred_real, label="Retrieved real part", color="red")
-    axs[0].set_title("Retrieved real part of the E-Field")
-    axs[0].set_xlabel("Delays in [s]")
-    axs[0].set_ylabel("Amplitude")
-    axs[0].grid(True)
-    axs[0].legend()
-
-    # Plotting the imgainary part
-    axs[1].plot(delay_axis,pred_imag, label="Retrieved imaginary part", color="red")
-    axs[1].set_title("Retrieved imaginary part of the E-Field")
-    axs[1].set_xlabel("Delays in [s]")
-    axs[0].set_ylabel("Amplitude")
-    axs[1].grid(True)
-    axs[1].legend()
-    
-    # Plotting the Phase
-    axs[2].plot(delay_axis,pred_phase, label="Retrieved phase", color="blue")
-    axs[2].set_title("Retrieved intensity and phase of the E-Field")
-    axs[2].set_ylabel("Phase in [rad]")
-    axs[2].set_xlabel("Delays in [s]")
-    axs[2].grid(True)
-    
-    ax_intensity = axs[2].twinx()
-    ax_intensity.plot(delay_axis, pred_intensity, label="Retrieved intensity", color="orange")
-    ax_intensity.set_ylabel("Intensity")
-    # ax_intensity.legend(loc='best')
-
-    # Combine legends from both axes
-    lines_1, labels_1 = axs[2].get_legend_handles_labels()
-    lines_2, labels_2 = ax_intensity.get_legend_handles_labels()
-    axs[2].legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
-
-    # Plot Intensity difference
-    axs[3].plot(freq_axis,fft_phase, label="Retrieved spectral phase", color="blue")
-    axs[3].set_title("Retrieved spectral intensity and phase")
-    axs[3].set_ylabel("Phase in [rad]")
-    axs[3].set_xlabel("Frequency")
-    axs[3].grid(True)
-
-    ax_fft_intensity = axs[3].twinx()
-    ax_fft_intensity.plot(freq_axis,fft_intensity, label="Retrieved spectral intensity", color="orange")
-    ax_fft_intensity.set_ylabel("Intensity")
-
-    lines_3, labels_3 = axs[3].get_legend_handles_labels()
-    lines_4, labels_4 = ax_fft_intensity.get_legend_handles_labels()
-    axs[3].legend(lines_3 + lines_4, labels_3 + labels_4, loc='upper right')
-
-    # Adjust the spacing between plots
-    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
-    plt.savefig(filepath)
-    plt.close()
-    logger.info(f"Saved plot of prediction to {filepath}")
-
-'''
-compareTimeDomainComplex()
-
-Description:
-    Compate Time Domains of label and prediction
-Inputs:
-    filepath    -> [string] path to where the plot is saved (without fileending)
-    label       -> [tensor] label of data
-    prediction  -> [tensor] predicted data
-'''
-def compareTimeDomainComplex(filepath, label, prediction):
-    # get correct filepaths
-    # tikz_filepath = f"{filepath}.tex"
-    png_filepath =  f"{filepath}.png"
-
-    # ensure correct datatype
-    if not isinstance(label, np.ndarray):
-        label = label.numpy()
-    if not isinstance(prediction, np.ndarray):
-        prediction = prediction.numpy()
-    label = np.squeeze(label)
-    prediction = np.squeeze(prediction)
-    
-    length_label = len(label)
-    if not (length_label == len(prediction)):
-        logger.error("Label and prediction don't have the same size")
-        logger.error(f"Label length:      {len(label)}")
-        logger.error(f"Prediction length: {len(prediction)}")
-        return
-    half_size = int(length_label //2)
-    orig_real = label[:half_size]
-    orig_imag = label[half_size:]
-    pred_real = prediction[:half_size]
-    pred_imag = prediction[half_size:]
-
-    orig_intensity = orig_real*orig_real + orig_imag*orig_imag
-    pred_intensity = pred_real*pred_real + pred_imag*pred_imag
-    orig_phase = np.mod(np.arctan2(orig_imag, orig_real), 2*np.pi)
-    pred_phase = np.mod(np.arctan2(pred_imag, pred_real), 2*np.pi)
-
-    orig_phase = np.unwrap(orig_phase)
-    pred_phase = np.unwrap(pred_phase)
-
-    fig, axs = plt.subplots(4,1, figsize=(10,16))
-
-    # Plotting the real part
-    axs[0].plot(orig_real, label="Zielsignal", color="green")
-    axs[0].plot(pred_real, label="Vorhersage", color="red")
-    axs[0].set_title("Vergleich des Realteils des E-Felds")
-    axs[0].set_xlabel("Zeit in fs")
-    axs[0].grid(True)
-    axs[0].legend()
-
-    # Plotting the imaginary part
-    axs[1].plot(orig_imag, label="Zielsignal", color="green")
-    axs[1].plot(pred_imag, label="Vorhersage", color="red")
-    axs[1].set_title("Vergleich des Imaginärteils des E-Felds")
-    axs[1].set_xlabel("Zeit in fs")
-    axs[1].grid(True)
-    axs[1].legend()
-    
-    # Plotting the Phase
-    axs[2].plot(orig_phase, label="Zielsignal", color="green")
-    axs[2].plot(pred_phase, label="Vorhersage", color="blue")
-    axs[2].set_title("Vergleich der Phase und Intensität des E-Felds")
-    axs[2].set_ylabel("Phase in rad")
-    axs[2].set_xlabel("Zeit in fs")
-    axs[2].grid(True)
-    
-    ax_intensity = axs[2].twinx()
-    ax_intensity.plot(orig_intensity, label="Zielsignal", color="red")
-    ax_intensity.plot(pred_intensity, label="Vorhersage", color="orange")
-    ax_intensity.set_ylabel("Intensität")
-    # ax_intensity.legend(loc='best')
-
-    # Combine legends from both axes
-    lines_1, labels_1 = axs[2].get_legend_handles_labels()
-    lines_2, labels_2 = ax_intensity.get_legend_handles_labels()
-    axs[2].legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
-
-    # Plot Intensity difference
-    intensity_diff = orig_intensity - pred_intensity
-    axs[3].plot(intensity_diff, color="blue")
-    axs[3].set_title("Differenz der Intensitäten des E-Felds")
-    axs[3].set_ylabel("Differenz")
-    axs[3].set_xlabel("Zeit in fs")
-    axs[3].grid(True)
-
-    # Adjust the spacing between plots
-    fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, hspace=0.5)
-    plt.savefig(png_filepath)
-    # tikzplotlib.save(tikz_filepath)
-    plt.close()
-    logger.info(f"Saved comparison of random prediction and label to {filepath}")
-
-'''
-plotSpectrogram()
-plotting Spectrogram
-'''
-def plotSpectrogram(path):
-    # reader
-    reader = data.ReadSHGmatrix()
-    shg_data = reader(path)
-    shg_matrix, header = shg_data
-
-    delay_axis, wavelength_axis = helper.generateAxes(header)
-
-    # Create a figure
-    plt.figure(figsize=(10, 18))
-
-    # FIGURE 1
-    # fix the axes to a specific exponent representation
-    plt.ticklabel_format(axis="x", style="sci", scilimits=(-15,-15))    # use 1e-15 as exponent for x axis
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(-9,-9))      # use 1e-9  as exponent for y axis
-    # Plot the SHG-matrix
-    plt.pcolormesh(
-        delay_axis.numpy(),
-        wavelength_axis.numpy(),
-        shg_matrix.numpy().T,
-        shading='auto',
-        norm=LogNorm(vmin=1e-10, vmax=float( shg_matrix.max() ))
-        )
-
-    # Add labels and title
-    # fig.colorbar(c1, label='Intensity')
-    plt.ylabel("Wavelength [m]")
-    plt.xlabel("Time [s]")
-    plt.title("SHG-Matrix")
-    
-    plt.colorbar(label='Intensity')
-    plt.show()
-    return

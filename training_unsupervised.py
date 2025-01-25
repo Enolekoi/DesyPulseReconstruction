@@ -177,8 +177,7 @@ criterion = loss_module.PulseRetrievalLossFunction(
         )
 
 # define and configure the optimizer used
-# TODO: AdamW probieren
-optimizer = torch.optim.Adam(
+optimizer = torch.optim.AdamW(
         [   
          {'params': model.fc1.parameters()},
          {'params': model.fc2.parameters()}
@@ -186,23 +185,7 @@ optimizer = torch.optim.Adam(
         lr=1e-8,
 	    weight_decay=config.WEIGHT_DECAY
 	    )
-#optimizer = torch.optim.SGD(
-        # [   
-        # { 'params': model.fc1.parameters()},
-        # {'params': model.fc2.parameters()}
-        # ],
-        # lr=config.LEARNING_RATE,
-	#momentum = 0.9)
-
 # define and configure the scheduler for changing learning rate during training
-# scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=config.GAMMA_SCHEDULER)
-# scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    # optimizer, 
-    # mode='min', 
-    # factor=0.5,  # Factor by which the learning rate will be reduced (e.g., half the learning rate).
-    # patience=2,  # Number of epochs with no improvement to wait before reducing the learning rate.
-    # threshold=0.0001   # Threshold for measuring the new optimum.
-    # )
 scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer,
     max_lr=1e-4,
@@ -307,30 +290,30 @@ for epoch in range(config.NUM_EPOCHS):
     logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # save learning rate and losses to csv files
-with open(config.learning_rate_filepath, 'w', newline='') as file:
+with open(config.LearningRateFilePath, 'w', newline='') as file:
     for item in learning_rates:
         file.write(f"{item}\n")
-with open(config.training_loss_filepath, 'w', newline='') as file:
+with open(config.TrainingLossFilePath, 'w', newline='') as file:
     for item in training_losses:
         file.write(f"{item}\n")
-with open(config.validation_loss_filepath, 'w', newline='') as file:
+with open(config.ValidationLossFilePath, 'w', newline='') as file:
     for item in validation_losses:
         file.write(f"{item}\n")
 
 
 # plot training loss
-vis.save_plot_training_loss(
+vis.savePlotTrainingLoss(
         training_loss = training_losses,
         validation_loss = validation_losses,
         learning_rates = learning_rates,
         train_size = train_size // config.BATCH_SIZE,
         num_epochs = config.NUM_EPOCHS,
-        filepath = f"{config.loss_plot_filepath}"
+        filepath = f"{config.LossPlotFilePath}"
         )
 logger.info("Training finished!")
 
 # Write state_dict of model to file
-torch.save(model.state_dict(), config.model_filepath)
+torch.save(model.state_dict(), config.ModelFilePath)
 logger.info("Saved Model")
 
 '''
@@ -362,6 +345,7 @@ with torch.no_grad():
     # calculate the mean test loss
     avg_test_loss = np.mean(test_losses)
     logger.info(f"Test Loss: {avg_test_loss:.10e}")
+    logger.info("Test Step finished!")
 
     # get the prediction of a random test data point and plot it
     if len(test_data) > 0:
@@ -381,7 +365,7 @@ with torch.no_grad():
         prediction_analytical = loss_module.hilbert(prediction.squeeze())
         prediction = torch.cat((prediction_analytical.real, prediction_analytical.imag))
         # plot
-        vis.compareTimeDomainComplex(config.random_prediction_filepath, label, prediction)
+        vis.compareTimeDomainComplex(config.RandomPredictionFilePath, label, prediction)
 
     test_loss_indices = [(i, loss) for i, loss  in enumerate(test_losses)]
     average_test_loss = np.mean(test_losses)
@@ -422,8 +406,6 @@ with torch.no_grad():
     vis.compareTimeDomainComplex("./prediction_min.png", label_min, prediction_min_combinded)
     vis.compareTimeDomainComplex("./prediction_max.png", label_max, prediction_max_combined)
     vis.compareTimeDomainComplex("./prediction_mean.png", label_mean, prediction_mean_combined)
-
-logger.info("Test Step finished!")
 
 for handler in logger.handlers:
     handler.flush()

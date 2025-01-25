@@ -1,3 +1,8 @@
+'''
+test_preprocessing.py Script
+
+Script used for testing preprocessing functions
+'''
 from modules import preprocessing
 from modules import visualize as vis
 
@@ -6,7 +11,7 @@ output_path = './test/experimental_data/preprocessed/as.dat'
 plot_path = './test/experimental_data/preprocessed/preproc.png'
 N = 512
 
-full_output_path = preprocessing.preprocess(shg_path, output_path, N)
+full_output_path = preprocessing.preprocessFile(shg_path, output_path, N)
 vis.comparePreproccesSHGMatrix(
         raw_filepath=shg_path,
         preproc_filepath=output_path,

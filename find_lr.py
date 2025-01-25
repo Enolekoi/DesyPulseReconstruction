@@ -1,7 +1,6 @@
 from torch.optim.lr_scheduler import LambdaLR
 import matplotlib.pyplot as plt
 
-import os
 import logging
 import numpy as np
 import torch
@@ -18,6 +17,7 @@ find_lr()
 
 Description:
     Find the optimal learning rate
+
 Inputs:
     model           -> [pytorch model] model which to use
     train_loader    -> [pytorch dataloader] model which to use
@@ -209,9 +209,9 @@ length_dataset = len(data_loader)
 logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios of train, validation and test data
-test_size = 0                       # amount of test data (10%)
-validation_size = 60000                # amount of validation data (10%) 
-train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
+test_size = 0                       
+validation_size = 60000                
+train_size = length_dataset - test_size - validation_size   
 logger.info(f"Size of training data:   {train_size}")
 
 # split the dataset accordingly
@@ -235,7 +235,6 @@ NUM_STEPS = NUM_STEPS_PER_EPOCH * config.NUM_EPOCHS
 ########################
 # loss function
 # define and configure the loss function
-# criterion = nn.MSELoss()
 criterion = loss_module.PulseRetrievalLossFunction(
         use_label=config.USE_LABEL,
         pulse_threshold = config.PULSE_THRESHOLD,

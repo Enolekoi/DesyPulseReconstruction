@@ -9,6 +9,7 @@ import torchvision.models as models
 
 '''
 CustomDenseNetReconstruction()
+
 Description:
     Custom DenseNet class for reconstructiong the time domain pulse from SHG-matrix
 '''
@@ -40,7 +41,9 @@ class CustomDenseNetReconstruction(nn.Module):
 
     def forward(self, shg_matrix):
         '''
-        Forward pass through the DenseNet
+        Description: 
+            Forward pass through the DenseNet
+
         Input:
             shg_matrix      -> [tensor] SHG-matrix
         Output:

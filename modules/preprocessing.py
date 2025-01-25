@@ -1,5 +1,7 @@
 '''
 Preprocessing
+
+Funcitons for preprocessing of data
 '''
 #############
 ## Imports ##
@@ -24,69 +26,11 @@ from modules import visualize as vis
 logger = logging.getLogger(__name__)
 
 '''
-zeroCrossings()
-
-Description:
-    Get the zero crossings of tensor y
-Inputs:
-    x           -> [tensor] x-values of the tensor
-    y           -> [tensor] y-values of the tensor
-    tollerance  -> [float] absolute y-values smaller than this will be considered 0
-Outputs:
-    x_zero      -> [tensor] x-values where y = 0
-''' 
-def zeroCrossings(x, y, tollerance=1e-12):
-    N = len(x)
-    x_zero = []
-    # check if y and x have the same length
-    if len(y) != N:
-        raise ValueError("arguments x and y need to have the same length")
-
-    # check if first element of y is close to zero (smaller than +-tollerance)
-    if abs(y[0]) < tollerance:
-        # add value to zero crossings
-        x_zero.append(x[0])
-    
-    for n in range(1, N):
-        # check if element is close to zero (smaller than +-tollerance)
-        if abs(y[n]) < tollerance:
-            # add value to zero crossings
-            x_zero.append(x[n])
-            continue    # go to next index n
-        
-        # check for changing sign between y[n] and y[n-1] 
-        # this is the case when y[n] * y[n-1] is negative and y[n-1] isn't inside the tollerance considered zero
-        if y[n] * y[n-1] < 0 and abs(y[n-1]) > tollerance:
-            # calculate the difference between x[n] and x[n-1]
-            delta_x = x[n] - x[n-1]
-            if not (delta_x > 0):
-                raise ValueError("Difference between x-values needs to be > 0")
-
-            # calculate the difference between y[n] and y[n-1]
-            delta_y = y[n] - y[n-1]
-
-            # calculate the slope
-            slope = delta_y / delta_x
-            assert abs(slope) > 0 # check that slope is not 0
-            
-            # calculate intercepts
-            intercept_1 = y[n-1] - slope * x[n-1]
-            intercept_2 = y[n] - slope * x[n]
-            # mean intercept
-            mean_intercept = (intercept_1 + intercept_2) / 2
-            
-            # calculate zero
-            zero = -mean_intercept / slope
-            
-            x_zero.append(zero)
-
-    return x_zero
-
-'''
 calcFWHM()
 
 Description:
     Calculate Full Width Half Maximum value
+
 Inputs:
     signal  -> [tensor] Signal of which the FWHM is to be calculated
     axis    -> [tensor] Axis of the signal
@@ -112,52 +56,304 @@ def calcFWHM(signal, axis):
         return fwhm
 
 '''
-windowSHGmatrix()
+checkForMissingFile()
 
 Description:
-    Use a window function on the SHG-matrix
+    check if any required files are missing
+
 Inputs:
-    shg_matrix                  -> [tensor] SHG-matrix over which to apply the windowing function
-    dimension                   -> [int] Dimension across which the window will be applied
-    standard_deviation_factor   -> [float] the standard deviation of the gauss window equals window_width*standard_deviation_factor
+    parent_dir          -> [string] path of parent directory
+    required_filename   -> [string] file to be checked
 Outputs:
-    shg_matrix_windowed     -> [tensor] SHG-matrix after application of the windowing function
+    missing_file_dirs   -> [list] list of directories in which the file is missing
 '''
-def windowSHGmatrix(shg_matrix, dimension = 1, standard_deviation_factor = 0.1):
-    # Raise exceptions
-    if not( (dimension == 1) or (dimension == 0) ):
-        raise ValueError(f"dimension should be either 1 or 0 but is {dimension}")
-    if not (standard_deviation_factor > 0):
-        raise ValueError(f"standard_deviation_factor needs to be higher than 0, but is {standard_deviation_factor}")
+def checkForMissingFile(parent_dir, required_filename):
+    missing_file_dirs = []
 
-    if isinstance(shg_matrix, np.ndarray):
-        # convert to tensor if spectrogram is a numpy array
-        shg_matrix = torch.from_numpy(shg_matrix)
+    for roots, dirs, files in os.walk(parent_dir):
+        for subdir in dirs:
+            subdir_path = os.path.join(roots, subdir)
+            if required_filename not in os.listdir(subdir_path):
+                missing_file_dirs.append(subdir_path)
+        break
+    return missing_file_dirs
 
-    # determine the window width (equals the number of samples across the selected dimension)
-    window_width = int(shg_matrix.size(dimension))
-    # calculate the standard deviation used for the gaussian window
-    window_standard_deviation = window_width * standard_deviation_factor
-    # define the window
-    window_delay = torch.from_numpy( windows.gaussian(window_width, std=window_standard_deviation)).float()
+'''
+createPlotSubdirectories()
 
-    # apply the window to the SHG-matrix
-    # 'None' adds a new axis for broadcasting
-    if dimension == 1:
-        shg_matrix_windowed = shg_matrix * window_delay[None, :]
-    elif dimension == 0:
-        shg_matrix_windowed = shg_matrix * window_delay[:, None]
+Description:
+    Creates directories for plots of the spectrograms
 
-    return shg_matrix_windowed
+Inputs:
+    path    -> [string] Path of the parent directory
+'''
+def createPlotSubdirectories(path):
+    try:
+        # Create the main directory if it doesn't exist
+        if not os.path.exists(path):
+            os.makedirs(path)
+            logger.info(f"Created plot directory at '{path}'!")
+        else:
+            logger.info(f"Plot directory already exists at '{path}'")
+        
+        # Create the subdirectories
+        subdir1_path = os.path.join(path, "experimental")
+        subdir2_path = os.path.join(path, "simulated")
+
+        os.makedirs(subdir1_path, exist_ok=True)
+        os.makedirs(subdir2_path, exist_ok=True)
+
+        logger.info(f"Subdirectories 'experimental' and 'raw' created in '{path}'.")
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+
+'''
+getTBDrmsValues
+
+Description:
+    Calculate TBDrms values for all subdirectories, sort them and write them to a file
+
+Inputs:
+    data_directory  -> [string] Base directorie of the training dataset
+    root_directory  -> [string] Root directorie of the project
+    output_filename -> [string] Filename to write the sorted TBDrms values to
+'''                            
+def getTBDrmsValues(data_directory, root_directory, output_filename):
+    data = []
+    
+    logger.info('Stepping through all subdirectories')
+    # step through all directories
+    for subdirectory in os.listdir(data_directory):
+        # get the subdirectory path 
+        subdirectory_path = os.path.join(data_directory, subdirectory)
+
+        # Ensure it's a subdirectory and starts with 's'
+        if os.path.isdir(subdirectory_path) and subdirectory.startswith('s'):
+            # get the path of SimulatedPulseData.txt
+            file_path = os.path.join(subdirectory_path, 'SimulatedPulseData.txt')
+
+            # Check if 'SimulatedPulseData.txt' exists
+            if os.path.exists(file_path):
+                # initialize rmsT and rmsW 
+                rmsT, rmsW = None, None
+
+                # open and read 'SimulatedPulseData.txt'
+                with open(file_path, 'r') as file:
+                    lines = file.readlines()
+                    for line in lines:
+                        # Extract rmsT value
+                        if line.startswith('rmsT;'):
+                            rmsT = float(line.split(';')[1].strip())
+                        # Extract rmsW value
+                        if line.startswith('rmsW;'):
+                            rmsW = float(line.split(';')[1].strip())
+
+                # Check if rmsT and rmsW have values
+                if (rmsT is not None) and (rmsW is not None): 
+                    TBDrms = rmsT*rmsW
+                    # Store values as a tuple (subdirectory, rmsT, rmsW, TBDrms)
+                    data.append([subdirectory, rmsT, rmsW, TBDrms])
+
+    logger.info('Got all data from subdirectories')
+    #####################
+    ## WRITE CSV FILES ##
+    #####################
+    logger.info('Creating sorted CSV-file')
+    sorted_data = sorted(data, key=lambda x: x[3], reverse=False)
+
+    sorted_csv_file = os.path.join(root_directory, output_filename)
+    with open(sorted_csv_file, 'w', newline='') as sorted_csvfile:
+        writer = csv.writer(sorted_csvfile)
+        # write header
+        writer.writerow(['Directory', 'rmsT', 'rmsW', 'TBDrms'])
+        # write data 
+        writer.writerows(sorted_data)
+
+'''
+indexRangeWithinLimits()
+
+Description:
+    get the index range for which values of signal are within limits
+    
+Inputs:
+    signal          -> [tensor] input signal
+    limits          -> [list] limits in which the signal should fit
+Outputs:
+    index_range     -> [list] Index range where values of signal are within the limits
+
+'''
+def indexRangeWithinLimits(signal, limits):
+    assert torch.all(signal.diff() >=0), "Tensor must be sorted in ascending order"
+    assert limits[1] > limits [0], "Upper limit must be greater then lower limit"
+
+    # find the first index where signal is greater than the lower limit
+    greater_than_lower_limit = signal > limits[0]
+    if greater_than_lower_limit.any():
+        index_1 = greater_than_lower_limit.nonzero(as_tuple=True)[0].min().item()
+    else:
+        index_1 = None
+
+    # find the last index where signal is greater than the lower limit
+    less_than_upper_limit = signal < limits[1]
+    if less_than_upper_limit.any():
+        index_2 = less_than_upper_limit.nonzero(as_tuple=True)[0].max().item()
+    else:
+        index_2 = None
+
+    index_range = (index_1, index_2)
+
+    return index_range
+
+'''
+preprocessFile()
+
+Description:
+    Preprocess the measured SHG-matrix from the path of it's file
+
+Inputs:
+    shg_path    -> [string] path of the file where the raw SHG-matrix and it's header are saved in
+    output_path -> [string] path of the file where the preprocessed SHG-matrix and it's header are saved in
+    N           -> [int] size of the SHG-matrix is (N x N) 
+'''
+def preprocessFile(shg_path, output_path, N = 256):
+    # initialize SHG-Matrix reader
+    reader = data.ReadSHGmatrix()
+    # read in the matrix and header
+    shg_data = reader(shg_path)
+    input_shg_matrix, input_header = shg_data
+    # preprocess the raw SHG-Matrix
+    shg_matrix, header = preprocessRawShgMatrix(input_shg_matrix, input_header, N)
+
+    # print(shg_matrix.shape)
+    # preprocess the header
+    number_delays       = int(header[0])
+    number_wavelengths  = int(header[1])
+    delta_tau           = round( float(header[2]) / c.femto, 4)
+    delta_lambda        = round( float(header[3]) / c.nano, 4)
+    center_wavelength   = round( float(header[4]) / c.nano, 4)
+    # place the header information into a string
+    header_line = f"{number_delays} {number_wavelengths} {delta_tau} {delta_lambda} {center_wavelength}"
+    shg_lines = '\n'.join(' '.join(map(str, row.tolist() )) for row in shg_matrix)
+    
+    with open(output_path, 'w') as file:
+        file.write(header_line + '\n')
+        file.write(shg_lines + '\n')
+
+'''
+preprocessExperimental()
+
+Description:
+    Preprocess the experimental data. 
+    It's expected, that raw_dir has the spectrogram files directly inside,
+    while preproc_dir has the same amount of subdirectories
+
+Inputs:
+    raw_dir             -> [string] Path to directory containing the raw experimental SHG-matrixes
+    preproc_dir         -> [string] Path to directory containing subdirectories for preprocessed SHG-matrixes
+    plot_dir            -> [string] Path to directory, where the comparison of preprocessed and raw spectrograms get saved
+    preproc_filename    -> [string] File name of the preprocessed SHG-matrix
+    grid_size           -> [int] (optional, default=512) Grid to which the spectrograms get resampled to
+'''
+def preprocessExperimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=512):
+    # Regular expression for extracting the indices
+    raw_file_pattern = re.compile(r'\D*(\d+)\.txt$')
+    preproc_dir_pattern = re.compile(r's(\d+)$')
+    
+    # List all input files and directories
+    raw_files = [f for f in os.listdir(raw_dir) if raw_file_pattern.search(f)]
+    preproc_dirs = [d for d in os.listdir(preproc_dir) if preproc_dir_pattern.search(d)]
+
+    # Extract indices and sort the files and directories by index
+    raw_files_with_indices = sorted(
+            [(int(raw_file_pattern.search(f).group(1)), f) for f in raw_files]
+            )
+    preproc_dirs_with_indices = sorted(
+            [(int(preproc_dir_pattern.search(d).group(1)), d) for d in preproc_dirs]
+            )
+    
+    # check if the number of files matches the number of directories
+    if len(raw_files_with_indices) != len(preproc_dirs_with_indices):
+        raise ValueError(f"Mismatch between number of input files ({len(raw_files_with_indices)}) and output directories ({len(preproc_dirs_with_indices)})!")
+
+
+    # itteratae over sorted files and directories
+    for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
+        logger.info(f"Preprocessing Experimental Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
+        logger.info(f"Raw path          = {raw_file}")
+        logger.info(f"Preprocessed path = {preproc_subdir}")
+
+        try:
+            # Construct raw file path
+            raw_file_path = os.path.join(raw_dir, raw_file)
+            
+            # Construct preproc file path
+            preproc_file_path = os.path.join(preproc_dir, preproc_subdir, preproc_filename)
+            
+            # Ensure the preproc directory exists
+            os.makedirs(os.path.dirname(preproc_file_path), exist_ok=True)
+            
+            # Call the preprocessing funtion
+            preprocessFile(
+                    shg_path = raw_file_path,
+                    output_path = preproc_file_path,
+                    N = grid_size
+                    )
+            
+            # Plot the comparison of the raw and preprocessed SHG-matrix
+            plot_filename = f"comparison_{raw_index}.png"
+            plot_path = os.path.join(plot_dir, plot_filename) 
+            vis.comparePreproccesSHGMatrix(
+                raw_filepath=raw_file_path,
+                preproc_filepath= preproc_file_path,
+                save_path=plot_path
+                )
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
+
+'''
+processHeader()
+
+Description:
+    Extract the header information from the first two lines of the file.
+    If the first line has fewer than 5 elements, the header is 2 lines.
+    Otherwise, it's just the first line.
+Inputs:
+     Inputs:
+        lines   -> [string] the first two lines of the spectrogram file
+    Outputs:
+        header  -> [list] the header of the spectrogram file
+
+'''
+def processHeader(lines):
+    header_line_1 = lines[0].split()
+    
+    if len(header_line_1) < 5:
+        header_line_2 = lines[1].split()
+        header = header_line_1 + header_line_2
+    else:
+        header = header_line_1
+
+    if len(header) < 5:
+        logger.error("ERROR: Header is has to many elements")
+    
+    # Convert elements to float for numeric calculations
+    header = [float(x) for x in header]
+    
+    return header
 
 '''
 preprocessRawShgMatrix()
 
 Description:
     Preprocess experimental SHG-matrixes
-Inputs:
 
+Inputs:
+    shg_matrix              -> [tensor] spectrogram to be preprocessed
+    header                  -> [list] header of spectrogram to be preprocessed
+    nTarget                 -> [int] size of the output tensor (nTarget * nTarget)
 Outputs:
+    resampled_shg_matrix    -> [tensor] spectrogram after preprocessing
+    output_header           -> [list] header of spectrogram after preprocessing
 '''
 def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     # extract header information
@@ -396,198 +592,13 @@ def preprocessRawShgMatrix(shg_matrix, header, nTarget):
     return resampled_shg_matrix, output_header
 
 '''
-indexRangeWithinLimits()
+preprocessSimulated()
 
 Description:
-    get the index range for which values of signal are within limits
-Inputs:
-    signal          -> [tensor] input signal
-    limits          -> [list] limits in which the signal should fit
-Outputs:
-    index_range     -> [list] Index range where values of signal are within the limits
-
-'''
-def indexRangeWithinLimits(signal, limits):
-    assert torch.all(signal.diff() >=0), "Tensor must be sorted in ascending order"
-    assert limits[1] > limits [0], "Upper limit must be greater then lower limit"
-
-    # find the first index where signal is greater than the lower limit
-    greater_than_lower_limit = signal > limits[0]
-    if greater_than_lower_limit.any():
-        index_1 = greater_than_lower_limit.nonzero(as_tuple=True)[0].min().item()
-    else:
-        index_1 = None
-
-    # find the last index where signal is greater than the lower limit
-    less_than_upper_limit = signal < limits[1]
-    if less_than_upper_limit.any():
-        index_2 = less_than_upper_limit.nonzero(as_tuple=True)[0].max().item()
-    else:
-        index_2 = None
-
-    index_range = (index_1, index_2)
-
-    return index_range
-
-'''
-preprocess()
-
-Description:
-    Preprocess the measured SHG-matrix from the path of it's file
-Inputs:
-    shg_path    -> [string] path of the file where the raw SHG-matrix and it's header are saved in
-    output_path -> [string] path of the file where the preprocessed SHG-matrix and it's header are saved in
-    N           -> [int] size of the SHG-matrix is (N x N) 
-Outputs:
-    shg_matrix  -> [tensor] preprocessed SHG-matrix
-    header      -> [tensor] header of the preprocessed SHG-matrix
-'''
-
-def preprocess(shg_path, output_path, N = 256):
-    # initialize SHG-Matrix reader
-    reader = data.ReadSHGmatrix()
-    # read in the matrix and header
-    shg_data = reader(shg_path)
-    input_shg_matrix, input_header = shg_data
-    # preprocess the raw SHG-Matrix
-    shg_matrix, header = preprocessRawShgMatrix(input_shg_matrix, input_header, N)
-
-    # print(shg_matrix.shape)
-    # preprocess the header
-    number_delays       = int(header[0])
-    number_wavelengths  = int(header[1])
-    delta_tau           = round( float(header[2]) / c.femto, 4)
-    delta_lambda        = round( float(header[3]) / c.nano, 4)
-    center_wavelength   = round( float(header[4]) / c.nano, 4)
-    # place the header information into a string
-    header_line = f"{number_delays} {number_wavelengths} {delta_tau} {delta_lambda} {center_wavelength}"
-    shg_lines = '\n'.join(' '.join(map(str, row.tolist() )) for row in shg_matrix)
-    
-    with open(output_path, 'w') as file:
-        file.write(header_line + '\n')
-        file.write(shg_lines + '\n')
-
-'''
-removeBlacklistFromDirectory()
-
-Description:
-    Remove files in a blacklist from the specified directory
-Inputs:
-    blacklist_path  -> [string] Path to blacklist file
-    directory_path  -> [string] Path to directory
-Outputs:
-    deleted_files   -> [array of strings] Filename of files that got deleted
-    failed_files    -> [array of strings] Filename of files that weren't deleted
-'''
-def removeBlacklistFromDirectory(blacklist_path, directory_path):
-    deleted_files = []
-    failed_files = []
-    logger.info(f"Deleting files listed in blacklist '{blacklist_path}' from '{directory_path}' directory!")
-    try:
-        # Read the blacklist
-        logger.info(f"Reading blacklist '{blacklist_path}'...")
-        with open(blacklist_path, newline='', encoding='utf-8') as csv_file:
-            reader = csv.reader(csv_file)
-            blacklisted_files = [row[0] for row in reader]
-    except Exception as e:
-        logger.info(f"Reading blacklist unsuccesful: {e}")
-        
-    # itterate over the blacklist and remove the files
-    logger.info(f"Removing Files from '{directory_path}'...")
-    for file_name in blacklisted_files:
-        # get full path of selected file
-        file_path = os.path.join(directory_path, file_name)
-        if os.path.isfile(file_path):
-            try:
-                # remove file from directory, if it exists
-                os.remove(file_path)
-                deleted_files.append(file_name)
-            except Exception as e:
-                # file doesn't exist
-                logger.info(f"Failed to delete {file_name}: {e}")
-                failed_files.append(file_name)
-        else:
-            failed_files.append(file_name)
-    logger.info("Finished deletion process.")
-    logger.info(f"Deleted files: {deleted_files}")
-    
-    return deleted_files, failed_files
-
-'''
-preprocess_experimental()
-
-Description:
-    Preprocess the experimental data. It's expected, that raw_dir has the spectrogram files directly inside,
+    Preprocess the simulated data.
+    It's expected, that raw_dir has the spectrogram files directly inside,
     while preproc_dir has the same amount of subdirectories
-Inputs:
-    raw_dir             -> [string] Path to directory containing the raw experimental SHG-matrixes
-    preproc_dir         -> [string] Path to directory containing subdirectories for preprocessed SHG-matrixes
-    plot_dir            -> [string] Path to directory, where the comparison of preprocessed and raw spectrograms get saved
-    preproc_filename    -> [string] File name of the preprocessed SHG-matrix
-    grid_size           -> [int] (optional, default=512) Grid to which the spectrograms get resampled to
-'''
-def preprocess_experimental(raw_dir, preproc_dir, plot_dir, preproc_filename, grid_size=512):
-    # Regular expression for extracting the indices
-    raw_file_pattern = re.compile(r'\D*(\d+)\.txt$')
-    preproc_dir_pattern = re.compile(r's(\d+)$')
-    
-    # List all input files and directories
-    raw_files = [f for f in os.listdir(raw_dir) if raw_file_pattern.search(f)]
-    preproc_dirs = [d for d in os.listdir(preproc_dir) if preproc_dir_pattern.search(d)]
 
-    # Extract indices and sort the files and directories by index
-    raw_files_with_indices = sorted(
-            [(int(raw_file_pattern.search(f).group(1)), f) for f in raw_files]
-            )
-    preproc_dirs_with_indices = sorted(
-            [(int(preproc_dir_pattern.search(d).group(1)), d) for d in preproc_dirs]
-            )
-    
-    # check if the number of files matches the number of directories
-    if len(raw_files_with_indices) != len(preproc_dirs_with_indices):
-        raise ValueError(f"Mismatch between number of input files ({len(raw_files_with_indices)}) and output directories ({len(preproc_dirs_with_indices)})!")
-
-
-    # itteratae over sorted files and directories
-    for(raw_index, raw_file), (preproc_index, preproc_subdir) in zip(raw_files_with_indices, preproc_dirs_with_indices):
-        logger.info(f"Preprocessing Experimental Matrix {preproc_index}/{len(preproc_dirs_with_indices)}")
-        logger.info(f"Raw path          = {raw_file}")
-        logger.info(f"Preprocessed path = {preproc_subdir}")
-
-        try:
-            # Construct raw file path
-            raw_file_path = os.path.join(raw_dir, raw_file)
-            
-            # Construct preproc file path
-            preproc_file_path = os.path.join(preproc_dir, preproc_subdir, preproc_filename)
-            
-            # Ensure the preproc directory exists
-            os.makedirs(os.path.dirname(preproc_file_path), exist_ok=True)
-            
-            # Call the preprocessing funtion
-            preprocess(
-                    shg_path = raw_file_path,
-                    output_path = preproc_file_path,
-                    N = grid_size
-                    )
-            
-            # Plot the comparison of the raw and preprocessed SHG-matrix
-            plot_filename = f"comparison_{raw_index}.png"
-            plot_path = os.path.join(plot_dir, plot_filename) 
-            vis.comparePreproccesSHGMatrix(
-                raw_filepath=raw_file_path,
-                preproc_filepath= preproc_file_path,
-                save_path=plot_path
-                )
-        except Exception as e:
-            logger.error(f"An error occurred: {e}")
-
-'''
-preprocess_simulated()
-
-Description:
-    Preprocess the simulated data. It's expected, that raw_dir has the spectrogram files directly inside,
-    while preproc_dir has the same amount of subdirectories
 Inputs:
     raw_dir                     -> [string] Path to directory containing subdirectories with the raw simulated data
     preproc_dir                 -> [string] Path to directory containing subdirectories for preprocessed data
@@ -598,7 +609,7 @@ Inputs:
     preproc_filename_label      -> [string] File name of the preprocessed SHG-matrix
     grid_size                   -> [int] (optional, default=512) Grid to which the spectrograms get resampled to
 '''
-def preprocess_simulated(
+def preprocessSimulated(
         raw_dir, preproc_dir, plot_dir,
         raw_filename_matrix, raw_filename_label,
         preproc_filename_matrix, preproc_filename_label,
@@ -647,7 +658,7 @@ def preprocess_simulated(
             
             logger.info(f"Starting Preprocessing")
             # Call the preprocessing funtion
-            preprocess(
+            preprocessFile(
                     shg_path = raw_file_path_matrix,
                     output_path = preproc_file_path_matrix,
                     N = grid_size
@@ -663,7 +674,199 @@ def preprocess_simulated(
                     )
         except Exception as e:
             logger.error(f"An error occurred: {e}")
+
+'''
+preprocessDataset
+
+Description:
+    Preprocess all datapoints in a dataset
+
+Inputs:
+    dataset_directory   -> [string] path to the dataset
+    grid_size           -> [int] grid size to be used
+'''
+def preprocessDataset(dataset_directory, grid_size=512):
+
+    preproc_path = os.path.join(dataset_directory, "preproc")
+    raw_path = os.path.join(dataset_directory, "raw")
+
+    preproc_experimental_path = os.path.join(preproc_path, "experimental")
+    preproc_simulated_path = os.path.join(preproc_path, "simulated")
+    raw_experimental_path = os.path.join(raw_path, "experimental")
+    raw_simulated_path = os.path.join(raw_path, "simulated")
+
+    plots_path = os.path.join(dataset_directory, "plots")
+    plots_experimental_path = os.path.join(plots_path, "experimental")
+    plots_simulated_path = os.path.join(plots_path, "simulated")
+    # preprocess the simulated data
+        # increment through datapoints and write result in /.preproc/simulated 
+    preprocessSimulated(
+            raw_dir=raw_simulated_path, 
+            preproc_dir=preproc_simulated_path, 
+            plot_dir=plots_simulated_path, 
+            raw_filename_matrix = "as_gn00.dat", 
+            raw_filename_label = "Es.dat", 
+            preproc_filename_matrix = "as_gn00.dat", 
+            preproc_filename_label = "Es.dat", 
+            grid_size=grid_size
+            )
+    # preprocess the experimental data
+        # increment through datapoints and write result in /.preproc/experimental 
+    preprocessExperimental(
+            raw_dir=raw_experimental_path, 
+            preproc_dir=preproc_experimental_path, 
+            plot_dir=plots_experimental_path, 
+            preproc_filename = "as_gn00.dat", 
+            grid_size=grid_size
+            )
+
+'''
+removeBlacklistFromDirectory()
+
+Description:
+    Remove files in a blacklist from the specified directory
+
+Inputs:
+    blacklist_path  -> [string] Path to blacklist file
+    directory_path  -> [string] Path to directory
+Outputs:
+    deleted_files   -> [array of strings] Filename of files that got deleted
+    failed_files    -> [array of strings] Filename of files that weren't deleted
+'''
+def removeBlacklistFromDirectory(blacklist_path, directory_path):
+    deleted_files = []
+    failed_files = []
+    logger.info(f"Deleting files listed in blacklist '{blacklist_path}' from '{directory_path}' directory!")
+    try:
+        # Read the blacklist
+        logger.info(f"Reading blacklist '{blacklist_path}'...")
+        with open(blacklist_path, newline='', encoding='utf-8') as csv_file:
+            reader = csv.reader(csv_file)
+            blacklisted_files = [row[0] for row in reader]
+    except Exception as e:
+        logger.info(f"Reading blacklist unsuccesful: {e}")
+        
+    # itterate over the blacklist and remove the files
+    logger.info(f"Removing Files from '{directory_path}'...")
+    for file_name in blacklisted_files:
+        # get full path of selected file
+        file_path = os.path.join(directory_path, file_name)
+        if os.path.isfile(file_path):
+            try:
+                # remove file from directory, if it exists
+                os.remove(file_path)
+                deleted_files.append(file_name)
+            except Exception as e:
+                # file doesn't exist
+                logger.info(f"Failed to delete {file_name}: {e}")
+                failed_files.append(file_name)
+        else:
+            failed_files.append(file_name)
+    logger.info("Finished deletion process.")
+    logger.info(f"Deleted files: {deleted_files}")
+    
+    return deleted_files, failed_files
+
+'''
+windowSHGmatrix()
+
+Description:
+    Use a window function on the SHG-matrix
+
+Inputs:
+    shg_matrix                  -> [tensor] SHG-matrix over which to apply the windowing function
+    dimension                   -> [int] Dimension across which the window will be applied
+    standard_deviation_factor   -> [float] the standard deviation of the gauss window equals window_width*standard_deviation_factor
+Outputs:
+    shg_matrix_windowed     -> [tensor] SHG-matrix after application of the windowing function
+'''
+def windowSHGmatrix(shg_matrix, dimension = 1, standard_deviation_factor = 0.1):
+    # Raise exceptions
+    if not( (dimension == 1) or (dimension == 0) ):
+        raise ValueError(f"dimension should be either 1 or 0 but is {dimension}")
+    if not (standard_deviation_factor > 0):
+        raise ValueError(f"standard_deviation_factor needs to be higher than 0, but is {standard_deviation_factor}")
+
+    if isinstance(shg_matrix, np.ndarray):
+        # convert to tensor if spectrogram is a numpy array
+        shg_matrix = torch.from_numpy(shg_matrix)
+
+    # determine the window width (equals the number of samples across the selected dimension)
+    window_width = int(shg_matrix.size(dimension))
+    # calculate the standard deviation used for the gaussian window
+    window_standard_deviation = window_width * standard_deviation_factor
+    # define the window
+    window_delay = torch.from_numpy( windows.gaussian(window_width, std=window_standard_deviation)).float()
+
+    # apply the window to the SHG-matrix
+    # 'None' adds a new axis for broadcasting
+    if dimension == 1:
+        shg_matrix_windowed = shg_matrix * window_delay[None, :]
+    elif dimension == 0:
+        shg_matrix_windowed = shg_matrix * window_delay[:, None]
+
+    return shg_matrix_windowed
+
+
+'''
+zeroCrossings()
+
+Description:
+    Get the zero crossings of tensor y
+
+Inputs:
+    x           -> [tensor] x-values of the tensor
+    y           -> [tensor] y-values of the tensor
+    tollerance  -> [float] absolute y-values smaller than this will be considered 0
+Outputs:
+    x_zero      -> [tensor] x-values where y = 0
+''' 
+def zeroCrossings(x, y, tollerance=1e-12):
+    N = len(x)
+    x_zero = []
+    # check if y and x have the same length
+    if len(y) != N:
+        raise ValueError("arguments x and y need to have the same length")
+
+    # check if first element of y is close to zero (smaller than +-tollerance)
+    if abs(y[0]) < tollerance:
+        # add value to zero crossings
+        x_zero.append(x[0])
+    
+    for n in range(1, N):
+        # check if element is close to zero (smaller than +-tollerance)
+        if abs(y[n]) < tollerance:
+            # add value to zero crossings
+            x_zero.append(x[n])
+            continue    # go to next index n
+        
+        # check for changing sign between y[n] and y[n-1] 
+        # this is the case when y[n] * y[n-1] is negative and y[n-1] isn't inside the tollerance considered zero
+        if y[n] * y[n-1] < 0 and abs(y[n-1]) > tollerance:
+            # calculate the difference between x[n] and x[n-1]
+            delta_x = x[n] - x[n-1]
+            if not (delta_x > 0):
+                raise ValueError("Difference between x-values needs to be > 0")
+
+            # calculate the difference between y[n] and y[n-1]
+            delta_y = y[n] - y[n-1]
+
+            # calculate the slope
+            slope = delta_y / delta_x
+            assert abs(slope) > 0 # check that slope is not 0
             
+            # calculate intercepts
+            intercept_1 = y[n-1] - slope * x[n-1]
+            intercept_2 = y[n] - slope * x[n]
+            # mean intercept
+            mean_intercept = (intercept_1 + intercept_2) / 2
+            
+            # calculate zero
+            zero = -mean_intercept / slope
+            
+            x_zero.append(zero)
+
+    return x_zero
 
 '''
 getDatasetInformation()
@@ -770,37 +973,20 @@ def getDelayWavelengthFromFile(path):
         return delay_range, wavelength_highest, wavelength_lowest
 
 '''
-processHeader()
-
-Extract the header information from the first two lines of the file.
-If the first line has fewer than 5 elements, the header is 2 lines.
-Otherwise, it's just the first line.
-'''
-def processHeader(lines):
-    """
-    Inputs:
-        lines   -> the first two lines of the spectrogram file
-    Outputs:
-        header  -> the header of the spectrogram file
-    """
-    header_line_1 = lines[0].split()
-    
-    if len(header_line_1) < 5:
-        header_line_2 = lines[1].split()
-        header = header_line_1 + header_line_2
-    else:
-        header = header_line_1
-
-    if len(header) < 5:
-        logger.error("ERROR: Header is has to many elements")
-    
-    # Convert elements to float for numeric calculations
-    header = [float(x) for x in header]
-    
-    return header
-
-'''
 writeDatasetInformationToFile()
+
+Description:
+    write information about the dataset into a file
+
+Inputs: 
+    file_path       -> [string] path of the file the information is written to
+    dataset_path    -> [string] path of the dataset
+    num_datapoints  -> [int] number of datapoints in the dataset
+    min_delay       -> [float] minimum delay value in the dataset
+    max_delay       -> [float] maximum delay value in the dataset
+    min_wavelength  -> [float] minimum wavelength in the dataset
+    max_wavelength  -> [float] maximum wavelength in the dataset
+    grid_size       -> [int] grid size of the dataset
 '''
 def writeDatasetInformationToFile(
         file_path,
@@ -827,95 +1013,6 @@ def writeDatasetInformationToFile(
         logger.info(f"File written to {file_path}!")
     else:
         raise OSError(f"Path {file_path} is incorrect!")
-
-'''
-getTBDrmsValues
-
-Description:
-    Calculate TBDrms values for all subdirectories, sort them and write them to a file
-
-Inputs:
-    data_directory  -> [string] Base directorie of the training dataset
-    root_directory  -> [string] Root directorie of the project
-    output_filename -> [string] Filename to write the sorted TBDrms values to
-'''                            
-def getTBDrmsValues(data_directory, root_directory, output_filename):
-    data = []
-    
-    logger.info('Stepping through all subdirectories')
-    # step through all directories
-    for subdirectory in os.listdir(data_directory):
-        # get the subdirectory path 
-        subdirectory_path = os.path.join(data_directory, subdirectory)
-
-        # Ensure it's a subdirectory and starts with 's'
-        if os.path.isdir(subdirectory_path) and subdirectory.startswith('s'):
-            # get the path of SimulatedPulseData.txt
-            file_path = os.path.join(subdirectory_path, 'SimulatedPulseData.txt')
-
-            # Check if 'SimulatedPulseData.txt' exists
-            if os.path.exists(file_path):
-                # initialize rmsT and rmsW 
-                rmsT, rmsW = None, None
-
-                # open and read 'SimulatedPulseData.txt'
-                with open(file_path, 'r') as file:
-                    lines = file.readlines()
-                    for line in lines:
-                        # Extract rmsT value
-                        if line.startswith('rmsT;'):
-                            rmsT = float(line.split(';')[1].strip())
-                        # Extract rmsW value
-                        if line.startswith('rmsW;'):
-                            rmsW = float(line.split(';')[1].strip())
-
-                # Check if rmsT and rmsW have values
-                if (rmsT is not None) and (rmsW is not None): 
-                    TBDrms = rmsT*rmsW
-                    # Store values as a tuple (subdirectory, rmsT, rmsW, TBDrms)
-                    data.append([subdirectory, rmsT, rmsW, TBDrms])
-
-    logger.info('Got all data from subdirectories')
-    #####################
-    ## WRITE CSV FILES ##
-    #####################
-    logger.info('Creating sorted CSV-file')
-    sorted_data = sorted(data, key=lambda x: x[3], reverse=False)
-
-    sorted_csv_file = os.path.join(root_directory, output_filename)
-    with open(sorted_csv_file, 'w', newline='') as sorted_csvfile:
-        writer = csv.writer(sorted_csvfile)
-        # write header
-        writer.writerow(['Directory', 'rmsT', 'rmsW', 'TBDrms'])
-        # write data 
-        writer.writerows(sorted_data)
-'''
-createPlotSubdirectories()
-
-Description:
-    Creates directories for plots of the spectrograms
-Inputs:
-    path    -> [string] Path of the parent directory
-'''
-def createPlotSubdirectories(path):
-    try:
-        # Create the main directory if it doesn't exist
-        if not os.path.exists(path):
-            os.makedirs(path)
-            logger.info(f"Created plot directory at '{path}'!")
-        else:
-            logger.info(f"Plot directory already exists at '{path}'")
-        
-        # Create the subdirectories
-        subdir1_path = os.path.join(path, "experimental")
-        subdir2_path = os.path.join(path, "simulated")
-
-        os.makedirs(subdir1_path, exist_ok=True)
-        os.makedirs(subdir2_path, exist_ok=True)
-
-        logger.info(f"Subdirectories 'experimental' and 'raw' created in '{path}'.")
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
 
 '''
 prepareDirectoriesForPreprocessing()
@@ -1049,52 +1146,3 @@ def prepareDirectoriesForPreprocessing(dataset_directory, grid_size, experimenta
 
     # create subdirectory for plots of the preprocessed SHG-matrixes
     createPlotSubdirectories(plots_path)
-
-'''
-pre
-'''
-def pre(dataset_directory, grid_size=512):
-
-    preproc_path = os.path.join(dataset_directory, "preproc")
-    raw_path = os.path.join(dataset_directory, "raw")
-
-    preproc_experimental_path = os.path.join(preproc_path, "experimental")
-    preproc_simulated_path = os.path.join(preproc_path, "simulated")
-    raw_experimental_path = os.path.join(raw_path, "experimental")
-    raw_simulated_path = os.path.join(raw_path, "simulated")
-
-    plots_path = os.path.join(dataset_directory, "plots")
-    plots_experimental_path = os.path.join(plots_path, "experimental")
-    plots_simulated_path = os.path.join(plots_path, "simulated")
-    # preprocess the simulated data
-        # increment through datapoints and write result in /.preproc/simulated 
-    preprocess_simulated(
-            raw_dir=raw_simulated_path, 
-            preproc_dir=preproc_simulated_path, 
-            plot_dir=plots_simulated_path, 
-            raw_filename_matrix = "as_gn00.dat", 
-            raw_filename_label = "Es.dat", 
-            preproc_filename_matrix = "as_gn00.dat", 
-            preproc_filename_label = "Es.dat", 
-            grid_size=grid_size
-            )
-    # preprocess the experimental data
-        # increment through datapoints and write result in /.preproc/experimental 
-    preprocess_experimental(
-            raw_dir=raw_experimental_path, 
-            preproc_dir=preproc_experimental_path, 
-            plot_dir=plots_experimental_path, 
-            preproc_filename = "as_gn00.dat", 
-            grid_size=grid_size
-            )
-
-def check_for_missing_file(parent_dir, required_filename):
-    missing_file_dirs = []
-
-    for roots, dirs, files in os.walk(parent_dir):
-        for subdir in dirs:
-            subdir_path = os.path.join(roots, subdir)
-            if required_filename not in os.listdir(subdir_path):
-                missing_file_dirs.append(subdir_path)
-        break
-    return missing_file_dirs

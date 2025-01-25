@@ -4,7 +4,6 @@ datasetInformation.py Script
 Script to get dataset information
 '''
 import os
-import csv
 import logging
 
 from modules import preprocessing as pre

@@ -1,20 +1,15 @@
 from modules import config
 from modules import data
-from modules import helper
 from modules import loss
 from modules import models
 from modules import visualize as vis
 
 import torch
-import torchvision.transforms as transforms
 import matplotlib
 matplotlib.use('Agg')  # Use the Agg backend for non-GUI rendering
-import matplotlib.pyplot as plt
 import logging
 
-
-
-shg_matrix_path = "./additional/samples/as_gn00.dat"
+shg_matrix_path = "path_to_example_spectrogram"
 filepath = "./pred.png"
 
 # Logger Settings
@@ -29,9 +24,7 @@ logging.basicConfig(
             ]
 )
 logger = logging.getLogger(__name__)
-##########
-## CUDA ##
-##########
+
 # If cuda is is available use it instead of the cpu
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 logger.info(f"Device used (cuda/cpu): {device}")
@@ -53,6 +46,7 @@ model.load_state_dict(
         map_location=torch.device(device))
     )
 logger.info(f"Model state loaded from {config.ModelPath}")
+
 # Set to evaluation mode
 model.eval()
 

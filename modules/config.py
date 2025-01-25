@@ -1,7 +1,7 @@
 '''
 config.py Module
 
-Module used for changing training parameters
+Module used for changing training parameters and paths
 '''
 #############
 ## Imports ##
@@ -16,16 +16,15 @@ Training Options
 
 Options that configure parameters for the training process
 '''
-NUM_EPOCHS = 1      # Number of epochs to train the model
-OUTPUT_SIZE = 256   # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
-BATCH_SIZE = 10     # Amount of data points trained at each step
-UNFREEZE_EPOCH = 0  # Epoch after which the whole model is trained (before that only the output layers are trained)
+NUM_EPOCHS = 1              # Number of epochs to train the model
+BATCH_SIZE = 10             # Amount of data points trained at each step
+UNFREEZE_EPOCH = 0          # Epoch after which the whole model is trained (before that only the output layers are trained)
 LEARNING_RATE = 2.13e-06    # Learning rate at the beginning of training
 MAX_LEARNING_RATE = 2.13e-05
-WEIGHT_DECAY = 1e-5     # TODO find description
-GAMMA_SCHEDULER = 0.9   # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
+WEIGHT_DECAY = 1e-5         # Regularisation
+GAMMA_SCHEDULER = 0.9       # Learning rate de-/increases by this factor after each epoch, when using exponential LR decrease
 TBDRMS_THRESHOLD = 0.5514   # Only data with a TBDrms higher than this threshold is used for training
-DESCRIPTOR = f"Training supervised 50% TBD, loading model39, new dataset and FROG-Error - with {NUM_EPOCHS} Epochs"
+DESCRIPTOR = f"Training expample description - with {NUM_EPOCHS} Epochs"
 
 '''
 Loss function options
@@ -42,33 +41,29 @@ WEIGTH_PHASE = 0.0          # Weight used for MSE of the phase (only considered,
 WEIGTH_FROG_ERROR = 1.0     # Weight used for the FROG Error (if it is 0.0, the calculation is skipped)
 
 '''
-Scaling Options
-
-Options for scaling of labels, etc.
-'''
-MAX_VALUE = 1   # The highest possible value the label can be
-
-
-'''
 Resampled Matrix configuration
 
 Options that configure how the resampled SHG-matrixes are created
 '''
+OUTPUT_SIZE = 256                               # Amount of samples used for the reconstructed pulse [model output size should be OUTPUT_SIZE]
 OUTPUT_NUM_DELAYS = 512                         # Number of delays the SHG-matrix get resampled to
 OUTPUT_NUM_WAVELENGTH = 512                     # Number of delays the SHG-matrix get resampled to
 OUTPUT_NUM_FREQUENCIES = OUTPUT_NUM_WAVELENGTH  # Number of frequencies the SHG-matrix get resampled to
-OUTPUT_TIMESTEP = 11*c.femto                   # Size of timestep between delays [fs]
+OUTPUT_TIMESTEP = 11*c.femto                    # Size of timestep between delays [fs]
 OUTPUT_START_WAVELENGTH = 478*c.nano            # Smallest wavelength in the dataset [nm]
 OUTPUT_END_WAVELENGTH = 561*c.nano              # Largest wavelength in the dataset [nm]
 OUTPUT_START_FREQUENCY = c.c2pi / OUTPUT_START_WAVELENGTH    # convert start wavelength to frequency [Hz]
 OUTPUT_END_FREQUENCY = c.c2pi / OUTPUT_END_WAVELENGTH        # convert stop wavelength to frequency [Hz]
+MAX_VALUE = 1                                   # The highest possible value the label can be
 
 logger = logging.getLogger(__name__)
+
 '''
 getFilepaths()
 
 Description:
     Search for the highest index of a matching subdirectory and create new directory. Return its path
+
 Input:
     root_directory      -> [string] directory containing the subdirectories
     subdirectory_string -> [string] name of subdirectory without numerical content
@@ -118,6 +113,7 @@ ModelPath = "./logs/training_002/model.pth"  # path of pretrained model used to 
 LogDirectory = "./logs/"
 SubDirectoryString = "log_"
 LogSubdiretory = getFilepaths(root_directory = LogDirectory, subdirectory_string=SubDirectoryString)
+
 LearningRateFilePath        = os.path.join(LogSubdiretory,"learning_rate.csv")
 LossPlotFilePath            = f"{LogSubdiretory}/loss"
 LogFilePath                 = f"{LogSubdiretory}/training.log"
@@ -131,8 +127,7 @@ MaxPredictionFilePath       = f"{LogSubdiretory}/prediction_max"
 MeanPredictionFilePath      = f"{LogSubdiretory}/prediction_mean"
 LearningRateFinderFilePath  = f"{LogSubdiretory}/lr_finder_plot"
 
-Path = "/mnt/data/desy/frog_simulated/grid_256_v4/" # Path to data used for training 
-# Path = "/mnt/data/desy/dataset/training_data/"
-TBDrmsFilename = "./grid_256_v4_TBD.csv"     # Path to a sorted list of all directories and their corresponfing TBDrms
-ShgFilename = "as_gn00.dat"    # Filename of the file containing the SHG-matrix
-LabelFilename = "Es.dat"        # Filename of the file containing the label
+Path = "path_to_dataset"            # Path to data used for training 
+TBDrmsFilename = "path_to_TBD.csv"  # Path to a sorted list of all directories and their corresponfing TBDrms
+ShgFilename = "as_gn00.dat"         # Filename of the file containing the SHG-matrix
+LabelFilename = "Es.dat"            # Filename of the file containing the label

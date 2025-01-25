@@ -1,4 +1,5 @@
-""" Data Module
+""" 
+Data Module
 
 Module containing functions and classes for loading or transforming data
 """
@@ -15,6 +16,92 @@ from modules import constants as c
 from modules import helper
 
 logger = logging.getLogger(__name__)
+
+'''
+Create3ChannelShgMatrix()
+
+Description:
+    Create a 3 Channel SHG-matrix and normalize it for the DenseNet
+'''
+class Create3ChannelSHGmatrix(object):
+    def __init__(self):
+        # initialize normalization with values for the densenet (https://pytorch.org/hub/pytorch_vision_densenet/)
+        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+
+    def __call__(self, inputs):
+        '''
+        Inputs:
+            shg_original        -> [tensor] Original SHG-matrix
+            header              -> [tensor] Header of original SHG-matrix
+            shg_resampled       -> [tensor] Resampled SHG-matrix 
+            output_delay        -> [tensor] Resampled delay axis
+            output_wavelength   -> [tensor] Resampled wavelength axis
+        Outputs:
+            shg_original        -> [tensor] Original SHG-matrix
+            header              -> [tensor] Header of original SHG-matrix
+            shg_resampled       -> [tensor] Resampled SHG-matrix 
+            output_delay        -> [tensor] Resampled delay axis
+            output_wavelength   -> [tensor] Resampled wavelength axis
+        '''
+
+        shg_original, header, shg_resampled, output_delay, output_wavelength = inputs
+        # add another dimension to the tensor
+        shg_resampled = shg_resampled.unsqueeze(0)
+        # repeat the SHG-matrix for 3 times to get 3 channels (shape =[3,h,w])
+        shg_resampled = shg_resampled.repeat([3,1,1])
+
+        # normalize using weights specified for the densenet
+        shg_resampled = self.normalize(shg_resampled)
+ 
+        return shg_original, header, shg_resampled, output_delay, output_wavelength
+
+
+'''
+CreateAxisAndRestructure()
+
+Description:
+    Takes path of a SHG-matrix and resamples it to the configured size and range of time/wavelength 
+'''
+class CreateAxisAndRestructure(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, shg_data):
+        '''
+        Inputs:
+            shg_data                -> [shg_matrix [tensor], header [tensor]] Original (not resampled) SHG-Matrix and Header 
+        Outputs:
+            shg_resampled           -> [tensor] Resampled SHG-matrix 
+            self.output_delay       -> [tensor] Resampled delay axis
+            self.output_wavelength  -> [tensor] Resampled wavelength axis
+        '''
+        shg_original, header = shg_data
+        device = shg_original.device
+        # ensure all tensors are of the same type (float32)
+        shg_original = shg_original.float()
+        shg_copy = shg_original
+
+        num_delays =            header[0]
+        num_wavelength =        header[1]
+        delay_step =            header[2]
+        wavelength_step =       header[3]
+        center_wavelength =     header[4]
+
+        # create input_delay_axis and input_wavelength_axis
+        input_delay_axis = helper.generateAxis(
+                N=num_delays,
+                resolution=delay_step,
+                center=0.0
+                )
+        input_wavelength_axis = helper.generateAxis(
+                N=num_wavelength,
+                resolution=wavelength_step,
+                center=center_wavelength
+                )
+
+        resample_outputs = [shg_original, header, shg_copy, input_delay_axis, input_wavelength_axis]
+        return resample_outputs
+
 
 '''
 LoadDatasetReconstruction()
@@ -76,6 +163,7 @@ class LoadDatasetReconstruction(Dataset):
         '''
         Description:
             Returns SHG-matrix and label of given index
+
         Inputs:
             index           -> [int] Index of SHG-matrix/label to be returned
         Outputs:
@@ -108,6 +196,56 @@ class LoadDatasetReconstruction(Dataset):
             return output_shg, label, header
         else:
             return output_shg, header
+
+'''
+ReadLabelFromEs()
+
+Description:
+    Read labels (real and imag part) from Es.dat
+'''
+class ReadLabelFromEs(object):
+    def __init__(self, number_elements):
+        '''
+        Inputs:
+            number_elements -> [int] Number of elements in the real and imaginary part array each
+        '''
+        self.number_elements = number_elements
+
+    def __call__(self, path):    
+        '''
+        Description:
+            Read Ek.dat file and place columns in arrays
+
+        Inputs:
+            path    -> [string] path to Ek.dat
+        Outputs:
+            label   -> [tensor] list of arrays containing real and imag part of time signal
+            [
+                real_part   -> [tensor] Array containing real part of time signal
+                imag_part   -> [tensor] Array containing imaginary part of time signal
+            ]
+        '''
+        # read the dataframe
+        dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
+ 
+        # get real and imaginary part from dataframe
+        # time, intensity, phase, real, imag = dataframe.to_numpy()
+        real = dataframe[3].to_numpy()
+        imag = dataframe[4].to_numpy()
+
+        # Resample to fit correct number of elements
+        if ( len(real) + len(imag) ) != self.number_elements:
+            original_indicies = np.linspace(0, len(real) - 1, num=len(real))
+            new_indicies = np.linspace(0, len(real) - 1, num=self.number_elements)
+            interpolationFuncReal = interp1d(original_indicies, real, kind='linear')
+            interpolationFuncImag = interp1d(original_indicies, imag, kind='linear')
+            real = interpolationFuncReal(new_indicies)
+            imag = interpolationFuncImag(new_indicies)
+        
+        # create a tensor from real and imaginary parts
+        label = np.concatenate( (real, imag), axis=0)
+        label = torch.from_numpy(label)
+        return label
 
 '''
 ReadShgMatrix()
@@ -163,9 +301,7 @@ class ReadSHGmatrix(object):
                 float(header[4]) * c.nano   # center wavelength [m]
                 ]
         shg_header = torch.tensor(shg_header)
-        #####################
-        ## Read SHG-matrix ##
-        #####################
+        # read SHG-matrix
         shg_df = pd.read_csv(path, sep='\\s+', skiprows=num_rows_skipped, header=None, engine='python')
         shg_matrix = shg_df.to_numpy()              # convert to numpy array 
         shg_matrix = torch.from_numpy(shg_matrix)   # convert to tensor
@@ -173,47 +309,57 @@ class ReadSHGmatrix(object):
         shg_data = [shg_matrix, shg_header]
         return shg_data
 
-class CreateAxisAndRestructure(object):
-    def __init__(self):
-        pass
+'''
+RemoveAmbiguitiesFromLabel()
 
-    def __call__(self, shg_data):
+Description:
+    Read labels (real and imag part) from Es.dat
+'''
+class RemoveAmbiguitiesFromLabel(object):
+    def __init__(self, number_elements):
+        '''
+        Inputs:
+            number_elements -> [int] Number of elements in the intensity and phase array each
+        '''
+        self.number_elements = number_elements
+        # get the center index of each half
+        self.center_index = number_elements // 2
+
+    def __call__(self, label):    
         '''
         Description:
-            Takes path of a SHG-matrix and resamples it to the configured size and range of time/wavelength 
+            Read Ek.dat file and place columns in arrays
+
         Inputs:
-            shg_data                -> [shg_matrix [tensor], header [tensor]] Original (not resampled) SHG-Matrix and Header 
+            label           -> [tensor] List of arrays containing real and imag part of time signal
         Outputs:
-            shg_resampled           -> [tensor] Resampled SHG-matrix 
-            self.output_delay       -> [tensor] Resampled delay axis
-            self.output_wavelength  -> [tensor] Resampled wavelength axis
+            output_label    -> [tensor] List of arrays containing real and imag part of time signal, without ambiguities
         '''
-        shg_original, header = shg_data
-        device = shg_original.device
-        # ensure all tensors are of the same type (float32)
-        shg_original = shg_original.float()
-        shg_copy = shg_original
+        if label.ndimension() != 1:
+            imag_part = label[:, self.number_elements:]
+            real_part = label[:, :self.number_elements]
+        else:
+            real_part = label[:self.number_elements]
+            imag_part = label[self.number_elements:]
 
-        num_delays =            header[0]
-        num_wavelength =        header[1]
-        delay_step =            header[2]
-        wavelength_step =       header[3]
-        center_wavelength =     header[4]
+        complex_signal = torch.complex(real_part, imag_part)
 
-        # create input_delay_axis and input_wavelength_axis
-        input_delay_axis = helper.generateAxis(
-                N=num_delays,
-                resolution=delay_step,
-                center=0.0
-                )
-        input_wavelength_axis = helper.generateAxis(
-                N=num_wavelength,
-                resolution=wavelength_step,
-                center=center_wavelength
-                )
+        # remove translation ambiguity Eamb(t) = E(t-t0)
+        complex_signal = helper.removeTranslationAmbiguity(complex_signal, self.center_index)
+        # remove absolute phase shift ambiguity Eamb(t) = E(t)*exp(j\phi0)
+        complex_signal = helper.removePhaseShiftAmbiguity(complex_signal, self.center_index)
+        # remove mirrored complex conjugate ambiguity Eamb(t) = E*(-t)
+        complex_signal = helper.removeConjugationAmbiguity(complex_signal, self.center_index)
 
-        resample_outputs = [shg_original, header, shg_copy, input_delay_axis, input_wavelength_axis]
-        return resample_outputs
+        real = complex_signal.real
+        imag = complex_signal.imag
+
+        if label.ndimension() != 1:
+            output_label = torch.cat([real, imag], dim=1)
+        else:
+            output_label = torch.cat([real, imag])
+
+        return output_label
 
 '''
 ResampleSHGmat()
@@ -240,9 +386,7 @@ class ResampleSHGmatrix(object):
         output_start_delay = -(self.output_number_rows // 2) * output_delay_step # calculate time at which the output time axis starts
         output_end_delay = output_start_delay + (self.output_number_rows -1) * output_delay_step # calculate the last element of the output time axis 
 
-        ######################## Used here to save time later
-        ## Define output axis ##
-        ########################
+        # Define output axis
         self.output_delay = torch.linspace(output_start_delay, output_end_delay, self.output_number_rows )  # create array that corresponds to the output time axis
         self.output_wavelength = torch.linspace(output_start_wavelength, output_stop_wavelength, self.output_number_cols)    # create array that corresponds tot the output wavelength axis
 
@@ -254,6 +398,7 @@ class ResampleSHGmatrix(object):
         '''
         Description:
             Takes path of a SHG-matrix and resamples it to the configured size and range of time/wavelength 
+
         Inputs:
             shg_data                -> [shg_matrix [tensor], header [tensor]] Original (not resampled) SHG-Matrix and Header 
         Outputs:
@@ -304,96 +449,10 @@ class ResampleSHGmatrix(object):
         return resample_outputs
 
 '''
-Create3ChannelShgMatrix()
-
-Description:
-    Create a 3 Channel SHG-matrix and normalize it for the DenseNet
-'''
-class Create3ChannelSHGmatrix(object):
-    def __init__(self):
-        # initialize normalization with values for the densenet (https://pytorch.org/hub/pytorch_vision_densenet/)
-        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-
-    def __call__(self, inputs):
-        '''
-        Inputs:
-            shg_original        -> [tensor] Original SHG-matrix
-            header              -> [tensor] Header of original SHG-matrix
-            shg_resampled       -> [tensor] Resampled SHG-matrix 
-            output_delay        -> [tensor] Resampled delay axis
-            output_wavelength   -> [tensor] Resampled wavelength axis
-        Outputs:
-            shg_original        -> [tensor] Original SHG-matrix
-            header              -> [tensor] Header of original SHG-matrix
-            shg_resampled       -> [tensor] Resampled SHG-matrix 
-            output_delay        -> [tensor] Resampled delay axis
-            output_wavelength   -> [tensor] Resampled wavelength axis
-        '''
-
-        shg_original, header, shg_resampled, output_delay, output_wavelength = inputs
-        # add another dimension to the tensor
-        shg_resampled = shg_resampled.unsqueeze(0)
-        # repeat the SHG-matrix for 3 times to get 3 channels (shape =[3,h,w])
-        shg_resampled = shg_resampled.repeat([3,1,1])
-
-        # normalize using weights specified for the densenet
-        shg_resampled = self.normalize(shg_resampled)
- 
-        return shg_original, header, shg_resampled, output_delay, output_wavelength
-
-
-'''
-ReadLabelFromEs()
-
-Description:
-    Read labels (real and imag part) from Es.dat
-'''
-class ReadLabelFromEs(object):
-    def __init__(self, number_elements):
-        '''
-        Inputs:
-            number_elements -> [int] Number of elements in the real and imaginary part array each
-        '''
-        self.number_elements = number_elements
-
-    def __call__(self, path):    
-        '''
-        Read Ek.dat file and place columns in arrays
-        Inputs:
-            path    -> [string] path to Ek.dat
-        Outputs:
-            label   -> [tensor] list of arrays containing real and imag part of time signal
-            [
-                real_part   -> [tensor] Array containing real part of time signal
-                imag_part   -> [tensor] Array containing imaginary part of time signal
-            ]
-        '''
-        # read the dataframe
-        dataframe = pd.read_csv(path,sep='  ', decimal=",", header=None, engine='python')     # sep needs to be 2 spaces
- 
-        # get real and imaginary part from dataframe
-        # time, intensity, phase, real, imag = dataframe.to_numpy()
-        real = dataframe[3].to_numpy()
-        imag = dataframe[4].to_numpy()
-
-        # Resample to fit correct number of elements
-        if ( len(real) + len(imag) ) != self.number_elements:
-            original_indicies = np.linspace(0, len(real) - 1, num=len(real))
-            new_indicies = np.linspace(0, len(real) - 1, num=self.number_elements)
-            interpolationFuncReal = interp1d(original_indicies, real, kind='linear')
-            interpolationFuncImag = interp1d(original_indicies, imag, kind='linear')
-            real = interpolationFuncReal(new_indicies)
-            imag = interpolationFuncImag(new_indicies)
-        
-        # create a tensor from real and imaginary parts
-        label = np.concatenate( (real, imag), axis=0)
-        label = torch.from_numpy(label)
-        return label
-
-'''
 Scaler()
 
-Scaler used for scaling the label
+Description:
+    Scaler used for scaling the label
 '''
 class Scaler(object):
     def __init__(self, number_elements, max_value):
@@ -407,7 +466,9 @@ class Scaler(object):
 
     def scale(self, label):
         '''
-        Scale the values of intensity and phase to [-1,1]
+        Description:
+            Scale the values of intensity and phase to [-1,1]
+
         Inputs:
             label           -> [tensor] Unscaled Label
         Outputs:
@@ -420,7 +481,9 @@ class Scaler(object):
         
     def unscale(self, scaled_label):
         '''
-        Unscales the values of the phase to [-1,1]
+        Description:
+            Unscales the values of the phase to [-1,1]
+
         Inputs:
             scaled_label    -> [tensor] Label scaled to [-1,1]
         Outputs:
@@ -430,53 +493,3 @@ class Scaler(object):
         unscaled_label = scaled_label * self.max_value
 
         return unscaled_label
-
-'''
-RemoveAmbiguitiesFromLabel()
-Read labels (real and imag part) from Es.dat
-'''
-class RemoveAmbiguitiesFromLabel(object):
-    def __init__(self, number_elements):
-        '''
-        Inputs:
-            number_elements -> [int] Number of elements in the intensity and phase array each
-        '''
-        self.number_elements = number_elements
-        # get the center index of each half
-        self.center_index = number_elements // 2
-
-    def __call__(self, label):    
-        '''
-        Read Ek.dat file and place columns in arrays
-        Inputs:
-            label           -> [tensor] List of arrays containing real and imag part of time signal
-        Outputs:
-            output_label    -> [tensor] List of arrays containing real and imag part of time signal, without ambiguities
-        '''
-        if label.ndimension() != 1:
-            imag_part = label[:, self.number_elements:]
-            real_part = label[:, :self.number_elements]
-        else:
-            real_part = label[:self.number_elements]
-            imag_part = label[self.number_elements:]
-
-        complex_signal = torch.complex(real_part, imag_part)
-
-        # remove translation ambiguity Eamb(t) = E(t-t0)
-        complex_signal = helper.removeTranslationAmbiguity(complex_signal, self.center_index)
-        # remove absolute phase shift ambiguity Eamb(t) = E(t)*exp(j\phi0)
-        complex_signal = helper.removePhaseShiftAmbiguity(complex_signal, self.center_index)
-        # remove mirrored complex conjugate ambiguity Eamb(t) = E*(-t)
-        complex_signal = helper.removeConjugationAmbiguity(complex_signal, self.center_index)
-
-        real = complex_signal.real
-        imag = complex_signal.imag
-
-        if label.ndimension() != 1:
-            output_label = torch.cat([real, imag], dim=1)
-        else:
-            output_label = torch.cat([real, imag])
-
-        return output_label
-
-

@@ -93,7 +93,6 @@ class PulseRetrievalLossFunction(nn.Module):
         prediction_real = prediction_tensor[:, :half_size].to(device)
         prediction_imag = prediction_tensor[:, half_size:].to(device)
 
-
         if self.use_label:
             # get real and imaginary parts of labels
             label_real = label[:, :half_size].to(device)
@@ -202,9 +201,6 @@ class PulseRetrievalLossFunction(nn.Module):
                 mse_loss += (mse_real_mean + mse_imag_mean + mse_intensity_mean + mse_phase_mean) / self.mse_weight_sum
 
             # calculate weighted mean loss of mse loss and frog error
-            # print(f"mse_loss = {mse_loss}")
-            # print(f"frog_error = {frog_error}")
-            # print(f"frog_error_weight = {self.frog_error_weight}")
             loss += mse_loss + frog_error*self.frog_error_weight
 
         # devide by batch size 
@@ -213,12 +209,53 @@ class PulseRetrievalLossFunction(nn.Module):
         return loss
 
 '''
+calcFrogError()
+
+Description:
+    Calculate the FROG-Error out of two FROG-Traces
+
+Inputs:
+    I_k         -> [tensor] retrieved FROG-Trace to compare
+    I_m         -> [tensor] measured FROG-Trace to compare to
+Outputs:
+    frog_error  -> [float] FROG-Error
+'''
+def calcFrogError(I_k, I_m):
+    # get correct device
+    device = I_k.device
+    # ensure all tensors are on the same device
+    I_m.to(device)
+    # get the shape of the measured spectrogram
+    M, N = I_m.shape
+    
+    # calculate \mu [pypret gl. 13 (s. 497)]
+    mu_numerator = torch.sum(I_m* I_k)
+    # print(f"mu_numerator = {mu_numerator}")
+    mu_denominator = torch.sum(I_k* I_k)
+    # print(f"mu_denominator = {mu_denominator}")
+    mu = mu_numerator / mu_denominator 
+    # print(f"mu = {mu}")
+    
+    # calculate normalization factor
+    norm_factor = 1 / (M * N)
+    # print(f"norm_factor = {norm_factor}")
+    # calculate the magnitude squared difference between the spectrograms
+    mag_squared_difference = torch.abs(I_m - mu*I_k)**2
+    # print(f"mag_squared_difference = {mag_squared_difference}")
+    # calculate the FROG-Error
+    frog_error = torch.sqrt(norm_factor * torch.sum(mag_squared_difference))
+    # print(f"frog_error = {frog_error}")
+
+    return frog_error
+
+'''
 createSHGmat()
 
 Description:
     Create an amplitude SHG-matrix from the analytical signal with delay and frequency axis.
     For the more common intensity SHG-matrix, take the elementwise squared absolute.
     Because of frequency doubling due to the SHG crystal the product signal is shifted by 2*wCenter
+
 Inputs:
     E                   -> [tensor] analytical time signal
     delta_tau           -> [float] time step between delays / sampling time
@@ -330,49 +367,11 @@ def createSHGmatFromAnalytical(analytical_signal, header):
     return shg_matrix, new_header
 
 '''
-calcFrogError()
-
-Description:
-    Calculate the FROG-Error out of two FROG-Traces
-Inputs:
-    I_k         -> [tensor] retrieved FROG-Trace to compare
-    I_m         -> [tensor] measured FROG-Trace to compare to
-Outputs:
-    frog_error  -> [float] FROG-Error
-'''
-def calcFrogError(I_k, I_m):
-    # get correct device
-    device = I_k.device
-    # ensure all tensors are on the same device
-    I_m.to(device)
-    # get the shape of the measured spectrogram
-    M, N = I_m.shape
-    
-    # calculate \mu [pypret gl. 13 (s. 497)]
-    mu_numerator = torch.sum(I_m* I_k)
-    # print(f"mu_numerator = {mu_numerator}")
-    mu_denominator = torch.sum(I_k* I_k)
-    # print(f"mu_denominator = {mu_denominator}")
-    mu = mu_numerator / mu_denominator 
-    # print(f"mu = {mu}")
-    
-    # calculate normalization factor
-    norm_factor = 1 / (M * N)
-    # print(f"norm_factor = {norm_factor}")
-    # calculate the magnitude squared difference between the spectrograms
-    mag_squared_difference = torch.abs(I_m - mu*I_k)**2
-    # print(f"mag_squared_difference = {mag_squared_difference}")
-    # calculate the FROG-Error
-    frog_error = torch.sqrt(norm_factor * torch.sum(mag_squared_difference))
-    # print(f"frog_error = {frog_error}")
-
-    return frog_error
-
-'''
 hilbert()
 
 Description:
     Calculate the hilbert transform of a real-valued signal
+
 Inputs:
     signal              -> [tensor] real-valued signal [tensor]
     plot                -> [bool] if true plots of the hilber transform process are made
@@ -446,23 +445,3 @@ def hilbert(signal, plot=False):
         plt.show()
     
     return analytical_signal
-
-def findMinimumFrogError(tensor1, tensor2):
-    width, height = tensor1.shape
-
-    min_error = float('inf')
-    best_shift = 0
-    best_shifted_tensor = None
-
-    for shift in range(0, height):  # Allow shifting up and down
-        shifted_tensor = torch.roll(tensor2, shifts=shift, dims=1)  # Circular shift along the vertical axis
-        error = calcFrogError(shifted_tensor, tensor1)
-
-        # Update the best shift if the error is lower
-        if abs(error) < min_error:
-            min_error = error
-            best_shift = shift
-            best_shifted_tensor = shifted_tensor
-
-    return min_error, best_shifted_tensor
-

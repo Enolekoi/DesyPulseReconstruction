@@ -95,7 +95,7 @@ model = models.CustomDenseNetReconstruction(
     num_outputs=config.OUTPUT_SIZE
     )
 # Define location of pretrained weights
-model.load_state_dict(torch.load('./logs/log_39/model.pth', weights_only=True))
+# model.load_state_dict(torch.load('./logs/log_39/model.pth', weights_only=True))
 
 # set the model to float, send it to the selected device and put it in evaluation mode
 model.float().to(device).eval()
@@ -136,22 +136,15 @@ length_dataset = len(data_loader)
 logger.info(f"Size of dataset: {length_dataset}")
 
 # get ratios of train, validation and test data
-test_size = int(500)                       # amount of test data (10%)
-# test_size = int(1000)
-train_size = int(10000)
-# train_size = int(0.1 * length_dataset)                       # amount of test data (10%)
-validation_size = int (2)                # amount of validation data (10%) 
-# validation_size = 0
-# validation_size = length_dataset - test_size - train_size   # amount of training and validation data (80%)
-# train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
-rest_size = length_dataset - test_size - train_size -validation_size   # amount of training and validation data (80%)
+test_size = int(0.1*length_dataset)                       # amount of test data (10%)
+validation_size = int(0.1*length_dataset)                # amount of validation data (10%) 
+train_size = length_dataset - test_size - validation_size   # amount of training and validation data (80%)
 logger.info(f"Size of training data:   {train_size}")
 logger.info(f"Size of validation data: {validation_size}")
 logger.info(f"Size of test data:       {test_size}")
 
 # split the dataset accordingly
-train_data, rest_data, validation_data, test_data = random_split(data_loader, [train_size, rest_size, validation_size, test_size])   # split data
-# train_data, validation_data, test_data = random_split(data_loader, [train_size, validation_size, test_size])   # split data
+train_data, validation_data, test_data = random_split(data_loader, [train_size, validation_size, test_size])   # split data
 
 # define the data loaders for training and validation
 train_loader = DataLoader(train_data, batch_size = config.BATCH_SIZE, shuffle=True)
@@ -312,7 +305,7 @@ for epoch in range(config.NUM_EPOCHS):
         logger.info(f"Validation Loss: {avg_val_loss:.10e}")
 
 # plot training loss
-vis.save_plot_training_loss(
+vis.savePlotTrainingLoss(
         training_loss = training_losses,
         validation_loss = validation_losses,
         learning_rates = learning_rates,
@@ -330,7 +323,6 @@ except Exception as e:
     logger.error(f"Error saving model: {e}")
     logger.error(f"model filepath: {config.ModelFilePath}")
     logger.error(f"Model: {model.state_dict}")
-
 
 '''
 Testing Loop
@@ -364,6 +356,7 @@ with torch.no_grad():
     avg_test_loss = np.mean(test_losses)
     logger.info(f"Test Loss: {avg_test_loss:.10e}")
 
+    logger.info("Test Step finished!")
     # get the prediction of a random test data point and plot it
     if len(test_data) > 0:
         # get a random sample
@@ -449,9 +442,6 @@ with open(config.ValidationLossFilePath, 'w', newline='') as file:
 with open(config.TestLossFilePath, 'w', newline='') as file:
     for item in test_losses:
         file.write(f"{item}\n")
-
-
-logger.info("Test Step finished!")
 
 for handler in logger.handlers:
     handler.flush()
