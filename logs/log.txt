@@ -1,0 +1,31 @@
+Comparing schedulers:
+  log_1   1cycle
+  log_2   constant LR
+  log_3   linear LR
+Comparing TBD:
+  log_4   100% TBD
+  log_5   90% TBD
+  log_6   50% TBD
+Comparing noise:
+  log_7   lowest noise
+  log_8   mid noise
+  log_9   highest noise
+Comparing hyperparameters:
+  log_10  hyperparams no FROG 1
+  log_11  hyperparams no FROG 2
+  log_12  hyperparams no FROG 3
+  log_13  hyperparams no FROG 4
+  log_14  hyperparams no FROG 5
+  log_15  hyperparams no FROG 6
+  log_16  hyperparams no FROG 7
+  log_17  hyperparams FROG 1
+  log_18  hyperparams FROG 2
+  log_19  hyperparams FROG 3
+  log_20  hyperparams FROG 3 - 3 Epochs - best
+  log_21  just FROG
+  log_22  just FROG for 1000 Samples after log 19
+  log_23  just FROG for 10000 Samples after log 19
+Comparing amount of datapoints
+  log_24  1/10 dataset - 10 Epochs
+  log_25  dataset - 10 Epochs
+  log_26  dataset - 1 Epoch
