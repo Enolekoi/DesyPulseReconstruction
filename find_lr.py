@@ -13,7 +13,7 @@ from modules import models
 from modules import loss as loss_module
 
 '''
-find_lr()
+findLR()
 
 Description:
     Find the optimal learning rate
@@ -28,7 +28,7 @@ Inputs:
     final_lr        -> [float] highest learning rate to test
     beta            -> [float] 
 '''
-def find_lr(
+def findLR(
     model, train_loader, criterion, optimizer, device, init_lr=1e-8, final_lr=10.0, beta=0.98
 ):
     logger.info("Starting learning rate finder")
@@ -264,7 +264,7 @@ optimizer = torch.optim.AdamW(
 	    )
 
 # Run the learning rate finder
-lrs, losses = find_lr(
+lrs, losses = findLR(
     model=model,
     train_loader=train_loader,
     criterion=criterion,
